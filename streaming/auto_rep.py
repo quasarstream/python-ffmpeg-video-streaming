@@ -24,11 +24,11 @@ class AutoRepresentation:
         width, height, ratio = self.dimension()
         less_than_height = list(filter(lambda x: x < height, self.heights))
         kilo_bit_rate = round(int(self.video['bit_rate']) / 1024)
-        reps = [Representation(width, height, kilo_bit_rate)]
+        reps = [Representation(width=width, height=height, bitrate=kilo_bit_rate)]
         kilo_bit_rates = get_kilo_bit_rates(kilo_bit_rate, len(less_than_height))
         count = 0
         for height in less_than_height:
-            reps.append(Representation(int(height*ratio), height, kilo_bit_rates[count]))
+            reps.append(Representation(width=int(height*ratio), height=height, bitrate=kilo_bit_rates[count]))
             count += 1
 
         return reps
