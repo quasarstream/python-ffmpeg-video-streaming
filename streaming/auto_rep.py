@@ -1,5 +1,6 @@
 from pprint import pprint
 
+from .utiles import round_to_even
 from .streams import Streams
 from .rep import Representation
 
@@ -14,22 +15,27 @@ def get_kilo_bit_rates(kilo_bit_rate, count):
 
 
 class AutoRepresentation:
-    def __init__(self, ffprob):
-        self.heights = [2160, 1080, 720, 480, 240, 144]
+    def __init__(self, ffprob, heights):
+        if heights is None:
+            heights = [2160, 1080, 720, 480, 240, 144]
+        self.heights = heights
         if not isinstance(ffprob, Streams):
             raise TypeError('The input must be instance of Streams')
         self.video = ffprob.video()
 
     def generate(self):
         width, height, ratio = self.dimension()
+        kilo_bitrate = round(int(self.video['bit_rate']) / 1024)
+
+        reps = [Representation(width=width, height=height, kilo_bitrate=kilo_bitrate)]
+
         less_than_height = list(filter(lambda x: x < height, self.heights))
-        kilo_bit_rate = round(int(self.video['bit_rate']) / 1024)
-        reps = [Representation(width=width, height=height, bitrate=kilo_bit_rate)]
-        kilo_bit_rates = get_kilo_bit_rates(kilo_bit_rate, len(less_than_height))
-        count = 0
+        k_bit_rates = get_kilo_bit_rates(kilo_bitrate, len(less_than_height))
+        i = 0
+
         for height in less_than_height:
-            reps.append(Representation(width=int(height*ratio), height=height, bitrate=kilo_bit_rates[count]))
-            count += 1
+            reps.append(Representation(width=round_to_even(height*ratio), height=height, kilo_bitrate=k_bit_rates[i]))
+            i += 1
 
         return reps
 

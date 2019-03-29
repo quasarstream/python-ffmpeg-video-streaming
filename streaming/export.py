@@ -11,8 +11,8 @@ class Export(object):
         self.reps = list(args)
         return self
 
-    def auto_rep(self):
-        self.reps = AutoRepresentation(ffprobe(self.filename)).generate()
+    def auto_rep(self, heights=None):
+        self.reps = AutoRepresentation(ffprobe(self.filename), heights).generate()
         return self
 
     def package(self):
