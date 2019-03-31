@@ -2,8 +2,8 @@ from .hls import HLS
 from .dash import DASH
 
 
-def dash(filename):
-    return DASH(filename)
+def dash(filename, **kwargs):
+    return DASH(filename, kwargs)
 
 
 def hls(filename):

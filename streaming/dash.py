@@ -3,10 +3,6 @@ from .export import Export
 
 class DASH(Export):
 
-    def __init__(self, filename):
-        super().__init__(filename)
-
-    def adaption(self, adaption):
-        self.adaption = str(adaption)
-        return self
-
+    def __init__(self, filename, kwargs):
+        self.adaption = kwargs.pop('adaption', None)
+        super(DASH, self).__init__(filename)

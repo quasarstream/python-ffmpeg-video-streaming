@@ -16,4 +16,4 @@ class Export(object):
         return self
 
     def package(self):
-        return self.reps
+        return self.adaption
