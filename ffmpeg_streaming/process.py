@@ -1,5 +1,5 @@
 import subprocess
-import streaming
+import ffmpeg_streaming
 from .params import (get_hls_parm, get_dash_parm)
 
 
@@ -10,11 +10,12 @@ def build_command(cmd, media_obj):
     cmd += ['-y', '-i', media_obj.filename]
     cmd += ['-c:v', media_obj.format]
 
-    if isinstance(media_obj, streaming.HLS):
+    if isinstance(media_obj, ffmpeg_streaming.HLS):
         cmd += get_hls_parm(media_obj)
-    elif isinstance(media_obj, streaming.DASH):
+    elif isinstance(media_obj, ffmpeg_streaming.DASH):
         cmd += get_dash_parm(media_obj)
-
+    # print(cmd)
+    # exit()
     return cmd
 
 
