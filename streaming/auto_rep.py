@@ -30,11 +30,11 @@ class AutoRepresentation:
 
         reps = [Representation(width=width, height=height, kilo_bitrate=kilo_bitrate)]
 
-        less_than_height = list(filter(lambda x: x < height, self.heights))
-        k_bit_rates = get_kilo_bit_rates(kilo_bitrate, len(less_than_height))
+        heights = list(filter(lambda x: x < height, self.heights))
+        k_bit_rates = get_kilo_bit_rates(kilo_bitrate, len(heights))
         i = 0
 
-        for height in less_than_height:
+        for height in heights:
             reps.append(Representation(width=round_to_even(height*ratio), height=height, kilo_bitrate=k_bit_rates[i]))
             i += 1
 

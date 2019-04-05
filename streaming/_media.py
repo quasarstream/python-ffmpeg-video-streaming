@@ -1,5 +1,4 @@
-from .hls import HLS
-from .dash import DASH
+from .media import (HLS, DASH)
 
 
 def dash(filename, **kwargs):
