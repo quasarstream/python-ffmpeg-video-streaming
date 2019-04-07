@@ -5,13 +5,13 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="python-ffmpeg-video-streaming",
-    version="0.0.1",
+    version="0.0.3",
     author="Amin Yazdanpanah",
     author_email="contact@aminyazdanpanah.com",
-    description="Package media content for online ffmpeg_streaming(DASH and HLS) using ffmpeg",
+    description="Package media content for online streaming(DASH and HLS) using ffmpeg",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/aminyazdanpanah/python-ffmpeg-video-ffmpeg_streaming",
+    url="https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming",
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",

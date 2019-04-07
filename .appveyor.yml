@@ -1,0 +1,38 @@
+build: false
+
+platform:
+  - x64
+
+clone_folder: c:\projects\project-code
+
+cache:
+  - c:\ProgramData\chocolatey\bin -> .appveyor.yml
+  - c:\ProgramData\chocolatey\lib -> .appveyor.yml
+  - c:\ProgramData\ComposerSetup -> .appveyor.yml
+  - c:\tools\php -> .appveyor.yml
+
+environment:
+  global:
+    COMPOSER_NO_INTERACTION: 1
+    ANSICON: 121x90 (121x90) # Console colors
+
+  ffmpeg_download: https://ffmpeg.zeranoe.com/builds/win64/static/ffmpeg-20190225-f948082-win64-static.zip
+
+  matrix:
+    - PYTHON_VERSION: "3.5"
+    - PYTHON_VERSION: "3.4"
+    - PYTHON_VERSION: "2.7"
+
+install:
+  # Astropy ci-helpers. See https://github.com/astropy/ci-helpers
+  - "git clone git://github.com/astropy/ci-helpers.git"
+  - "powershell ci-helpers/appveyor/install-miniconda.ps1"
+  - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
+  - "activate test"
+  # Install the selected Qt version
+  - "conda install ciocheck -c conda-forge"
+  - "python setup.py develop"
+  - ps: Start-FileDownload $env:ffmpeg_download
+
+  - 7z x ffmpeg-20190225-f948082-win64-static.zip
+  - PATH=%PATH%;%cd%\ffmpeg-20190225-f948082-win64-static\bin

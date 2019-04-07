@@ -1,8 +1,7 @@
 # Python FFMpeg Video Streaming
-This library uses FFmpeg to package media content for online streaming(DASH and HLS)
+This library uses the [FFmpeg](https://ffmpeg.org) to package media content for online streaming(DASH and HLS)
 
 ## Installation
-
 
 The latest version of `ffmpeg-streaming` can be acquired via pip:
 
@@ -13,13 +12,13 @@ pip install python-ffmpeg-video-streaming
 
 ## Documentation
 
-It is recommended to browse the source code as it is self-documented.
+The best way to learn how to use this library is to review the examples and browse the source code as it is self-documented.
 
 ### Required Libraries
 
-This library requires a working FFMpeg install. You will need both FFMpeg and FFProbe binaries to use it.
+This library requires a working FFMpeg and FFProbe binaries to use it.
 
-For installing FFmpeg and FFprobe, just Google "install ffmpeg on" + `your operation system`
+For installing the FFmpeg and also the FFprobe, just Google "install ffmpeg on" + `your operation system`
 
 
 ### DASH
@@ -59,7 +58,7 @@ rep3 = Representation(width=640, height=360, kilo_bitrate=1000)
 
 ```
 
-For more information about [FFMpeg](https://ffmpeg.org/) and its dash options please [click here](https://ffmpeg.org/ffmpeg-formats.html#dash-2).
+For more information about [FFMpeg](https://ffmpeg.org/) and its dash options, [see here](https://ffmpeg.org/ffmpeg-formats.html#dash-2).
 ### HLS
 
 **[HTTP Live Streaming (also known as HLS)](https://en.wikipedia.org/wiki/HTTP_Live_Streaming)** is an HTTP-based media streaming communications protocol implemented by [Apple Inc](https://www.apple.com/).
@@ -93,7 +92,7 @@ rep3 = Representation(width=640, height=360, kilo_bitrate=1000)
         .package('/var/www/media/videos/hls/test.m3u8')
 )
 ```
-For more information about which value you should pass to these methods and also HLS options please [click here](https://ffmpeg.org/ffmpeg-formats.html#hls-2).
+For more information about which value you should pass to these methods and also HLS options, [see here](https://ffmpeg.org/ffmpeg-formats.html#hls-2).
 
 #### Encryption HLS
 
@@ -150,19 +149,20 @@ Reference: http://hlsbook.net/
 ## Contributing
 
 I'd love your help in improving, correcting, adding to the specification.
-Please [file an issue](https://github.com/aminyazdanpanah/Python-FFmpeg-video-streaming/issues)
-or [submit a pull request](https://github.com/aminyazdanpanah/Python-FFmpeg-video-streaming/pulls).
+Please [file an issue](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/issues)
+or [submit a pull request](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/pulls).
 
-Please see [Contributing File](https://github.com/aminyazdanpanah/Python-FFmpeg-video-streaming/blob/master/CONTRIBUTING.md) for more information.
+Please see [Contributing File](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/blob/master/CONTRIBUTING.md) for more information.
 
 ## Security
 
 If you discover a security vulnerability within this package, please send an e-mail to Amin Yazdanpanah via:
+
 contact [AT] aminyazdanpanah • com.
 ## Credits
 
-- [Amin Yazdanpanah](http://www.aminyazdanpanah.com/?u=github.com/aminyazdanpanah/Python-FFmpeg-video-streaming)
+- [Amin Yazdanpanah](http://www.aminyazdanpanah.com/?u=github.com/aminyazdanpanah/python-ffmpeg-video-streaming)
 
 ## License
 
-The MIT License (MIT). Please see [License File](https://github.com/aminyazdanpanah/Python-FFmpeg-video-streaming/blob/master/LICENSE) for more information.
+The MIT License (MIT). Please see [License File](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/blob/master/LICENSE) for more information.

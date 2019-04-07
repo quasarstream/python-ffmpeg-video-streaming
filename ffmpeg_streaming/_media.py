@@ -5,8 +5,8 @@ def dash(filename, **kwargs):
     return DASH(filename, kwargs)
 
 
-def hls(filename):
-    return HLS(filename)
+def hls(filename, **kwargs):
+    return HLS(filename, kwargs)
 
 
 __all__ = [

@@ -37,7 +37,7 @@ class Export(object):
 
 class HLS(Export):
 
-    def __init__(self, filename, **kwargs):
+    def __init__(self, filename, kwargs):
         self.hls_time = kwargs.pop('hls_time', 10)
         self.hls_allow_cache = kwargs.pop('hls_allow_cache', 0)
         self.hls_key_info_file = kwargs.pop('hls_key_info_file', None)
