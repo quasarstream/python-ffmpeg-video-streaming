@@ -1,3 +1,4 @@
+from ffmpeg_streaming.key_info_file import generate_key_info_file
 from .process import run
 from ._ffprobe import *
 from .auto_rep import AutoRepresentation
@@ -12,8 +13,8 @@ class Export(object):
         self.reps = list(args)
         return self
 
-    def auto_rep(self, heights=None):
-        self.reps = AutoRepresentation(ffprobe(self.filename), heights).generate()
+    def auto_rep(self, heights=None, cmd='ffprobe'):
+        self.reps = AutoRepresentation(FFProbe(self.filename, cmd), heights).generate()
         return self
 
     def format(self, video_format):
@@ -42,6 +43,10 @@ class HLS(Export):
         self.hls_allow_cache = kwargs.pop('hls_allow_cache', 0)
         self.hls_key_info_file = kwargs.pop('hls_key_info_file', None)
         super(HLS, self).__init__(filename)
+
+    def encryption(self, url, path, length=16):
+        self.hls_key_info_file = generate_key_info_file(url, path, length)
+        return self
 
 
 class DASH(Export):

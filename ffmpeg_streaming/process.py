@@ -14,8 +14,6 @@ def build_command(cmd, media_obj):
         cmd += get_hls_parm(media_obj)
     elif isinstance(media_obj, ffmpeg_streaming.DASH):
         cmd += get_dash_parm(media_obj)
-    # print(cmd)
-    # exit()
     return cmd
 
 

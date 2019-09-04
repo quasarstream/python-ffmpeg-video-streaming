@@ -19,10 +19,10 @@ Which problem does the PR fix?
 #### Example Usage
 
 ```php
-$foo = new Foo();
+foo = Foo();
 
 // Now we can do
-$foo->doSomething();
+foo.doSomething();
 
 // Remove this section if not needed
 ~~~

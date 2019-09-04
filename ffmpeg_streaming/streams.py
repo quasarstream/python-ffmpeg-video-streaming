@@ -1,23 +1,29 @@
-from pprint import pprint
-
-
 class Streams:
-    def __init__(self, stream):
-        self.stream = stream
+    def __init__(self, streams):
+        self.streams = streams
 
     def video(self):
-        video = next((stream for stream in self.stream['streams'] if stream['codec_type'] == 'video'), None)
-        if video is None:
-            raise ValueError('No video stream found')
-
-        return video
+        return self.get_stream('video')
 
     def audio(self):
-        audio = next((stream for stream in self.stream['streams'] if stream['codec_type'] == 'audio'), None)
-        if audio is None:
-            raise ValueError('No audio stream found')
+        return self.get_stream('audio')
 
-        return audio
+    def first_stream(self):
+        return self.streams[0]
 
-    def first(self):
-        return self.stream['streams'][0]
+    def videos(self):
+        return self.get_streams('video')
+
+    def audios(self):
+        return self.get_streams('audio')
+
+    def get_stream(self, media):
+        media_attr = next((stream for stream in self.streams if stream['codec_type'] == media), None)
+        if media_attr is None:
+            raise ValueError('No ' + str(media) + ' stream found')
+        return media_attr
+
+    def get_streams(self, media):
+        for stream in self.streams:
+            if stream['codec_type'] == media:
+                yield stream

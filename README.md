@@ -1,31 +1,39 @@
-# Python FFMpeg Video Streaming
-This library uses the [FFmpeg](https://ffmpeg.org) to package media content for online streaming(DASH and HLS)
+# 📼 Python FFMpeg Video Streaming
+This package uses the [FFmpeg](https://ffmpeg.org) to package media content for online streaming(DASH and HLS)
+
+**Contents**
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Quickstart](#quickstart)
+  - [DASH](#dash)
+  - [HLS](#hls)
+    - [Encrypted HLS](#encrypted-hls)
+  - [Probe](#probe)
+- [Several Open Source Players](#several-open-source-players)
+- [Contributing and Reporting Bugs](#contributing-and-reporting-bugs)
+- [Credits](#credits)
+- [License](#license)
+
+## Requirements
+1. This version of the package is only compatible with Python 3.0 or higher.
+
+2. To use this package, you need to **[install the FFMpeg](https://ffmpeg.org/download.html)**. You will need both FFMpeg and FFProbe binaries to use it.
 
 ## Installation
-
 The latest version of `ffmpeg-streaming` can be acquired via pip:
-
 ```
 pip install python-ffmpeg-video-streaming
 ```
 
-
-## Documentation
-
+## Quickstart
 The best way to learn how to use this library is to review the examples and browse the source code as it is self-documented.
-
-### Required Libraries
-
-This library requires a working FFMpeg and FFProbe binaries to use it.
-
-For installing the FFmpeg and also the FFprobe, just Google "install ffmpeg on" + `your operation system`
-
 
 ### DASH
 **[Dynamic Adaptive Streaming over HTTP (DASH)](https://en.wikipedia.org/wiki/Dynamic_Adaptive_Streaming_over_HTTP)**, also known as MPEG-DASH, is an adaptive bitrate streaming technique that enables high quality streaming of media content over the Internet delivered from conventional HTTP web servers.
 
-
-#### Auto Create DASH Files
+Similar to Apple's HTTP Live Streaming (HLS) solution, MPEG-DASH works by breaking the content into a sequence of small HTTP-based file segments, each segment containing a short interval of playback time of content that is potentially many hours in duration, such as a movie or the live broadcast of a sports event. The content is made available at a variety of different bit rates, i.e., alternative segments encoded at different bit rates covering aligned short intervals of playback time. While the content is being played back by an MPEG-DASH client, the client uses a bit rate adaptation (ABR) algorithm to automatically select the segment with the highest bit rate possible that can be downloaded in time for playback without causing stalls or re-buffering events in the playback. The current MPEG-DASH reference client dash.js offers both buffer-based (BOLA) and hybrid (DYNAMIC) bit rate adaptation algorithms. Thus, an MPEG-DASH client can seamlessly adapt to changing network conditions and provide high quality playback with fewer stalls or re-buffering events. [Learn more](https://en.wikipedia.org/wiki/Dynamic_Adaptive_Streaming_over_HTTP)
+ 
+Create DASH Files:
 ```python
 import ffmpeg_streaming
 
@@ -37,9 +45,7 @@ import ffmpeg_streaming
         .package('/var/www/media/videos/dash/test.mpd')
 )
 ```
-
-
-#### Create Representations Manually
+You can also create representations manually:
 ```python
 import ffmpeg_streaming
 from ffmpeg_streaming import Representation
@@ -57,12 +63,14 @@ rep3 = Representation(width=640, height=360, kilo_bitrate=1000)
 )
 
 ```
+See **[DASH options](https://ffmpeg.org/ffmpeg-formats.html#dash-2)** for more information.
 
-For more information about [FFMpeg](https://ffmpeg.org/) and its dash options, [see here](https://ffmpeg.org/ffmpeg-formats.html#dash-2).
 ### HLS
+**[HTTP Live Streaming (also known as HLS)](https://en.wikipedia.org/wiki/HTTP_Live_Streaming)** is an HTTP-based adaptive bitrate streaming communications protocol implemented by Apple Inc. as part of its QuickTime, Safari, OS X, and iOS software. Client implementations are also available in Microsoft Edge, Firefox and some versions of Google Chrome. Support is widespread in streaming media servers.
 
-**[HTTP Live Streaming (also known as HLS)](https://en.wikipedia.org/wiki/HTTP_Live_Streaming)** is an HTTP-based media streaming communications protocol implemented by [Apple Inc](https://www.apple.com/).
-
+HLS resembles MPEG-DASH in that it works by breaking the overall stream into a sequence of small HTTP-based file downloads, each download loading one short chunk of an overall potentially unbounded transport stream. A list of available streams, encoded at different bit rates, is sent to the client using an extended M3U playlist. [Learn more](https://en.wikipedia.org/wiki/HTTP_Live_Streaming)
+ 
+Create HLS files based on original video(auto generate qualities).
 ```python
 import ffmpeg_streaming
 
@@ -75,7 +83,7 @@ import ffmpeg_streaming
 )
 ```
 
-#### Create Representations Manually
+You can also create representations manually:
 ```python
 import ffmpeg_streaming
 from ffmpeg_streaming import Representation
@@ -92,77 +100,95 @@ rep3 = Representation(width=640, height=360, kilo_bitrate=1000)
         .package('/var/www/media/videos/hls/test.m3u8')
 )
 ```
-For more information about which value you should pass to these methods and also HLS options, [see here](https://ffmpeg.org/ffmpeg-formats.html#hls-2).
+**NOTE:** You cannot use HEVC(libx265) and VP9 formats for HLS packaging.
 
-#### Encryption HLS
+#### Encrypted HLS
+The encryption process requires some kind of secret (key) together with an encryption algorithm. HLS uses AES in cipher block chaining (CBC) mode. This means each block is encrypted using the ciphertext of the preceding block. [Learn more](https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation)
 
-The encryption process requires some kind of secret (key) together with an encryption algorithm.
-
-HLS uses AES in cipher block chaining (CBC) mode. This means each block is encrypted using the cipher text of the preceding block. [read more](http://hlsbook.net/how-to-encrypt-hls-video-with-ffmpeg/)
-
-Before we can encrypt our videos, we need an encryption key. I’m going to use OpenSSL to create the key, which we can do like so:
-
-``` bash 
-openssl rand 16 > enc.key
-```
-
-The next step is to generate an IV. This step is optional. (If no value is provided, the segment sequence number will be used instead.)
-``` bash
-openssl rand -hex 16
-ecd0d06eaf884d8226c33928e87efa33
-```
-
-Make a note of the output as you’ll need it shortly.
-
-To encrypt the video we need to tell ffmpeg what encryption key to use, the URI of the key, and so on. We use `setHlsKeyInfoFile` method and passing the location of a key info file. The file must be in the following format:
-
-``` bash
-Key URI
-Path to key file
-IV (optional)
-```
-
-The first line specifies the URI of the key, which will be written to the playlist. The second line is the path to the file containing the encryption key, and the (optional) third line contains the initialisation vector. Here’s an example (enc.keyinfo):
-
-``` bash
-https://example.com/enc.key
-enc.key
-ecd0d06eaf884d8226c33928e87efa33
-```
-
-Now that we have everything we need, run the following code to encrypt the video segments:
+You need to pass both `URL to the key` and `path to save a random key` to the `encryption` method:
 
 ```python
 import ffmpeg_streaming
 
 (
     ffmpeg_streaming
-        .hls('/var/www/media/videos/test.mp4', hls_time=10, hls_allow_cache=1, hls_key_info_file="/path/to/keyinfo")
+        .hls('/var/www/media/videos/test.mp4', hls_time=10, hls_allow_cache=1)
+        .encryption('https://www.aminyazdanpanah.com/keys/enc.key', '/var/www/my_website_project/keys/enc.key')
         .format('libx264')
         .auto_rep()
         .package('/var/www/media/videos/hls/test.m3u8')
 )
 ```
 
-Reference: http://hlsbook.net/
+**NOTE:** It is very important to protect your key on your website using a token or a session/cookie(****It is highly recommended****).    
 
-## Contributing
+See **[HLS options](https://ffmpeg.org/ffmpeg-formats.html#hls-2)** for more information.
 
+### Probe
+You can extract the metadata of video file using the following code:
+```python
+from pprint import pprint
+from ffmpeg_streaming import FFProbe
+
+ffprobe = FFProbe('/var/www/media/test.mp4')
+
+ffprobe.save_as_json('/var/www/media/test_metadata.json')
+
+video_format = ffprobe.format()
+videos = ffprobe.streams().videos()
+audios = ffprobe.streams().audios()
+first_video = ffprobe.streams().video()
+first_audio = ffprobe.streams().audio()
+
+print("format:\n")
+pprint(video_format)
+
+print("\nvideos:\n")
+for video in videos:
+    pprint(video)
+
+print("\naudios:\n")
+for audio in audios:
+    pprint(audio)
+
+print("\nfirst video:\n")
+pprint(first_video)
+
+print("\nfirst audio\n")
+pprint(first_audio)
+```
+**NOTE:** You can save these metadata to your database.
+
+## Several Open Source Players
+You can use these libraries to play your streams.
+- **WEB**
+    - DASH and HLS: **[video.js](https://github.com/videojs/video.js)**
+    - DASH and HLS: **[DPlayer](https://github.com/MoePlayer/DPlayer)**
+    - DASH and HLS: **[Plyr](https://github.com/sampotts/plyr)**
+    - DASH and HLS: **[MediaElement.js](https://github.com/mediaelement/mediaelement)**
+    - DASH and HLS: **[Clappr](https://github.com/clappr/clappr)**
+    - DASH and HLS: **[Flowplayer](https://github.com/flowplayer/flowplayer)**
+    - DASH and HLS: **[Shaka Player](https://github.com/google/shaka-player)**
+    - DASH and HLS: **[videojs-http-streaming (VHS)](https://github.com/videojs/http-streaming)**
+    - DASH: **[dash.js](https://github.com/Dash-Industry-Forum/dash.js)**
+    - HLS: **[hls.js](https://github.com/video-dev/hls.js)**
+- **Android**
+    - DASH and HLS: **[ExoPlayer](https://github.com/google/ExoPlayer)**
+
+**NOTE:** You should pass a manifest of stream(e.g. `https://www.aminyazdanpanah.com/videos/dash/lesson-1/test.mpd` or `/videos/hls/lesson-2/test.m3u8` ) to these players.
+
+## Contributing and Reporting Bugs
 I'd love your help in improving, correcting, adding to the specification.
-Please [file an issue](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/issues)
-or [submit a pull request](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/pulls).
+Please **[file an issue](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/issues)** or **[submit a pull request](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/pulls)**.
+- Please see **[Contributing File](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/blob/master/CONTRIBUTING.md)** for more information.
+- If you have any questions or you want to report a bug, please just **[file an issue](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/issues)**
+- If you discover a security vulnerability within this package, please see **[SECURITY File](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/blob/master/SECURITY.md)** for more information to help with that.
 
-Please see [Contributing File](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/blob/master/CONTRIBUTING.md) for more information.
+**NOTE:** If you have any questions about this package or FFMpeg, please **DO NOT** send an email to me or submit the contact form in my website. Emails related to these issues **will be ignored**.
 
-## Security
 
-If you discover a security vulnerability within this package, please send an e-mail to Amin Yazdanpanah via:
-
-contact [AT] aminyazdanpanah • com.
 ## Credits
-
 - [Amin Yazdanpanah](http://www.aminyazdanpanah.com/?u=github.com/aminyazdanpanah/python-ffmpeg-video-streaming)
 
 ## License
-
 The MIT License (MIT). Please see [License File](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/blob/master/LICENSE) for more information.
