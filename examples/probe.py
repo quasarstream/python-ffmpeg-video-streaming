@@ -1,32 +1,53 @@
 from pprint import pprint
 from ffmpeg_streaming import FFProbe
 
-ffprobe = FFProbe('/var/www/media/test.mp4')
 
-ffprobe.save_as_json('/var/www/media/test_metadata.json')
+def ffprobe():
+    return FFProbe('/var/www/media/test.mp4')
 
-video_format = ffprobe.format()
-videos = ffprobe.streams().videos()
-audios = ffprobe.streams().audios()
-first_video = ffprobe.streams().video()
-first_audio = ffprobe.streams().audio()
 
-print("format:\n")
-pprint(video_format)
+if __name__ == "__main__":
+    ffprobe = ffprobe()
 
-print("\nvideos:\n")
-for video in videos:
-    pprint(video)
+    ffprobe.save_as_json('/var/www/media/test_metadata.json')
 
-print("\naudios:\n")
-for audio in audios:
-    pprint(audio)
+    all_media = ffprobe.all()
 
-print("\nfirst video:\n")
-pprint(first_video)
+    video_format = ffprobe.format()
 
-print("\nfirst audio\n")
-pprint(first_audio)
+    streams = ffprobe.streams().all()
+    videos = ffprobe.streams().videos()
+    audios = ffprobe.streams().audios()
+
+    first_stream = ffprobe.streams().first_stream()
+    first_video = ffprobe.streams().video()
+    first_audio = ffprobe.streams().audio()
+
+    print("all:\n")
+    pprint(all_media)
+
+    print("format:\n")
+    pprint(video_format)
+
+    print("streams:\n")
+    pprint(streams)
+
+    print("\nvideos:\n")
+    for video in videos:
+        pprint(video)
+
+    print("\naudios:\n")
+    for audio in audios:
+        pprint(audio)
+
+    print("\nfirst stream:\n")
+    pprint(first_stream)
+
+    print("\nfirst video:\n")
+    pprint(first_video)
+
+    print("\nfirst audio\n")
+    pprint(first_audio)
 
 
 

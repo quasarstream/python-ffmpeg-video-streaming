@@ -1,5 +1,5 @@
 # 📼 Python FFMpeg Video Streaming
-This package uses the [FFmpeg](https://ffmpeg.org) to package media content for online streaming(DASH and HLS)
+This package uses the **[FFmpeg](https://ffmpeg.org)** to package media content for online streaming(DASH and HLS)
 
 **Contents**
 - [Requirements](#requirements)
@@ -8,6 +8,7 @@ This package uses the [FFmpeg](https://ffmpeg.org) to package media content for 
   - [DASH](#dash)
   - [HLS](#hls)
     - [Encrypted HLS](#encrypted-hls)
+  - [Progress](#progress)
   - [Probe](#probe)
 - [Several Open Source Players](#several-open-source-players)
 - [Contributing and Reporting Bugs](#contributing-and-reporting-bugs)
@@ -119,10 +120,41 @@ import ffmpeg_streaming
         .package('/var/www/media/videos/hls/test.m3u8')
 )
 ```
-
 **NOTE:** It is very important to protect your key on your website using a token or a session/cookie(****It is highly recommended****).    
 
 See **[HLS options](https://ffmpeg.org/ffmpeg-formats.html#hls-2)** for more information.
+
+### Progress
+You can get realtime information about the transcoding by passing a callable method to the `package` method:
+```python
+import ffmpeg_streaming
+
+def progress(percentage, line, all_media):
+    # You can update a field in your database
+    # You can also create a socket connection and show a progress bar to users
+    print("{}% is transcoded".format(percentage))
+
+(
+    ffmpeg_streaming
+        .hls('/var/www/media/videos/test.mp4', hls_time=10, hls_allow_cache=1)
+        .encryption('https://www.aminyazdanpanah.com/keys/enc.key', '/var/www/my_website_project/keys/enc.key')
+        .format('libx264')
+        .auto_rep()
+        .package('/var/www/media/videos/hls/test.m3u8', progress)
+)
+```
+Output:
+``` bash
+1% is transcoded
+2% is transcoded
+.
+.
+.
+99% is transcoded
+100% is transcoded
+
+Process finished with exit code 0
+```
 
 ### Probe
 You can extract the metadata of video file using the following code:
@@ -131,33 +163,10 @@ from pprint import pprint
 from ffmpeg_streaming import FFProbe
 
 ffprobe = FFProbe('/var/www/media/test.mp4')
-
-ffprobe.save_as_json('/var/www/media/test_metadata.json')
-
-video_format = ffprobe.format()
-videos = ffprobe.streams().videos()
-audios = ffprobe.streams().audios()
-first_video = ffprobe.streams().video()
-first_audio = ffprobe.streams().audio()
-
-print("format:\n")
-pprint(video_format)
-
-print("\nvideos:\n")
-for video in videos:
-    pprint(video)
-
-print("\naudios:\n")
-for audio in audios:
-    pprint(audio)
-
-print("\nfirst video:\n")
-pprint(first_video)
-
-print("\nfirst audio\n")
-pprint(first_audio)
 ```
 **NOTE:** You can save these metadata to your database.
+
+See the [example](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/blob/master/examples/probe.py) for more information.
 
 ## Several Open Source Players
 You can use these libraries to play your streams.
@@ -184,11 +193,11 @@ Please **[file an issue](https://github.com/aminyazdanpanah/python-ffmpeg-video-
 - If you have any questions or you want to report a bug, please just **[file an issue](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/issues)**
 - If you discover a security vulnerability within this package, please see **[SECURITY File](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/blob/master/SECURITY.md)** for more information to help with that.
 
-**NOTE:** If you have any questions about this package or FFMpeg, please **DO NOT** send an email to me or submit the contact form in my website. Emails related to these issues **will be ignored**.
+**NOTE:** If you have any questions about this package or FFMpeg, please **DO NOT** send an email to me or submit the contact form on my website. Emails related to these issues **will be ignored**.
 
 
 ## Credits
-- [Amin Yazdanpanah](http://www.aminyazdanpanah.com/?u=github.com/aminyazdanpanah/python-ffmpeg-video-streaming)
+- **[Amin Yazdanpanah](https://www.aminyazdanpanah.com/?u=github.com/aminyazdanpanah/python-ffmpeg-video-streaming)**
 
 ## License
-The MIT License (MIT). Please see [License File](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/blob/master/LICENSE) for more information.
+The MIT License (MIT). Please see **[License File](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/blob/master/LICENSE)** for more information.

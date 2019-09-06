@@ -17,6 +17,9 @@ class FFProbe:
     def format(self):
         return json.loads(self.out.decode('utf-8'))['format']
 
+    def all(self):
+        return json.loads(self.out.decode('utf-8'))
+
     def save_as_json(self, path):
         with open(path, 'w') as probe:
             probe.write(self.out.decode('utf-8'))

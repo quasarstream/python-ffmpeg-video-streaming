@@ -11,6 +11,9 @@ class Streams:
     def first_stream(self):
         return self.streams[0]
 
+    def all(self):
+        return self.streams
+
     def videos(self):
         return self.get_streams('video')
 
