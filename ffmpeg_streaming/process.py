@@ -16,7 +16,8 @@ def build_command(cmd, media_obj):
         cmd += get_hls_parm(media_obj)
     elif isinstance(media_obj, ffmpeg_streaming.DASH):
         cmd += get_dash_parm(media_obj)
-    return cmd
+
+    return " ".join(cmd)
 
 
 def run_async(media, cmd='ffmpeg', pipe_stdin=False, pipe_stdout=False, pipe_stderr=False, universal_newlines=False):
@@ -58,7 +59,8 @@ def show_progress(media, callable_progress, cmd, ffprobe_cmd, input):
 
 def run(media, callable_progress=None, cmd='ffmpeg', ffprobe_cmd='ffprobe', capture_stdout=False, capture_stderr=False,
         input=None, timeout=None):
-    if callable(progress):
+
+    if callable(callable_progress):
         return show_progress(media, callable_progress, cmd, ffprobe_cmd, input)
 
     process = run_async(

@@ -1,4 +1,6 @@
-# 📼 Python FFMpeg Video Streaming
+# 📼 Python FFmpeg Video Streaming
+[![Downloads](https://pepy.tech/badge/python-ffmpeg-video-streaming)](https://pepy.tech/project/python-ffmpeg-video-streaming)
+
 This package uses the **[FFmpeg](https://ffmpeg.org)** to package media content for online streaming(DASH and HLS)
 
 **Contents**
@@ -27,7 +29,7 @@ pip install python-ffmpeg-video-streaming
 ```
 
 ## Quickstart
-The best way to learn how to use this library is to review the examples and browse the source code as it is self-documented.
+The best way to learn how to use this library is to review **[the examples](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/tree/master/examples)** and browse the source code as it is self-documented.
 
 ### DASH
 **[Dynamic Adaptive Streaming over HTTP (DASH)](https://en.wikipedia.org/wiki/Dynamic_Adaptive_Streaming_over_HTTP)**, also known as MPEG-DASH, is an adaptive bitrate streaming technique that enables high quality streaming of media content over the Internet delivered from conventional HTTP web servers.
@@ -166,7 +168,7 @@ ffprobe = FFProbe('/var/www/media/test.mp4')
 ```
 **NOTE:** You can save these metadata to your database.
 
-See the [example](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/blob/master/examples/probe.py) for more information.
+See the **[example](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/blob/master/examples/probe.py)** for more information.
 
 ## Several Open Source Players
 You can use these libraries to play your streams.

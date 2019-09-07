@@ -7,15 +7,19 @@ def progress(percentage, line, all_media):
     print("{}% is transcoded".format(percentage))
 
 
-def create_hls_files():
+def create_hls_files(_input, _output, __progress=None):
     (
         ffmpeg_streaming
-            .hls('/var/www/media/videos/test.mkv', hls_time=10, hls_allow_cache=1)
+            .hls(_input, hls_time=10, hls_allow_cache=1)
             .format('libx264')
             .auto_rep()
-            .package('/var/www/media/videos/hls/test.m3u8', progress)
+            .package(_output, __progress)
     )
 
 
 if __name__ == "__main__":
-    create_hls_files()
+    _input = '/var/www/media/videos/test.mkv'
+    _output = '/var/www/media/videos/dash/test.mpd'
+    _progress = progress
+
+    create_hls_files(_input, _output, _progress)

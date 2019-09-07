@@ -1,4 +1,3 @@
-from pprint import pprint
 from ffmpeg_streaming import FFProbe
 
 
@@ -23,31 +22,31 @@ if __name__ == "__main__":
     first_video = ffprobe.streams().video()
     first_audio = ffprobe.streams().audio()
 
-    print("all:\n")
-    pprint(all_media)
+    print("all:")
+    print(all_media)
 
-    print("format:\n")
-    pprint(video_format)
+    print("format:")
+    print(video_format)
 
-    print("streams:\n")
-    pprint(streams)
+    print("streams:")
+    print(streams)
 
-    print("\nvideos:\n")
+    print("videos:")
     for video in videos:
-        pprint(video)
+        print(video)
 
-    print("\naudios:\n")
+    print("audios:")
     for audio in audios:
-        pprint(audio)
+        print(audio)
 
-    print("\nfirst stream:\n")
-    pprint(first_stream)
+    print("first stream:")
+    print(first_stream)
 
-    print("\nfirst video:\n")
-    pprint(first_video)
+    print("first video:")
+    print(first_video)
 
-    print("\nfirst audio\n")
-    pprint(first_audio)
+    print("first audio:")
+    print(first_audio)
 
 
 
