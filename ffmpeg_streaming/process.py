@@ -1,3 +1,4 @@
+import shlex
 import subprocess
 import ffmpeg_streaming
 from ffmpeg_streaming.progress import progress
@@ -8,7 +9,7 @@ def build_command(cmd, media_obj):
     if type(cmd) != list:
         cmd = [cmd]
 
-    cmd += ['-y', '-i', media_obj.filename]
+    cmd += ['-y', '-i', media_obj.filename.replace("\\", "/")]
     cmd += ['-c:v', media_obj.format]
 
     if isinstance(media_obj, ffmpeg_streaming.HLS):
@@ -24,7 +25,7 @@ def run_async(media, cmd='ffmpeg', pipe_stdin=False, pipe_stdout=False, pipe_std
     stdin_stream = subprocess.PIPE if pipe_stdin else None
     stdout_stream = subprocess.PIPE if pipe_stdout else None
     stderr_stream = subprocess.STDOUT if pipe_stderr else None
-    return subprocess.Popen(commands, stdout=stdout_stream, stderr=stderr_stream, stdin=stdin_stream
+    return subprocess.Popen(shlex.split(commands), stdout=stdout_stream, stderr=stderr_stream, stdin=stdin_stream
                             , universal_newlines=universal_newlines)
 
 

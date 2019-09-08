@@ -36,7 +36,7 @@ def get_hls_parm(hls):
                 commands += ['-maxrate', str(round(rep.kilo_bitrate * 1.2)) + "k"]
                 commands += ['-hls_segment_filename', dirnmae + "/" + name + "_" + str(rep.height) + "p_%04d.ts"]
                 if hls.hls_key_info_file is not None:
-                    commands += ['-hls_key_info_file', hls.hls_key_info_file]
+                    commands += ['-hls_key_info_file', hls.hls_key_info_file.replace("\\", "/")]
                 commands += ['-strict', hls.strict]
                 commands += [dirnmae + "/" + name + "_" + str(rep.height) + "p.m3u8"]
 

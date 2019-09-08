@@ -73,11 +73,11 @@ class TestStreaming(unittest.TestCase):
         with open(os.path.join(self.src_dir, 'hls', 'test.m3u8')) as test_m3u8:
             actual_m3u8 = test_m3u8.read()
         self.assertEqual(actual_m3u8, expected_m3u8)
-        with open(os.path.join(self.src_dir, 'fixture_test_270p.m3u8')) as test_m3u8:
-            expected_270_m3u8 = test_m3u8.read()
         with open(os.path.join(self.src_dir, 'hls', 'test_270p.m3u8')) as test_m3u8:
-            actual_270_m3u8 = test_m3u8.read()
-        self.assertEqual(actual_270_m3u8, expected_270_m3u8)
+            actual_270_m3u8 = test_m3u8.readlines()
+        self.assertEqual(actual_270_m3u8[0].replace('\n', ''), '#EXTM3U')
+        self.assertEqual(actual_270_m3u8[1].replace('\n', ''), '#EXT-X-VERSION:3')
+        self.assertEqual(actual_270_m3u8[2].replace('\n', ''), '#EXT-X-ALLOW-CACHE:NO')
 
     def test_encrypted_hls(self):
         encrypted_hls = ffmpeg_streaming.hls(self.src_video).encryption(
