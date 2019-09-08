@@ -47,4 +47,5 @@ install:
   - PATH=%PATH%;%cd%\ffmpeg-20190225-f948082-win64-static\bin
 
 test_script:
-  - py.test -vv
+  - cd c:\projects\project-code
+  - python -m unittest

@@ -1,5 +1,7 @@
 language: python
 before_install:
+  - sudo apt-get update
+  - travis_retry composer self-update
   - >
     [ -f ffmpeg-release/ffmpeg ] || (
         curl -O https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz &&
@@ -9,23 +11,8 @@ before_install:
 matrix:
   include:
     - python: 3.4
-      env:
-      - TOX_ENV=py34
     - python: 3.5
-      env:
-      - TOX_ENV=py35
     - python: 3.6
-      env:
-      - TOX_ENV=py36
-    - python: pypy
-      env:
-      - TOX_ENV=pypy
-install:
-  - pip install tox
+
 script:
-  - export PATH=$(readlink -f ffmpeg-release):$PATH
-  - tox -e $TOX_ENV
-cache:
-  directories:
-    - .tox
-    - ffmpeg-release
+  - python -m unittest
