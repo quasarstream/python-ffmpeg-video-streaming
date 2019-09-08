@@ -19,16 +19,16 @@ environment:
   ffmpeg_download: https://ffmpeg.zeranoe.com/builds/win64/static/ffmpeg-20190225-f948082-win64-static.zip
 
   matrix:
-    - PYTHON: "C:\\Python35"
-      PYTHON_VERSION: 3.5
+    - PYTHON: "C:\\Python37"
+      PYTHON_VERSION: 3.7
       PYTHON_ARCH: 32
 
     - PYTHON: "C:\\Python34"
-      PYTHON_VERSION: 3.4
+      PYTHON_VERSION: 3.6
       PYTHON_ARCH: 32
 
     - PYTHON: "C:\\Python33"
-      PYTHON_VERSION: 3.3
+      PYTHON_VERSION: 3.5
       PYTHON_ARCH: 32
 
 init:

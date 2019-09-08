@@ -111,7 +111,6 @@ class TestStreaming(unittest.TestCase):
         dash.path = dash.filename
 
         params = get_dash_parm(dash)
-        print(len(params))
         self.assertEqual(len(params), 37)
 
         dash.package(os.path.join(self.src_dir, 'dash', 'test.mpd'))

@@ -1,16 +1,18 @@
 language: python
+
 before_install:
   - sudo apt-get update
-  - travis_retry composer self-update
-  - >
-    [ -f ffmpeg-release/ffmpeg ] || (
-        curl -O https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz &&
-        mkdir -p ffmpeg-release &&
-        tar Jxf ffmpeg-release-amd64-static.tar.xz --strip-components=1 -C ffmpeg-release
-    )
+  - if [ -n "$GH_TOKEN" ]; then composer config github-oauth.github.com ${GH_TOKEN}; fi;
+
 matrix:
   include:
     - python: 3.7
+    - python: 3.6
+    - python: 3.5
+    - python: 3.4
+
+install:
+  - sudo apt-get install ffmpeg
 
 script:
   - python -m unittest
