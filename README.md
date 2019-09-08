@@ -1,5 +1,9 @@
 # 📼 Python FFmpeg Video Streaming
+[![Build Status](https://travis-ci.org/aminyazdanpanah/python-ffmpeg-video-streaming.svg?branch=master)](https://travis-ci.org/aminyazdanpanah/python-ffmpeg-video-streaming)
+[![Build status](https://ci.appveyor.com/api/projects/status/qy712tou5pvq629y?svg=true)](https://ci.appveyor.com/project/aminyazdanpanah/python-ffmpeg-video-streaming)
 [![Downloads](https://pepy.tech/badge/python-ffmpeg-video-streaming)](https://pepy.tech/project/python-ffmpeg-video-streaming)
+[![PyPI version](https://badge.fury.io/py/python-ffmpeg-video-streaming.svg)](https://badge.fury.io/py/python-ffmpeg-video-streaming)
+[![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat)](https://github.com/aminyazdanpanah/PHP-FFmpeg-video-streaming/blob/master/LICENSE)
 
 This package uses the **[FFmpeg](https://ffmpeg.org)** to package media content for online streaming(DASH and HLS)
 
@@ -18,7 +22,7 @@ This package uses the **[FFmpeg](https://ffmpeg.org)** to package media content 
 - [License](#license)
 
 ## Requirements
-1. This version of the package is only compatible with Python 3.0 or higher.
+1. This version of the package is only compatible with **[Python 3.6](https://www.python.org/downloads/)** or higher.
 
 2. To use this package, you need to **[install the FFMpeg](https://ffmpeg.org/download.html)**. You will need both FFMpeg and FFProbe binaries to use it.
 
