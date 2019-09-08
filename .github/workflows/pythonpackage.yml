@@ -2,6 +2,8 @@ name: Python package
 
 on: [push]
 
+sudo: True
+
 jobs:
   build:
 
@@ -22,7 +24,7 @@ jobs:
         python -m pip install --upgrade pip
     - name: Install ffmpeg
       run: |
-        apt-get install ffmpeg
+        sudo apt-get install ffmpeg
     - name: Test with pytest
       run: |
         pip install pytest
