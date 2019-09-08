@@ -21,6 +21,9 @@ def get_hls_parm(hls):
     commands = []
     for rep in hls.reps:
             if isinstance(rep, Representation):
+                if hls.filter is not None:
+                    for filter in hls.filter:
+                        commands += ['-' + filter, hls.filter[filter]]
                 commands += ['-s:v', rep.size()]
                 commands += ['-crf', '20']
                 commands += ['-sc_threshold', '0']
@@ -34,6 +37,7 @@ def get_hls_parm(hls):
                 commands += ['-hls_segment_filename', dirnmae + "/" + name + "_" + str(rep.height) + "p_%04d.ts"]
                 if hls.hls_key_info_file is not None:
                     commands += ['-hls_key_info_file', hls.hls_key_info_file]
+                commands += ['-strict', hls.strict]
                 commands += [dirnmae + "/" + name + "_" + str(rep.height) + "p.m3u8"]
 
     export_hls_playlist(dirnmae, name, hls.reps)
@@ -54,17 +58,22 @@ def get_dash_parm(dash):
         '-use_template', '1',
         '-f', 'dash'
     ]
+
+    if dash.filter is not None:
+        for filter in dash.filter:
+            commands += ['-' + filter, dash.filter[filter]]
+
     count = 0
     for rep in reversed(dash.reps):
             if isinstance(rep, Representation):
                 commands += ['-map', '0']
                 commands += ['-b:v:' + str(count), rep.bit_rate()]
                 commands += ['-s:v:' + str(count), rep.size()]
-            count += 1
+                count += 1
 
     if dash.adaption is not None:
         commands += ['-adaptation_sets', dash.adaption]
-
+    commands += ['-strict', dash.strict]
     commands += ['"' + dirnmae + '/' + name + '.mpd"']
 
     return commands

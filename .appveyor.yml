@@ -19,20 +19,32 @@ environment:
   ffmpeg_download: https://ffmpeg.zeranoe.com/builds/win64/static/ffmpeg-20190225-f948082-win64-static.zip
 
   matrix:
-    - PYTHON_VERSION: "3.5"
-    - PYTHON_VERSION: "3.4"
-    - PYTHON_VERSION: "2.7"
+    - PYTHON: "C:\\Python35"
+      PYTHON_VERSION: 3.5
+      PYTHON_ARCH: 32
+
+    - PYTHON: "C:\\Python34"
+      PYTHON_VERSION: 3.4
+      PYTHON_ARCH: 32
+
+    - PYTHON: "C:\\Python33"
+      PYTHON_VERSION: 3.3
+      PYTHON_ARCH: 32
+
+init:
+  - ECHO %PYTHON% %PYTHON_VERSION% %PYTHON_ARCH%
 
 install:
-  # Astropy ci-helpers. See https://github.com/astropy/ci-helpers
-  - "git clone git://github.com/astropy/ci-helpers.git"
-  - "powershell ci-helpers/appveyor/install-miniconda.ps1"
-  - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
-  - "activate test"
-  # Install the selected Qt version
-  - "conda install ciocheck -c conda-forge"
-  - "python setup.py develop"
+  - set PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%
+  - python --version
+  - "python -c \"import struct; print(struct.calcsize('P') * 8)\""
+  - python -m pip install -U pip
+  - python -m easy_install -U setuptools
+  - pip install -e .[test]
   - ps: Start-FileDownload $env:ffmpeg_download
 
   - 7z x ffmpeg-20190225-f948082-win64-static.zip
   - PATH=%PATH%;%cd%\ffmpeg-20190225-f948082-win64-static\bin
+
+test_script:
+  - py.test -vv

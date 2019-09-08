@@ -1,6 +1,5 @@
 import subprocess
 import ffmpeg_streaming
-from ffmpeg_streaming import FFProbe
 from ffmpeg_streaming.progress import progress
 from .params import (get_hls_parm, get_dash_parm)
 
@@ -30,7 +29,7 @@ def run_async(media, cmd='ffmpeg', pipe_stdin=False, pipe_stdout=False, pipe_std
 
 
 def get_total_sec(filename, cmd):
-    ffprobe = FFProbe(filename, cmd)
+    ffprobe = ffmpeg_streaming.FFProbe(filename, cmd)
     media_format = ffprobe.format()
     all_media = ffprobe.all()
     try:
@@ -50,11 +49,17 @@ def show_progress(media, callable_progress, cmd, ffprobe_cmd, input):
     )
     total_sec, all_media = get_total_sec(media.filename, ffprobe_cmd)
     current_percentage = 0
+    log = []
     for line in process.stdout:
+        log += [line]
         percentage = progress(line, total_sec)
         if percentage is not None and current_percentage != percentage:
             current_percentage = percentage
             callable_progress(percentage, line, all_media)
+
+    if process.poll():
+        raise RuntimeError('ffmpeg', " ".join(log))
+    return media, log
 
 
 def run(media, callable_progress=None, cmd='ffmpeg', ffprobe_cmd='ffprobe', capture_stdout=False, capture_stderr=False,
@@ -71,7 +76,6 @@ def run(media, callable_progress=None, cmd='ffmpeg', ffprobe_cmd='ffprobe', capt
         pipe_stderr=capture_stderr,
     )
     out, err = process.communicate(input, timeout=timeout)
-    retcode = process.poll()
-    if retcode:
+    if process.poll():
         raise RuntimeError('ffmpeg', out, err)
-    return out, err
+    return media, [out, err]

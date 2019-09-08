@@ -24,7 +24,7 @@ def create_hls_files(_input, _output, __progress=None):
 
 if __name__ == "__main__":
     _input = '/var/www/media/videos/test.mp4'
-    _output = '/var/www/media/videos/dash/test.mpd'
+    _output = '/var/www/media/videos/dash/test.m3u8'
     _progress = progress
 
     create_hls_files(_input, _output, _progress)

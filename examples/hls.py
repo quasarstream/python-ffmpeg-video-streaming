@@ -10,7 +10,7 @@ def progress(percentage, line, all_media):
 def create_hls_files(_input, _output, __progress=None):
     (
         ffmpeg_streaming
-            .hls(_input, hls_time=10, hls_allow_cache=1)
+            .hls(_input, hls_time=20)
             .format('libx264')
             .auto_rep()
             .package(_output, __progress)
@@ -19,7 +19,7 @@ def create_hls_files(_input, _output, __progress=None):
 
 if __name__ == "__main__":
     _input = '/var/www/media/videos/test.mkv'
-    _output = '/var/www/media/videos/dash/test.mpd'
+    _output = '/var/www/media/videos/dash/test.m3u8'
     _progress = progress
 
     create_hls_files(_input, _output, _progress)

@@ -45,7 +45,9 @@ class HLS(Export):
     def __init__(self, filename, kwargs):
         self.hls_time = kwargs.pop('hls_time', 10)
         self.hls_allow_cache = kwargs.pop('hls_allow_cache', 0)
+        self.strict = kwargs.pop('strict', "-2")
         self.hls_key_info_file = kwargs.pop('hls_key_info_file', None)
+        self.filter = kwargs
         super(HLS, self).__init__(filename)
 
     def encryption(self, url, path, length=16):
@@ -57,6 +59,8 @@ class DASH(Export):
 
     def __init__(self, filename, kwargs):
         self.adaption = kwargs.pop('adaption', None)
+        self.strict = kwargs.pop('strict', "-2")
+        self.filter = kwargs
         super(DASH, self).__init__(filename)
 
 

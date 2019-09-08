@@ -10,7 +10,7 @@ def progress(percentage, line, all_media):
 def create_encrypted_hls_files(_input, _output, url_to_key, save_to, __progress=None):
     (
         ffmpeg_streaming
-            .hls(_input, hls_time=10, hls_allow_cache=1)
+            .hls(_input)
             .encryption(url_to_key, save_to)
             .format('libx264')
             .auto_rep()
@@ -20,14 +20,16 @@ def create_encrypted_hls_files(_input, _output, url_to_key, save_to, __progress=
 
 if __name__ == "__main__":
     _input = '/var/www/media/videos/test.3gp'
-    _output = '/var/www/media/videos/dash/test.mpd'
+    _output = '/var/www/media/videos/dash/test.m3u8'
 
     # A URL (or a path) to access the key on your website
+    # It is highly recommended to protect the key on your website(e.g using a token or check a session/cookie)
     _url_to_key = 'https://www.aminyazdanpanah.com/keys/enc.key'
     # or _url_to_key = '/keys/enc.key'
 
-    # A path you want to save a random key on your local machine
-    _save_to = '/var/www/my_website_project/keys/enc.key'
+    # The full pathname of the file where a random key will be created
+    # Please note that the path of the key should be accessible from your website
+    _save_to = '/var/www/public_html/keys/enc.key'
 
     _progress = progress
 
