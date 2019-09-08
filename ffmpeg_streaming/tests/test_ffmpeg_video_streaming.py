@@ -88,8 +88,8 @@ class TestStreaming(unittest.TestCase):
 
         with open(encrypted_hls.hls_key_info_file) as key_info:
             key_info = key_info.readlines()
-        self.assertEqual(key_info[0], 'https://www.aminyazdanpanah.com/enc.key\n')
-        self.assertEqual(key_info[1], os.path.join(self.src_dir, 'enc.key\n'))
+        self.assertEqual(key_info[0].replace('\n', ''), 'https://www.aminyazdanpanah.com/enc.key')
+        self.assertEqual(key_info[1].replace('\n', ''), os.path.join(self.src_dir, 'enc.key'))
 
         encrypted_hls.auto_rep()
         encrypted_hls.format('libx264')
@@ -114,11 +114,10 @@ class TestStreaming(unittest.TestCase):
         self.assertEqual(len(params), 37)
 
         dash.package(os.path.join(self.src_dir, 'dash', 'test.mpd'))
-        with open(os.path.join(self.src_dir, 'fixture_test.mpd')) as test_mpd:
-            expected_mpd = test_mpd.read()
         with open(os.path.join(self.src_dir, 'dash', 'test.mpd')) as test_mpd:
-            actual_mpd = test_mpd.read()
-        self.assertEqual(actual_mpd, expected_mpd)
+            actual_mpd = test_mpd.readlines()
+        self.assertEqual(actual_mpd[0].replace('\n', ''), '<?xml version="1.0" encoding="utf-8"?>')
+        self.assertEqual(actual_mpd[1].replace('\n', ''), '<MPD xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"')
 
     def test_progress(self):
         line = 'frame=   00 fps= 0 q=-0.0 q=-0.0 q=-0.0 size=N/A time=00:01:00. bitrate=N/A speed=0.0x'

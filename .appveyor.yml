@@ -23,12 +23,8 @@ environment:
       PYTHON_VERSION: 3.7
       PYTHON_ARCH: 32
 
-    - PYTHON: "C:\\Python34"
+    - PYTHON: "C:\\Python36"
       PYTHON_VERSION: 3.6
-      PYTHON_ARCH: 32
-
-    - PYTHON: "C:\\Python33"
-      PYTHON_VERSION: 3.5
       PYTHON_ARCH: 32
 
 init:
