@@ -1,4 +1,3 @@
-#!/bin/sh
 import json
 import os
 import unittest
@@ -22,8 +21,6 @@ class TestStreaming(unittest.TestCase):
         ffprobe = FFProbe(self.src_video)
 
         all_media = ffprobe.all()
-        del all_media['format']['filename']
-        # self.assertEqual(all_media, self.ffprobe)
 
         streams = ffprobe.streams()
         self.assertIsInstance(streams, Streams)
