@@ -20,8 +20,8 @@ def create_dash_files(_input, _output, __progress=None):
 
 
 if __name__ == "__main__":
-    _input = 'c:\\test\\test.mp4'
-    _output = 'c:\\test\\aminm/aa.mpd'
+    _input = '/var/www/media/videos/test.wmv'
+    _output = '/var/www/media/videos/dash/test.mpd'
     _progress = progress
 
     create_dash_files(_input, _output, _progress)
