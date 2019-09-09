@@ -1,10 +1,12 @@
+import sys
 import ffmpeg_streaming
 
 
 def progress(percentage, line, all_media):
     # You can update a field in your database
-    # You can also create a socket connection and show the progress to users
-    print("{}% is transcoded".format(percentage))
+    # You can also create a socket connection and show a progress bar to users
+    sys.stdout.write("\r %s%% is transcoded [%s%s]" % (percentage, '#' * percentage, '-' * (100 - percentage)))
+    sys.stdout.flush()
 
 
 def create_encrypted_hls_files(_input, _output, url_to_key, save_to, __progress=None):
@@ -20,7 +22,7 @@ def create_encrypted_hls_files(_input, _output, url_to_key, save_to, __progress=
 
 if __name__ == "__main__":
     _input = '/var/www/media/videos/test.3gp'
-    _output = '/var/www/media/videos/dash/test.m3u8'
+    _output = '/var/www/media/videos/hls/test.m3u8'
 
     # A URL (or a path) to access the key on your website
     # It is highly recommended to protect the key on your website(e.g using a token or check a session/cookie)

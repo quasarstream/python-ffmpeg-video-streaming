@@ -133,34 +133,26 @@ See **[HLS options](https://ffmpeg.org/ffmpeg-formats.html#hls-2)** for more inf
 ### Progress
 You can get realtime information about the transcoding by passing a callable method to the `package` method:
 ```python
+import sys
 import ffmpeg_streaming
 
 def progress(percentage, line, all_media):
     # You can update a field in your database
     # You can also create a socket connection and show a progress bar to users
-    print("{}% is transcoded".format(percentage))
+    sys.stdout.write("\r %s%% is transcoded [%s%s]" % (percentage, '#' * percentage, '-' * (100 - percentage)))
+    sys.stdout.flush()
 
 (
     ffmpeg_streaming
-        .hls('/var/www/media/videos/test.mp4', hls_time=10, hls_allow_cache=1)
-        .encryption('https://www.aminyazdanpanah.com/keys/enc.key', '/var/www/my_website_project/keys/enc.key')
+        .hls('/var/www/media/videos/test.mp4')
         .format('libx264')
         .auto_rep()
         .package('/var/www/media/videos/hls/test.m3u8', progress)
 )
 ```
 Output:
-``` bash
-1% is transcoded
-2% is transcoded
-.
-.
-.
-99% is transcoded
-100% is transcoded
 
-Process finished with exit code 0
-```
+![progress](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/blob/master/docs/progress.gif?raw=true "progress" )
 
 ### Probe
 You can extract the metadata of video file using the following code:
