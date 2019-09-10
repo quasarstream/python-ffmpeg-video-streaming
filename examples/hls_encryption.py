@@ -34,7 +34,7 @@ if __name__ == "__main__":
     # or _url_to_key = '/keys/enc.key'
 
     # The full pathname of the file where a random key will be created
-    # Please note that the path of the key should be accessible from your website
+    # Note: The path of the key should be accessible from your website(e.g. '/var/www/public_html/keys/enc.key')
     _save_to = os.path.join(current_dir, 'enc.key')
 
     _progress = progress
