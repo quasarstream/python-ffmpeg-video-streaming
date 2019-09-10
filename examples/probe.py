@@ -1,14 +1,20 @@
+import os
+
 from ffmpeg_streaming import FFProbe
 
 
-def ffprobe():
-    return FFProbe('/var/www/media/test.mp4')
+def ffprobe(__input):
+    return FFProbe(__input)
 
 
 if __name__ == "__main__":
-    ffprobe = ffprobe()
+    current_dir = os.path.dirname(os.path.abspath(__file__))
 
-    ffprobe.save_as_json('/var/www/media/test_metadata.json')
+    _input = os.path.join(current_dir, '_example.mp4')
+
+    ffprobe = ffprobe(_input)
+
+    ffprobe.save_as_json(os.path.join(current_dir, 'probe.json'))
 
     all_media = ffprobe.all()
 

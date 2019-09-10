@@ -1,3 +1,4 @@
+import os
 import sys
 import ffmpeg_streaming
 from ffmpeg_streaming import Representation
@@ -25,8 +26,12 @@ def create_hls_files(_input, _output, __progress=None):
 
 
 if __name__ == "__main__":
-    _input = '/var/www/media/videos/test.mp4'
-    _output = '/var/www/media/videos/hls/test.m3u8'
+    create_dir = os.path.basename(__file__).split('.')[0]
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+
+    _input = os.path.join(current_dir, '_example.mp4')
+    _output = os.path.join(current_dir, create_dir, 'output')
+
     _progress = progress
 
     create_hls_files(_input, _output, _progress)

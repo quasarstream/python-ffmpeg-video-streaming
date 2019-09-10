@@ -1,3 +1,4 @@
+import os
 import sys
 import ffmpeg_streaming
 
@@ -21,8 +22,11 @@ def create_encrypted_hls_files(_input, _output, url_to_key, save_to, __progress=
 
 
 if __name__ == "__main__":
-    _input = '/var/www/media/videos/test.3gp'
-    _output = '/var/www/media/videos/hls/test.m3u8'
+    create_dir = os.path.basename(__file__).split('.')[0]
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+
+    _input = os.path.join(current_dir, '_example.mp4')
+    _output = os.path.join(current_dir, create_dir, 'output')
 
     # A URL (or a path) to access the key on your website
     # It is highly recommended to protect the key on your website(e.g using a token or check a session/cookie)
@@ -31,7 +35,7 @@ if __name__ == "__main__":
 
     # The full pathname of the file where a random key will be created
     # Please note that the path of the key should be accessible from your website
-    _save_to = '/var/www/public_html/keys/enc.key'
+    _save_to = os.path.join(current_dir, 'enc.key')
 
     _progress = progress
 

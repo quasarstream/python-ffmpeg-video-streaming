@@ -33,7 +33,7 @@ pip install python-ffmpeg-video-streaming
 ```
 
 ## Quickstart
-The best way to learn how to use this library is to review **[the examples](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/tree/master/examples)** and browse the source code as it is self-documented.
+The best way to learn how to use this library is to review ****[the examples](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/tree/master/examples)**** and browse the source code.
 
 ### DASH
 **[Dynamic Adaptive Streaming over HTTP (DASH)](https://dashif.org/)**, also known as MPEG-DASH, is an adaptive bitrate streaming technique that enables high quality streaming of media content over the Internet delivered from conventional HTTP web servers.
