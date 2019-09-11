@@ -161,8 +161,9 @@ video = from_url(url)
 )
 ```
 **NOTE:** It is very important to protect your key on your website using a token or a session/cookie(****It is highly recommended****).    
+See **[HLS examples](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/tree/master/examples)** for more information.
 
-See **[HLS options](https://ffmpeg.org/ffmpeg-formats.html#hls-2)** for more information.
+See also **[HLS options](https://ffmpeg.org/ffmpeg-formats.html#hls-2)** for more information about options.
 
 ### Progress
 You can get realtime information about transcoding and downloading by passing callable methods to the `package` and `from_url` methods respectively:
