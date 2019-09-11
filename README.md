@@ -35,6 +35,22 @@ pip install python-ffmpeg-video-streaming
 ## Quickstart
 The best way to learn how to use this library is to review ****[the examples](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/tree/master/examples)**** and browse the source code.
 
+### opening a file
+There are two ways to open a file:
+#### 1. From a Local Path
+```python
+video = '/var/www/media/videos/test.mp4'
+```
+
+#### 2. From a cloud
+```python
+from ffmpeg_streaming.from_clouds import from_url
+
+url = 'https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/blob/master/examples/_example.mp4?raw=true'
+video = from_url(url)
+```
+**NOTE:** This package uses **[Requests](https://2.python-requests.org/en/master/)** to send and receive files. 
+ 
 ### DASH
 **[Dynamic Adaptive Streaming over HTTP (DASH)](https://dashif.org/)**, also known as MPEG-DASH, is an adaptive bitrate streaming technique that enables high quality streaming of media content over the Internet delivered from conventional HTTP web servers.
 
@@ -44,9 +60,11 @@ Create DASH Files:
 ```python
 import ffmpeg_streaming
 
+video = '/var/www/media/videos/test.mp4'
+
 (
     ffmpeg_streaming
-        .dash('/var/www/media/videos/test.mp4', adaption='"id=0,streams=v id=1,streams=a"')
+        .dash(video, adaption='"id=0,streams=v id=1,streams=a"')
         .format('libx265')
         .auto_rep()
         .package('/var/www/media/videos/dash/test.mpd')
@@ -56,6 +74,10 @@ You can also create representations manually:
 ```python
 import ffmpeg_streaming
 from ffmpeg_streaming import Representation
+from ffmpeg_streaming.from_clouds import from_url
+
+url = 'https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/blob/master/examples/_example.mp4?raw=true'
+video = from_url(url)
 
 rep1 = Representation(width=256, height=144, kilo_bitrate=200)
 rep2 = Representation(width=426, height=240, kilo_bitrate=500)
@@ -63,14 +85,16 @@ rep3 = Representation(width=640, height=360, kilo_bitrate=1000)
 
 (
     ffmpeg_streaming
-        .dash('/var/www/media/videos/test.mp4', adaption='"id=0,streams=v id=1,streams=a"')
+        .dash(video, adaption='"id=0,streams=v id=1,streams=a"')
         .format('libx265')
         .add_rep(rep1, rep2, rep3)
         .package('/var/www/media/videos/dash/test.mpd')
 )
 
 ```
-See **[DASH options](https://ffmpeg.org/ffmpeg-formats.html#dash-2)** for more information.
+See **[DASH examples](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/tree/master/examples)** for more information.
+
+See also **[DASH options](https://ffmpeg.org/ffmpeg-formats.html#dash-2)** for more information about options.
 
 ### HLS
 **[HTTP Live Streaming (also known as HLS)](https://developer.apple.com/streaming/)** is an HTTP-based adaptive bitrate streaming communications protocol implemented by Apple Inc. as part of its QuickTime, Safari, OS X, and iOS software. Client implementations are also available in Microsoft Edge, Firefox and some versions of Google Chrome. Support is widespread in streaming media servers.
@@ -80,10 +104,14 @@ HLS resembles MPEG-DASH in that it works by breaking the overall stream into a s
 Create HLS files based on original video(auto generate qualities).
 ```python
 import ffmpeg_streaming
+from ffmpeg_streaming.from_clouds import from_url
+
+url = 'https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/blob/master/examples/_example.mp4?raw=true'
+video = from_url(url)
 
 (
     ffmpeg_streaming
-        .hls('/var/www/media/videos/test.mp4', hls_time=10, hls_allow_cache=1)
+        .hls(video, hls_time=10, hls_allow_cache=1)
         .format('libx264')
         .auto_rep()
         .package('/var/www/media/videos/hls/test.m3u8')
@@ -95,13 +123,15 @@ You can also create representations manually:
 import ffmpeg_streaming
 from ffmpeg_streaming import Representation
 
+video = '/var/www/media/videos/test.mp4'
+
 rep1 = Representation(width=256, height=144, kilo_bitrate=200)
 rep2 = Representation(width=426, height=240, kilo_bitrate=500)
 rep3 = Representation(width=640, height=360, kilo_bitrate=1000)
 
 (
     ffmpeg_streaming
-        .hls('/var/www/media/videos/test.mp4', hls_time=10, hls_allow_cache=1)
+        .hls(video, hls_time=10, hls_allow_cache=1)
         .format('libx264')
         .add_rep(rep1, rep2, rep3)
         .package('/var/www/media/videos/hls/test.m3u8')
@@ -116,10 +146,14 @@ You need to pass both `URL to the key` and `path to save a random key` to the `e
 
 ```python
 import ffmpeg_streaming
+from ffmpeg_streaming.from_clouds import from_url
+
+url = 'https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/blob/master/examples/_example.mp4?raw=true'
+video = from_url(url)
 
 (
     ffmpeg_streaming
-        .hls('/var/www/media/videos/test.mp4', hls_time=10, hls_allow_cache=1)
+        .hls(video, hls_time=10, hls_allow_cache=1)
         .encryption('https://www.aminyazdanpanah.com/keys/enc.key', '/var/www/my_website_project/keys/enc.key')
         .format('libx264')
         .auto_rep()
@@ -131,26 +165,37 @@ import ffmpeg_streaming
 See **[HLS options](https://ffmpeg.org/ffmpeg-formats.html#hls-2)** for more information.
 
 ### Progress
-You can get realtime information about the transcoding by passing a callable method to the `package` method:
+You can get realtime information about transcoding and downloading by passing callable methods to the `package` and `from_url` methods respectively:
 ```python
 import sys
 import ffmpeg_streaming
+from ffmpeg_streaming.from_clouds import from_url
 
-def progress(percentage, line, all_media):
+def download_progress(percentage, downloaded, total):
+    # You can update a field in your database
+    # You can also create a socket connection and show a progress bar to users
+    sys.stdout.write("\r Downloading... (%s%%)[%s%s]" % (percentage, '#' * percentage, '-' * (100 - percentage)))
+    sys.stdout.flush()
+
+
+def progress(percentage, line, sec):
     # You can update a field in your database
     # You can also create a socket connection and show a progress bar to users
     sys.stdout.write("\r Transcoding... (%s%%)[%s%s]" % (percentage, '#' * percentage, '-' * (100 - percentage)))
     sys.stdout.flush()
 
+url = 'https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/blob/master/examples/_example.mp4?raw=true'
+video = from_url(url, progress=download_progress)
+
 (
     ffmpeg_streaming
-        .hls('/var/www/media/videos/test.mp4')
+        .hls(video)
         .format('libx264')
         .auto_rep()
         .package('/var/www/media/videos/hls/test.m3u8', progress)
 )
 ```
-Output:
+Output of Transcoding progress:
 
 ![progress](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/blob/master/docs/progress.gif?raw=true "progress" )
 

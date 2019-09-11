@@ -1,7 +1,14 @@
 import os
 import sys
 import ffmpeg_streaming
-from ffmpeg_streaming import Representation
+from ffmpeg_streaming.from_clouds import from_url
+
+
+def download_progress(percentage, downloaded, total):
+    # You can update a field in your database
+    # You can also create a socket connection and show a progress bar to users
+    sys.stdout.write("\r Downloading... (%s%%)[%s%s]" % (percentage, '#' * percentage, '-' * (100 - percentage)))
+    sys.stdout.flush()
 
 
 def progress(percentage, line, sec):
@@ -12,15 +19,11 @@ def progress(percentage, line, sec):
 
 
 def create_hls_files(_input, _output, __progress=None):
-    rep1 = Representation(width=256, height=144, kilo_bitrate=200)
-    rep2 = Representation(width=426, height=240, kilo_bitrate=500)
-    rep3 = Representation(width=640, height=360, kilo_bitrate=1000)
-
     (
         ffmpeg_streaming
-            .hls(_input, hls_time=10, hls_allow_cache=1)
+            .hls(_input, hls_time=20)
             .format('libx264')
-            .add_rep(rep1, rep2, rep3)
+            .auto_rep()
             .package(_output, __progress)
     )
 
@@ -29,7 +32,8 @@ if __name__ == "__main__":
     name = os.path.basename(__file__).split('.')[0]
     current_dir = os.path.dirname(os.path.abspath(__file__))
 
-    _input = os.path.join(current_dir, '_example.mp4')
+    url = 'https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/blob/master/examples/_example.mp4?raw=true'
+    _input = from_url(url, progress=download_progress)
     _output = os.path.join(current_dir, name, 'output')
 
     _progress = progress

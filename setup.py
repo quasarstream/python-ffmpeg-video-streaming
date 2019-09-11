@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="python-ffmpeg-video-streaming",
-    version="0.0.8",
+    version="0.0.9",
     author="Amin Yazdanpanah",
     author_email="contact@aminyazdanpanah.com",
     description="Package media content for online streaming(DASH and HLS) using ffmpeg",

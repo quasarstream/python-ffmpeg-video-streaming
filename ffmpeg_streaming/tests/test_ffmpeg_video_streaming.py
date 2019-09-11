@@ -3,10 +3,11 @@ import os
 import unittest
 
 from ffmpeg_streaming import *
+from ffmpeg_streaming.from_clouds import from_url
 from ffmpeg_streaming.params import get_hls_parm, get_dash_parm
 from ffmpeg_streaming.streams import Streams
 import ffmpeg_streaming
-from ffmpeg_streaming.progress import progress
+from ffmpeg_streaming.progress import progress, get_duration_sec
 
 
 class TestStreaming(unittest.TestCase):
@@ -123,6 +124,16 @@ class TestStreaming(unittest.TestCase):
         _progress = progress(line, total_sec)
 
         self.assertEqual(_progress, 100)
+
+        d_line = 'Duration: 01:00:00.00, start: 0.000000, bitrate: 0 kb/s'
+        _get_duration_sec = get_duration_sec(d_line)
+
+        self.assertEqual(_get_duration_sec, 3600)
+
+    def test_from_clouds(self):
+        url = 'https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/blob/master/examples/_example.mp4' \
+              '?raw=true'
+        self.assertTrue(os.path.isfile(from_url(url)))
 
 
 if __name__ == '__main__':

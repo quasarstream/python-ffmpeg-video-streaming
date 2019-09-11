@@ -26,7 +26,6 @@ class Export(object):
             path=None,
             progress=None,
             cmd='ffmpeg',
-            ffprobe_cmd='ffprobe',
             capture_stdout=False,
             capture_stderr=False,
             input=None,
@@ -37,7 +36,7 @@ class Export(object):
         else:
             self.path = path
 
-        return run(self, progress, cmd, ffprobe_cmd, capture_stdout, capture_stderr, input, timeout)
+        return run(self, progress, cmd, capture_stdout, capture_stderr, input, timeout)
 
 
 class HLS(Export):
