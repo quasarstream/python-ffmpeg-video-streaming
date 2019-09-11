@@ -37,6 +37,7 @@ install:
   - python -m pip install -U pip
   - python -m easy_install -U setuptools
   - pip install -e .[test]
+  - pip install -r requirements.txt --no-index
   - ps: Start-FileDownload $env:ffmpeg_download
 
   - 7z x ffmpeg-20190225-f948082-win64-static.zip
