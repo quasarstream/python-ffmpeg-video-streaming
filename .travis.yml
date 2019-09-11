@@ -2,7 +2,8 @@ language: python
 
 before_install:
   - python -m pip install --upgrade pip
-  - pip install -r requirements.txt --no-index
+  - pip install --upgrade virtualenv
+  - pip install -r requirements.txt
   - >
     [ -f ffmpeg-release/ffmpeg ] || (
         curl -O https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz &&
