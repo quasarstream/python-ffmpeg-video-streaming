@@ -11,6 +11,7 @@ This package uses the **[FFmpeg](https://ffmpeg.org)** to package media content 
 - [Requirements](#requirements)
 - [Installation](#installation)
 - [Quickstart](#quickstart)
+  - [Opening a File](#opening-a-file)
   - [DASH](#dash)
   - [HLS](#hls)
     - [Encrypted HLS](#encrypted-hls)

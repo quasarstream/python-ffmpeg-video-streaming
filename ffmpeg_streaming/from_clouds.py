@@ -1,10 +1,11 @@
+import sys
 import tempfile
 import requests
 
 
 def from_url(url, method='get', **kwargs):
     progress = kwargs.pop('progress', None)
-    with tempfile.NamedTemporaryFile(delete=False) as tmp:
+    with tempfile.NamedTemporaryFile(delete=False, suffix='_py_ff_vi_st.tmp') as tmp:
         response = requests.request(method, url, stream=True, **kwargs)
         total_byte = response.headers.get('content-length')
 
@@ -18,5 +19,5 @@ def from_url(url, method='get', **kwargs):
                 tmp.write(data)
                 percentage = round(100 * downloaded/total_byte)
                 progress(percentage, downloaded, total_byte)
-            print('\n')
+            sys.stdout.write('\n')
         return tmp.name

@@ -2,6 +2,7 @@ import shlex
 import subprocess
 import ffmpeg_streaming
 from ffmpeg_streaming.progress import progress, get_duration_sec
+from ffmpeg_streaming.utiles import clear_tmp_file
 from .params import (get_hls_parm, get_dash_parm)
 
 
@@ -27,6 +28,12 @@ def run_async(media, cmd='ffmpeg', pipe_stdin=False, pipe_stdout=False, pipe_std
     stderr_stream = subprocess.STDOUT if pipe_stderr else None
     return subprocess.Popen(shlex.split(commands), stdout=stdout_stream, stderr=stderr_stream, stdin=stdin_stream
                             , universal_newlines=universal_newlines)
+
+
+def clear_tmp_files(media):
+    clear_tmp_file(media.filename)
+    if isinstance(media, ffmpeg_streaming.HLS):
+        clear_tmp_file(media.hls_key_info_file)
 
 
 def show_progress(media, callable_progress, cmd, input):
@@ -56,6 +63,7 @@ def show_progress(media, callable_progress, cmd, input):
             if percentage is not None:
                 callable_progress(percentage, line, total_sec)
 
+    clear_tmp_files(media)
     if process.poll():
         raise RuntimeError('ffmpeg', " ".join(log))
 
@@ -76,6 +84,9 @@ def run(media, callable_progress=None, cmd='ffmpeg', capture_stdout=False, captu
         pipe_stderr=capture_stderr,
     )
     out, err = process.communicate(input, timeout=timeout)
+
+    clear_tmp_files(media)
+
     if process.poll():
         raise RuntimeError('ffmpeg', out, err)
     return media, [out, err]

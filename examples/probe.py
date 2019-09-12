@@ -1,3 +1,4 @@
+import datetime
 import os
 
 from ffmpeg_streaming import FFProbe
@@ -54,5 +55,20 @@ if __name__ == "__main__":
     print("first audio:")
     print(first_audio)
 
+    print("duration: {}".format(str(datetime.timedelta(seconds=float(video_format.get('duration', 0))))))
+    # duration: 00:00:10.496
 
+    print("size: {}k".format(round(int(video_format.get('size', 0)) / 1024)))
+    # size: 290k
 
+    print("overall bitrate: {}k".format(round(int(video_format.get('bit_rate', 0)) / 1024)))
+    # overall bitrate: 221k
+
+    print("dimensions: {}x{}".format(first_video.get('width', "Unknown"), first_video.get('height', "Unknown")))
+    # dimensions: 480x270
+
+    print("video bitrate: {}k".format(round(int(first_video.get('bit_rate', 0)) / 1024)))
+    # video bitrate: 149k
+
+    print("audio bitrate: {}k".format(round(int(first_audio.get('bit_rate', 0)) / 1024)))
+    # audio bitrate: 64k

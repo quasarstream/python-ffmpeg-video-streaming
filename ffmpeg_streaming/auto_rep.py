@@ -1,5 +1,3 @@
-from pprint import pprint
-
 from ffmpeg_streaming import FFProbe
 from .utiles import round_to_even
 from .rep import Representation
@@ -46,17 +44,19 @@ class AutoRepresentation:
         return reps
 
     def dimension(self):
-        width = self.video['width']
-        height = self.video['height']
+        width = self.video.get('width', 0)
+        height = self.video.get('height', 0)
         ratio = width / height
 
         return width, height, ratio
 
     def kilo_bitrate(self):
-        try:
-            return round(int(self.video['bit_rate']) / 1024)
-        except KeyError:
-            try:
-                return round((int(self.format['bit_rate']) / 1024) * .9)
-            except KeyError:
-                raise KeyError('It could not determine the value of video bitrate')
+        video_k_bitrate = round(int(self.video.get('bit_rate', 0)) / 1024)
+        overall_k_bitrate = round((int(self.format.get('bit_rate', 0)) / 1024) * .9)
+
+        if video_k_bitrate != 0:
+            return video_k_bitrate
+        elif overall_k_bitrate != 0:
+            return overall_k_bitrate
+        else:
+            raise ValueError('It could not determine the value of video bitrate')
