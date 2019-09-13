@@ -24,7 +24,7 @@ def get_hls_parm(hls):
                 if hls.filter is not None:
                     for filter in hls.filter:
                         commands += ['-' + filter, hls.filter[filter]]
-                commands += ['-s:v', rep.size()]
+                commands += ['-s:v', rep.size]
                 commands += ['-crf', '20']
                 commands += ['-sc_threshold', '0']
                 commands += ['-g', '48']
@@ -32,7 +32,7 @@ def get_hls_parm(hls):
                 commands += ['-hls_list_size', '0']
                 commands += ['-hls_time', str(hls.hls_time)]
                 commands += ['-hls_allow_cache', str(hls.hls_allow_cache)]
-                commands += ['-b:v', rep.bit_rate()]
+                commands += ['-b:v', rep.bit_rate]
                 commands += ['-maxrate', str(round(rep.kilo_bitrate * 1.2)) + "k"]
                 commands += ['-hls_segment_filename', dirnmae + "/" + name + "_" + str(rep.height) + "p_%04d.ts"]
                 if hls.hls_key_info_file is not None:
@@ -67,8 +67,8 @@ def get_dash_parm(dash):
     for rep in reversed(dash.reps):
             if isinstance(rep, Representation):
                 commands += ['-map', '0']
-                commands += ['-b:v:' + str(count), rep.bit_rate()]
-                commands += ['-s:v:' + str(count), rep.size()]
+                commands += ['-b:v:' + str(count), rep.bit_rate]
+                commands += ['-s:v:' + str(count), rep.size]
                 count += 1
 
     if dash.adaption is not None:

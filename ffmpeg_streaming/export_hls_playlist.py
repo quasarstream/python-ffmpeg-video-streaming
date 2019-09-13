@@ -1,7 +1,7 @@
 def get_contents(reps, name):
     content = ['#EXTM3U', '#EXT-X-VERSION:3']
     for rep in reps:
-        content += ['#EXT-X-STREAM-INF:BANDWIDTH=' + str(round(rep.kilo_bitrate * 1024)) + ',RESOLUTION=' + rep.size()]
+        content += ['#EXT-X-STREAM-INF:BANDWIDTH=' + str(round(rep.kilo_bitrate * 1024)) + ',RESOLUTION=' + rep.size]
         content += [name + '_' + str(rep.height) + 'p.m3u8']
     return '\n'.join(content)
 

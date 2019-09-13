@@ -4,11 +4,13 @@ class Representation:
         self.height = kwargs.pop('height', None)
         self.kilo_bitrate = kwargs.pop('kilo_bitrate', None)
 
+    @property
     def size(self):
         if self.width is None or self.height is None:
             raise ValueError("You must set the width and the height of video")
         return str(self.width) + "x" + str(self.height)
 
+    @property
     def bit_rate(self):
         if self.kilo_bitrate is None:
             raise ValueError("You must set the bitrate of video")
