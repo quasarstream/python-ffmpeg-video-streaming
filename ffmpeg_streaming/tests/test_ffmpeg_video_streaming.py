@@ -6,7 +6,6 @@ import unittest
 from ffmpeg_streaming import *
 from ffmpeg_streaming.from_clouds import from_url
 from ffmpeg_streaming.media import (HLS, DASH)
-from ffmpeg_streaming.params import get_hls_parm, get_dash_parm
 from ffmpeg_streaming.streams import Streams
 import ffmpeg_streaming
 from ffmpeg_streaming.progress import progress, get_duration_sec
@@ -62,12 +61,7 @@ class TestStreaming(unittest.TestCase):
         hls_obj.format('libx264')
         self.assertEqual(hls_obj.video_format, 'libx264')
 
-        hls_obj.output = hls_obj.filename
-
-        params = get_hls_parm(hls_obj)
-        self.assertEqual(len(params), 81)
-
-        hls_obj.package(os.path.join(self.src_dir, 'hls', 'test.m3u8'))
+        hls_obj.package(output=os.path.join(self.src_dir, 'hls', 'test.m3u8'), capture_stderr=False)
         with open(os.path.join(self.src_dir, 'fixture_test.m3u8')) as test_m3u8:
             expected_m3u8 = test_m3u8.read()
         with open(os.path.join(self.src_dir, 'hls', 'test.m3u8')) as test_m3u8:
@@ -95,7 +89,7 @@ class TestStreaming(unittest.TestCase):
         encrypted_hls.auto_rep()
         encrypted_hls.format('libx264')
 
-        encrypted_hls.package(os.path.join(self.src_dir, 'encrypted_hls', 'test.m3u8'))
+        encrypted_hls.package(output=os.path.join(self.src_dir, 'encrypted_hls', 'test.m3u8'), capture_stderr=False)
         with open(os.path.join(self.src_dir, 'fixture_test.m3u8')) as test_m3u8:
             expected_m3u8 = test_m3u8.read()
         with open(os.path.join(self.src_dir, 'encrypted_hls', 'test.m3u8')) as test_m3u8:
@@ -109,12 +103,8 @@ class TestStreaming(unittest.TestCase):
 
         dash_obj.auto_rep()
         dash_obj.format('libx265')
-        dash_obj.output = dash_obj.filename
 
-        params = get_dash_parm(dash_obj)
-        self.assertEqual(len(params), 43)
-
-        dash_obj.package(os.path.join(self.src_dir, 'dash', 'test.mpd'))
+        dash_obj.package(os.path.join(self.src_dir, 'dash', 'test.mpd'), capture_stderr=False)
         with open(os.path.join(self.src_dir, 'dash', 'test.mpd')) as test_mpd:
             actual_mpd = test_mpd.readlines()
         self.assertEqual(actual_mpd[0].replace('\n', ''), '<?xml version="1.0" encoding="utf-8"?>')
