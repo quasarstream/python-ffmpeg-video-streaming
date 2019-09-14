@@ -14,7 +14,7 @@ def create_dash_files(_input, _output, __progress=None):
     (
         ffmpeg_streaming
             .dash(_input, adaption='"id=0,streams=v id=1,streams=a"')
-            .format('libx265')
+            .format('libx265', 'libmp3lame')
             .auto_rep()
             .package(_output, __progress)
     )

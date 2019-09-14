@@ -1,29 +1,17 @@
-import os
-
-from .export_hls_playlist import export_hls_playlist
+from .utiles import get_path_info
 from .rep import Representation
-
-
-def get_path_info(path):
-    dirnmae = os.path.dirname(path).replace("\\", "/")
-    name = str(os.path.basename(path).split('.')[0])
-
-    if not os.path.exists(dirnmae):
-        os.mkdir(dirnmae)
-
-    return dirnmae, name
 
 
 def get_hls_parm(hls):
 
-    dirnmae, name = get_path_info(hls.path)
+    dirname, name = get_path_info(hls.output)
 
     commands = []
     for rep in hls.reps:
             if isinstance(rep, Representation):
-                if hls.filter is not None:
-                    for filter in hls.filter:
-                        commands += ['-' + filter, hls.filter[filter]]
+                if hls.options is not None:
+                    for option in hls.options:
+                        commands += ['-' + option, hls.options[option]]
                 commands += ['-s:v', rep.size]
                 commands += ['-crf', '20']
                 commands += ['-sc_threshold', '0']
@@ -33,20 +21,20 @@ def get_hls_parm(hls):
                 commands += ['-hls_time', str(hls.hls_time)]
                 commands += ['-hls_allow_cache', str(hls.hls_allow_cache)]
                 commands += ['-b:v', rep.bit_rate]
+                if rep.audio_bit_rate is not None:
+                    commands += ['-b:a', rep.audio_bit_rate]
                 commands += ['-maxrate', str(round(rep.kilo_bitrate * 1.2)) + "k"]
-                commands += ['-hls_segment_filename', dirnmae + "/" + name + "_" + str(rep.height) + "p_%04d.ts"]
+                commands += ['-hls_segment_filename', dirname + "/" + name + "_" + str(rep.height) + "p_%04d.ts"]
                 if hls.hls_key_info_file is not None:
                     commands += ['-hls_key_info_file', hls.hls_key_info_file.replace("\\", "/")]
-                commands += ['-strict', hls.strict]
-                commands += [dirnmae + "/" + name + "_" + str(rep.height) + "p.m3u8"]
-
-    export_hls_playlist(dirnmae, name, hls.reps)
+                commands += ['-strict', hls.options.get('strict', "-2")]
+                commands += [dirname + "/" + name + "_" + str(rep.height) + "p.m3u8"]
 
     return commands
 
 
 def get_dash_parm(dash):
-    dirnmae, name = get_path_info(dash.path)
+    dirname, name = get_path_info(dash.output)
 
     commands = [
         '-bf', '1',
@@ -59,21 +47,23 @@ def get_dash_parm(dash):
         '-f', 'dash'
     ]
 
-    if dash.filter is not None:
-        for filter in dash.filter:
-            commands += ['-' + filter, dash.filter[filter]]
+    if dash.options is not None:
+        for option in dash.options:
+            commands += ['-' + option, dash.options[option]]
 
     count = 0
     for rep in reversed(dash.reps):
             if isinstance(rep, Representation):
                 commands += ['-map', '0']
                 commands += ['-b:v:' + str(count), rep.bit_rate]
+                if rep.audio_bit_rate is not None:
+                    commands += ['-b:a:' + str(count), rep.audio_bit_rate]
                 commands += ['-s:v:' + str(count), rep.size]
                 count += 1
 
     if dash.adaption is not None:
         commands += ['-adaptation_sets', dash.adaption]
-    commands += ['-strict', dash.strict]
-    commands += ['"' + dirnmae + '/' + name + '.mpd"']
+    commands += ['-strict', dash.options.get('strict', "-2")]
+    commands += ['"' + dirname + '/' + name + '.mpd"']
 
     return commands

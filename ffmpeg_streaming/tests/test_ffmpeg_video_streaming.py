@@ -2,8 +2,10 @@ import json
 import os
 import unittest
 
+
 from ffmpeg_streaming import *
 from ffmpeg_streaming.from_clouds import from_url
+from ffmpeg_streaming.media import (HLS, DASH)
 from ffmpeg_streaming.params import get_hls_parm, get_dash_parm
 from ffmpeg_streaming.streams import Streams
 import ffmpeg_streaming
@@ -31,41 +33,41 @@ class TestStreaming(unittest.TestCase):
         self.assertEqual(streams.audio()['codec_type'], 'audio')
 
     def test_hls(self):
-        hls = ffmpeg_streaming.hls(self.src_video)
-        self.assertIsInstance(hls, HLS)
-        self.assertEqual(hls.filename, self.src_video)
-        self.assertEqual(hls.hls_time, 10)
-        self.assertEqual(hls.hls_allow_cache, 0)
+        hls_obj = ffmpeg_streaming.hls(self.src_video)
+        self.assertIsInstance(hls_obj, HLS)
+        self.assertEqual(hls_obj.filename, self.src_video)
+        self.assertEqual(hls_obj.hls_time, 10)
+        self.assertEqual(hls_obj.hls_allow_cache, 0)
 
-        hls.add_rep(Representation(width=256, height=144, kilo_bitrate=100))
-        rep = hls.reps[0]
-        self.assertIsInstance(rep, Representation)
-        self.assertEqual(rep.size(), '256x144')
-        self.assertEqual(rep.bit_rate(), '100k')
+        hls_obj.add_rep(Representation(width=256, height=144, kilo_bitrate=100))
+        rep_1 = hls_obj.reps[0]
+        self.assertIsInstance(rep_1, Representation)
+        self.assertEqual(rep_1.size, '256x144')
+        self.assertEqual(rep_1.bit_rate, '100k')
 
-        hls.auto_rep()
-        self.assertEqual(len(hls.reps), 3)
-        for rep in hls.reps:
-            self.assertIsInstance(rep, Representation)
-        rep_1 = hls.reps[0]
-        self.assertEqual(rep_1.size(), '480x270')
-        self.assertEqual(rep_1.bit_rate(), '176k')
-        rep_2 = hls.reps[1]
-        self.assertEqual(rep_2.size(), '426x240')
-        self.assertEqual(rep_2.bit_rate(), '117k')
-        rep_3 = hls.reps[2]
-        self.assertEqual(rep_3.size(), '256x144')
-        self.assertEqual(rep_3.bit_rate(), '88k')
+        hls_obj.auto_rep()
+        self.assertEqual(len(hls_obj.reps), 3)
+        for rep_ in hls_obj.reps:
+            self.assertIsInstance(rep_, Representation)
+        rep_1 = hls_obj.reps[0]
+        self.assertEqual(rep_1.size, '480x270')
+        self.assertEqual(rep_1.bit_rate, '176k')
+        rep_2 = hls_obj.reps[1]
+        self.assertEqual(rep_2.size, '426x240')
+        self.assertEqual(rep_2.bit_rate, '117k')
+        rep_3 = hls_obj.reps[2]
+        self.assertEqual(rep_3.size, '256x144')
+        self.assertEqual(rep_3.bit_rate, '88k')
 
-        hls.format('libx264')
-        self.assertEqual(hls.format, 'libx264')
+        hls_obj.format('libx264')
+        self.assertEqual(hls_obj.video_format, 'libx264')
 
-        hls.path = hls.filename
+        hls_obj.output = hls_obj.filename
 
-        params = get_hls_parm(hls)
-        self.assertEqual(len(params), 75)
+        params = get_hls_parm(hls_obj)
+        self.assertEqual(len(params), 81)
 
-        hls.package(os.path.join(self.src_dir, 'hls', 'test.m3u8'))
+        hls_obj.package(os.path.join(self.src_dir, 'hls', 'test.m3u8'), capture_stderr=False)
         with open(os.path.join(self.src_dir, 'fixture_test.m3u8')) as test_m3u8:
             expected_m3u8 = test_m3u8.read()
         with open(os.path.join(self.src_dir, 'hls', 'test.m3u8')) as test_m3u8:
@@ -93,7 +95,7 @@ class TestStreaming(unittest.TestCase):
         encrypted_hls.auto_rep()
         encrypted_hls.format('libx264')
 
-        encrypted_hls.package(os.path.join(self.src_dir, 'encrypted_hls', 'test.m3u8'))
+        encrypted_hls.package(os.path.join(self.src_dir, 'encrypted_hls', 'test.m3u8'), capture_stderr=False)
         with open(os.path.join(self.src_dir, 'fixture_test.m3u8')) as test_m3u8:
             expected_m3u8 = test_m3u8.read()
         with open(os.path.join(self.src_dir, 'encrypted_hls', 'test.m3u8')) as test_m3u8:
@@ -101,18 +103,18 @@ class TestStreaming(unittest.TestCase):
         self.assertEqual(actual_encrypted_m3u8, expected_m3u8)
 
     def test_dash(self):
-        dash = ffmpeg_streaming.dash(self.src_video)
-        self.assertIsInstance(dash, DASH)
-        self.assertEqual(dash.filename, self.src_video)
+        dash_obj = ffmpeg_streaming.dash(self.src_video)
+        self.assertIsInstance(dash_obj, DASH)
+        self.assertEqual(dash_obj.filename, self.src_video)
 
-        dash.auto_rep()
-        dash.format('libx265')
-        dash.path = dash.filename
+        dash_obj.auto_rep()
+        dash_obj.format('libx265')
+        dash_obj.output = dash_obj.filename
 
-        params = get_dash_parm(dash)
-        self.assertEqual(len(params), 37)
+        params = get_dash_parm(dash_obj)
+        self.assertEqual(len(params), 43)
 
-        dash.package(os.path.join(self.src_dir, 'dash', 'test.mpd'))
+        dash_obj.package(os.path.join(self.src_dir, 'dash', 'test.mpd'), capture_stderr=False)
         with open(os.path.join(self.src_dir, 'dash', 'test.mpd')) as test_mpd:
             actual_mpd = test_mpd.readlines()
         self.assertEqual(actual_mpd[0].replace('\n', ''), '<?xml version="1.0" encoding="utf-8"?>')

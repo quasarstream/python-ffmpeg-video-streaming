@@ -12,9 +12,9 @@ def progress(percentage, line, sec):
 
 
 def create_dash_files(_input, _output, __progress=None):
-    rep1 = Representation(width=256, height=144, kilo_bitrate=200)
-    rep2 = Representation(width=426, height=240, kilo_bitrate=500)
-    rep3 = Representation(width=640, height=360, kilo_bitrate=1000)
+    rep1 = Representation(width=256, height=144, kilo_bitrate=200, audio_k_bitrate=64)
+    rep2 = Representation(width=854, height=480, kilo_bitrate=500, audio_k_bitrate=128)
+    rep3 = Representation(width=1080, height=720, kilo_bitrate=1000, audio_k_bitrate=320)
 
     (
         ffmpeg_streaming

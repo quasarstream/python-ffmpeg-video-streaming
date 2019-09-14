@@ -197,7 +197,7 @@ video = from_url(url, progress=download_progress)
         .package('/var/www/media/videos/hls/test.m3u8', progress)
 )
 ```
-Output of Transcoding progress:
+Output of the progress:
 
 ![progress](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/blob/master/docs/progress.gif?raw=true "progress" )
 

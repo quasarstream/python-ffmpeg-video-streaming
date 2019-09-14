@@ -1,53 +1,65 @@
-from ffmpeg_streaming.key_info_file import generate_key_info_file
+import os
+
+from ffmpeg_streaming.export_hls_playlist import export_hls_playlist
+from ffmpeg_streaming.utiles import get_path_info
+from .key_info_file import generate_key_info_file
 from .process import run
 from ._ffprobe import *
 from .auto_rep import AutoRepresentation
 
 
 class Export(object):
-    def __init__(self, filename):
-        self.reps = None
+    video_format = str
+    audio_format = str
+    reps = list
+    output = str
+
+    def __init__(self, filename, options):
         self.filename = filename
+        self.options = options
 
     def add_rep(self, *args):
-        self.reps = list(args)
+        Export.reps = list(args)
         return self
 
     def auto_rep(self, heights=None, cmd='ffprobe'):
-        self.reps = AutoRepresentation(FFProbe(self.filename, cmd), heights).generate()
+        Export.reps = AutoRepresentation(ffprobe(self.filename, cmd), heights).generate()
         return self
 
-    def format(self, video_format):
-        self.format = video_format
+    def format(self, video, audio=None):
+        Export.video_format = video
+        Export.audio_format = audio
         return self
 
     def package(
             self,
-            path=None,
+            output=None,
             progress=None,
             cmd='ffmpeg',
             capture_stdout=False,
-            capture_stderr=False,
+            capture_stderr=True,
             input=None,
             timeout=None
          ):
-        if path is None:
-            self.path = self.filename
+        if output is None:
+            Export.output = self.filename
         else:
-            self.path = path
+            Export.output = output
+
+        if isinstance(self, HLS):
+            dirname, name = get_path_info(Export.output)
+            export_hls_playlist(dirname, name, Export.reps)
 
         return run(self, progress, cmd, capture_stdout, capture_stderr, input, timeout)
 
 
 class HLS(Export):
 
-    def __init__(self, filename, kwargs):
-        self.hls_time = kwargs.pop('hls_time', 10)
-        self.hls_allow_cache = kwargs.pop('hls_allow_cache', 0)
-        self.strict = kwargs.pop('strict', "-2")
-        self.hls_key_info_file = kwargs.pop('hls_key_info_file', None)
-        self.filter = kwargs
-        super(HLS, self).__init__(filename)
+    def __init__(self, filename, options):
+        self.hls_time = options.pop('hls_time', 10)
+        self.hls_allow_cache = options.pop('hls_allow_cache', 0)
+        self.hls_key_info_file = options.pop('hls_key_info_file', None)
+        super(HLS, self).__init__(filename, options)
 
     def encryption(self, url, path, length=16):
         self.hls_key_info_file = generate_key_info_file(url, path, length)
@@ -56,14 +68,24 @@ class HLS(Export):
 
 class DASH(Export):
 
-    def __init__(self, filename, kwargs):
-        self.adaption = kwargs.pop('adaption', None)
-        self.strict = kwargs.pop('strict', "-2")
-        self.filter = kwargs
-        super(DASH, self).__init__(filename)
+    def __init__(self, filename, options):
+        self.adaption = options.pop('adaption', None)
+        super(DASH, self).__init__(filename, options)
+
+
+def dash(filename, **kwargs):
+    if not os.path.isfile(filename):
+        raise RuntimeError('The file is not exist')
+    return DASH(filename, kwargs)
+
+
+def hls(filename, **kwargs):
+    if not os.path.isfile(filename):
+        raise RuntimeError('The file is not exist')
+    return HLS(filename, kwargs)
 
 
 __all__ = [
-    'HLS',
-    'DASH'
+    'dash',
+    'hls'
 ]

@@ -1,4 +1,5 @@
 import json
+import os
 import subprocess
 from .streams import Streams
 
@@ -25,6 +26,13 @@ class FFProbe:
             probe.write(self.out.decode('utf-8'))
 
 
+def ffprobe(filename, cmd='ffprobe'):
+    if not os.path.isfile(filename):
+        raise RuntimeError('The file is not exist')
+    return FFProbe(filename, cmd)
+
+
 __all__ = [
-    'FFProbe',
+    'ffprobe',
+    'FFProbe'
 ]
