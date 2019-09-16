@@ -3,7 +3,7 @@ import sys
 import ffmpeg_streaming
 
 
-def progress(percentage, line, sec):
+def progress(percentage, ffmpeg, media):
     # You can update a field in your database
     # You can also create a socket connection and show a progress bar to users
     sys.stdout.write("\r Transcoding... (%s%%)[%s%s]" % (percentage, '#' * percentage, '-' * (100 - percentage)))
@@ -14,7 +14,7 @@ def create_dash_files(_input, _output, __progress=None):
     (
         ffmpeg_streaming
             .dash(_input, adaption='"id=0,streams=v id=1,streams=a"')
-            .format('libx265', 'libmp3lame')
+            .format('libx265')
             .auto_rep()
             .package(_output, __progress)
     )

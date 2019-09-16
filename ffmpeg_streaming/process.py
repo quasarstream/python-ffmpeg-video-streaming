@@ -40,11 +40,11 @@ def clear_tmp_files(media):
         clear_tmp_file(media.hls_key_info_file)
 
 
-def show_progress(media, callable_progress, cmd, input):
+def show_progress(media, callable_progress, cmd, c_stdin):
     process = run_async(
         media,
         cmd,
-        pipe_stdin=input is not None,
+        pipe_stdin=c_stdin,
         pipe_stdout=True,
         pipe_stderr=True,
         universal_newlines=True
@@ -52,6 +52,7 @@ def show_progress(media, callable_progress, cmd, input):
 
     total_sec = None
     log = []
+    percentage = 0
 
     while True:
         line = process.stdout.readline().strip()
@@ -63,9 +64,11 @@ def show_progress(media, callable_progress, cmd, input):
         if total_sec is None:
             total_sec = get_duration_sec(line)
         else:
-            percentage = progress(line, total_sec)
-            if percentage is not None:
-                callable_progress(percentage, line, total_sec)
+            c_percentage = progress(line, total_sec)
+            if c_percentage is not None:
+                percentage = c_percentage
+
+        callable_progress(percentage, line, media)
 
     clear_tmp_files(media)
     if process.poll():
@@ -74,20 +77,18 @@ def show_progress(media, callable_progress, cmd, input):
     return media, log
 
 
-def run(media, callable_progress=None, cmd='ffmpeg', capture_stdout=False, capture_stderr=True,
-        input=None, timeout=None):
-
-    if callable(callable_progress):
-        return show_progress(media, callable_progress, cmd, input)
+def run(media, c_progress=None, cmd='ffmpeg', c_stdout=False, c_stderr=True, c_stdin=False, c_input=None, timeout=None):
+    if callable(c_progress):
+        return show_progress(media, c_progress, cmd, c_stdin)
 
     process = run_async(
         media,
         cmd,
-        pipe_stdin=input is not None,
-        pipe_stdout=capture_stdout,
-        pipe_stderr=capture_stderr,
+        pipe_stdin=c_stdin,
+        pipe_stdout=c_stdout,
+        pipe_stderr=c_stderr,
     )
-    out, err = process.communicate(input, timeout=timeout)
+    out, err = process.communicate(c_input, timeout=timeout)
 
     clear_tmp_files(media)
 

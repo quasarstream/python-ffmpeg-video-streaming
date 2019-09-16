@@ -61,7 +61,7 @@ class TestStreaming(unittest.TestCase):
         hls_obj.format('libx264')
         self.assertEqual(hls_obj.video_format, 'libx264')
 
-        hls_obj.package(output=os.path.join(self.src_dir, 'hls', 'test.m3u8'), capture_stderr=False)
+        hls_obj.package(os.path.join(self.src_dir, 'hls', 'test.m3u8'), c_stderr=False)
         with open(os.path.join(self.src_dir, 'fixture_test.m3u8')) as test_m3u8:
             expected_m3u8 = test_m3u8.read()
         with open(os.path.join(self.src_dir, 'hls', 'test.m3u8')) as test_m3u8:
@@ -89,7 +89,7 @@ class TestStreaming(unittest.TestCase):
         encrypted_hls.auto_rep()
         encrypted_hls.format('libx264')
 
-        encrypted_hls.package(output=os.path.join(self.src_dir, 'encrypted_hls', 'test.m3u8'), capture_stderr=False)
+        encrypted_hls.package(os.path.join(self.src_dir, 'encrypted_hls', 'test.m3u8'), c_stderr=False)
         with open(os.path.join(self.src_dir, 'fixture_test.m3u8')) as test_m3u8:
             expected_m3u8 = test_m3u8.read()
         with open(os.path.join(self.src_dir, 'encrypted_hls', 'test.m3u8')) as test_m3u8:
@@ -104,7 +104,7 @@ class TestStreaming(unittest.TestCase):
         dash_obj.auto_rep()
         dash_obj.format('libx265')
 
-        dash_obj.package(os.path.join(self.src_dir, 'dash', 'test.mpd'), capture_stderr=False)
+        dash_obj.package(os.path.join(self.src_dir, 'dash', 'test.mpd'), c_stderr=False)
         with open(os.path.join(self.src_dir, 'dash', 'test.mpd')) as test_mpd:
             actual_mpd = test_mpd.readlines()
         self.assertEqual(actual_mpd[0].replace('\n', ''), '<?xml version="1.0" encoding="utf-8"?>')

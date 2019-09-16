@@ -36,9 +36,9 @@ class Export(object):
             output=None,
             progress=None,
             cmd='ffmpeg',
-            capture_stdout=False,
-            capture_stderr=True,
-            input=None,
+            c_stdout=False,
+            c_stderr=True,
+            c_input=None,
             timeout=None
          ):
         if output is None:
@@ -50,7 +50,7 @@ class Export(object):
             dirname, name = get_path_info(Export.output)
             export_hls_playlist(dirname, name, Export.reps)
 
-        return run(self, progress, cmd, capture_stdout, capture_stderr, input, timeout)
+        return run(self, progress, cmd, c_stdout, c_stderr, c_input, timeout)
 
 
 class HLS(Export):

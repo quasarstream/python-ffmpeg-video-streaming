@@ -3,7 +3,7 @@ import sys
 import ffmpeg_streaming
 
 
-def progress(percentage, line, sec):
+def progress(percentage, ffmpeg, media):
     # You can update a field in your database
     # You can also create a socket connection and show a progress bar to users
     sys.stdout.write("\r Transcoding... (%s%%)[%s%s]" % (percentage, '#' * percentage, '-' * (100 - percentage)))

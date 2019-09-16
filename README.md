@@ -198,7 +198,6 @@ video = from_url(url, progress=download_progress)
 )
 ```
 Output of the progress:
-
 ![progress](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/blob/master/docs/progress.gif?raw=true "progress" )
 
 ### Probe
@@ -227,6 +226,9 @@ You can use these libraries to play your streams.
     - HLS: **[hls.js](https://github.com/video-dev/hls.js)**
 - **Android**
     - DASH and HLS: **[ExoPlayer](https://github.com/google/ExoPlayer)**
+- **Windows, Linux, and macOS**
+    - DASH and HLS: **[VLC media player](https://github.com/videolan/vlc)**
+ 
 
 **NOTE:** You should pass a manifest of stream(e.g. `https://www.aminyazdanpanah.com/videos/dash/lesson-1/test.mpd` or `/videos/hls/lesson-2/test.m3u8` ) to these players.
 
