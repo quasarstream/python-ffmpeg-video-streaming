@@ -6,13 +6,13 @@ class Representation:
         self.audio_kilo_bitrate = kwargs.pop('audio_k_bitrate', None)
 
     @property
-    def size(self):
+    def size(self) -> str:
         if self.width is None or self.height is None:
             raise ValueError("You must set the width and the height of video")
         return str(self.width) + "x" + str(self.height)
 
     @property
-    def bit_rate(self):
+    def bit_rate(self) -> str:
         if self.kilo_bitrate is None:
             raise ValueError("You must set the bitrate of video")
         return str(self.kilo_bitrate) + "k"

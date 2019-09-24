@@ -32,7 +32,7 @@ if __name__ == "__main__":
     name = os.path.basename(__file__).split('.')[0]
     current_dir = os.path.dirname(os.path.abspath(__file__))
 
-    url = 'https://www.sample-videos.com/video123/mp4/720/big_buck_bunny_720p_30mb.mp4'
+    url = 'https://www.aminyazdanpanah.com/my_sweetie.mp4'
     _input = from_url(url, progress=download_progress)
     _output = os.path.join(current_dir, name, 'output')
 
