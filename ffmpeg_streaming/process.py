@@ -9,7 +9,7 @@ def build_command(cmd, media_obj):
     if type(cmd) != list:
         cmd = [cmd]
 
-    cmd += ['-y', '-i', media_obj.filename.replace("\\", "/")]
+    cmd += ['-y', '-i', '"' + media_obj.filename.replace("\\", "/") + '"']
     cmd += ['-c:v', media_obj.video_format]
 
     if media_obj.audio_format is not None:
@@ -25,11 +25,14 @@ def build_command(cmd, media_obj):
     return " ".join(cmd)
 
 
-def run_async(media, cmd='ffmpeg', pipe_stdin=False, pipe_stdout=False, pipe_stderr=True, universal_newlines=False):
+def run_async(media, cmd='ffmpeg', pipe_stdin=False, pipe_stdout=False, pipe_stderr=subprocess.STDOUT,
+              universal_newlines=False):
+
     commands = build_command(cmd, media)
     stdin_stream = subprocess.PIPE if pipe_stdin else None
     stdout_stream = subprocess.PIPE if pipe_stdout else None
-    stderr_stream = subprocess.STDOUT if pipe_stderr else False
+    stderr_stream = pipe_stderr
+
     return subprocess.Popen(shlex.split(commands), stdout=stdout_stream, stderr=stderr_stream, stdin=stdin_stream
                             , universal_newlines=universal_newlines)
 
@@ -46,7 +49,7 @@ def show_progress(media, callable_progress, cmd, c_stdin):
         cmd,
         pipe_stdin=c_stdin,
         pipe_stdout=True,
-        pipe_stderr=True,
+        pipe_stderr=subprocess.STDOUT,
         universal_newlines=True
     )
 
@@ -56,7 +59,9 @@ def show_progress(media, callable_progress, cmd, c_stdin):
 
     while True:
         line = process.stdout.readline().strip()
-        log += [line]
+
+        if line != '':
+            log += [line]
 
         if line == '' and process.poll() is not None:
             break
@@ -71,8 +76,9 @@ def show_progress(media, callable_progress, cmd, c_stdin):
         callable_progress(percentage, line, media)
 
     clear_tmp_files(media)
+
     if process.poll():
-        raise RuntimeError('ffmpeg', " ".join(log))
+        raise RuntimeError('ffmpeg', " ".join(log[-3:]), " ".join(log))
 
     return media, log
 
@@ -86,12 +92,12 @@ def run(media, c_progress=None, cmd='ffmpeg', c_stdout=False, c_stderr=True, c_s
         cmd,
         pipe_stdin=c_stdin,
         pipe_stdout=c_stdout,
-        pipe_stderr=c_stderr,
+        pipe_stderr=subprocess.PIPE if c_stderr else False,
     )
     out, err = process.communicate(c_input, timeout=timeout)
 
     clear_tmp_files(media)
 
     if process.poll():
-        raise RuntimeError('ffmpeg', out, err)
+        raise RuntimeError('ffmpeg', err, out)
     return media, [out, err]

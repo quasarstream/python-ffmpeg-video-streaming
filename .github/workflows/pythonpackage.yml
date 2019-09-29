@@ -23,6 +23,7 @@ jobs:
         pip install requests
     - name: Install ffmpeg
       run: |
+        sudo apt-get update
         sudo apt-get install ffmpeg
     - name: Test with pytest
       run: |
