@@ -2,7 +2,7 @@ import shlex
 import subprocess
 from .progress import progress, get_duration_sec
 from .utiles import clear_tmp_file
-from .params import get_hls_parm, get_dash_parm
+from .args import get_hls_args, get_dash_args
 
 
 def build_command(cmd, media_obj):
@@ -18,9 +18,9 @@ def build_command(cmd, media_obj):
     media_name = type(media_obj).__name__
 
     if media_name == 'HLS':
-        cmd += get_hls_parm(media_obj)
+        cmd += get_hls_args(media_obj)
     elif media_name == 'DASH':
-        cmd += get_dash_parm(media_obj)
+        cmd += get_dash_args(media_obj)
 
     return " ".join(cmd)
 

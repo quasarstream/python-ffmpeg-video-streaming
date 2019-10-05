@@ -2,8 +2,7 @@ from .utiles import get_path_info
 from .rep import Representation
 
 
-def get_hls_parm(hls):
-
+def get_hls_args(hls):
     dirname, name = get_path_info(hls.output)
 
     commands = []
@@ -33,7 +32,7 @@ def get_hls_parm(hls):
     return commands
 
 
-def get_dash_parm(dash):
+def get_dash_args(dash):
     dirname, name = get_path_info(dash.output)
 
     commands = [
