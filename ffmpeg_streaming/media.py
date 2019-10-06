@@ -1,9 +1,10 @@
 import os
 
+from ffmpeg_streaming.build_commands import build_command
 from ffmpeg_streaming.export_hls_playlist import export_hls_playlist
 from ffmpeg_streaming.utiles import get_path_info
 from .key_info_file import generate_key_info_file
-from .process import run
+from .process import Process
 from ._ffprobe import *
 from .auto_rep import AutoRepresentation
 
@@ -38,6 +39,7 @@ class Export(object):
             cmd='ffmpeg',
             c_stdout=False,
             c_stderr=True,
+            c_stdin=True,
             c_input=None,
             timeout=None
          ):
@@ -50,7 +52,12 @@ class Export(object):
             dirname, name = get_path_info(Export.output)
             export_hls_playlist(dirname, name, Export.reps)
 
-        return run(self, progress, cmd, c_stdout, c_stderr, c_input, timeout)
+        commands = build_command(cmd, self)
+
+        with Process(self, progress, commands, c_stdout, c_stderr, c_stdin) as process:
+            p = process.run(c_input, timeout)
+
+        return p
 
 
 class HLS(Export):

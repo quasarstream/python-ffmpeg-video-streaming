@@ -40,6 +40,8 @@ install:
 #  - pip install --upgrade virtualenv
 #  - pip install -r requirements.txt
   - pip install requests
+  - pip install boto3
+  - pip install google-cloud-storage
   - ps: Start-FileDownload $env:ffmpeg_download
 
   - 7z x ffmpeg-20190225-f948082-win64-static.zip

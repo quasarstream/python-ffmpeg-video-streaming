@@ -2,7 +2,7 @@ from .utiles import get_path_info
 from .rep import Representation
 
 
-def get_hls_args(hls):
+def _get_hls_args(hls):
     dirname, name = get_path_info(hls.output)
 
     commands = []
@@ -32,7 +32,7 @@ def get_hls_args(hls):
     return commands
 
 
-def get_dash_args(dash):
+def _get_dash_args(dash):
     dirname, name = get_path_info(dash.output)
 
     commands = [
@@ -66,3 +66,23 @@ def get_dash_args(dash):
     commands += ['"' + dirname + '/' + name + '.mpd"']
 
     return commands
+
+
+def build_command(cmd, media_obj):
+    if type(cmd) != list:
+        cmd = [cmd]
+
+    cmd += ['-y', '-i', '"' + media_obj.filename.replace("\\", "/") + '"']
+    cmd += ['-c:v', media_obj.video_format]
+
+    if media_obj.audio_format is not None:
+        cmd += ['-c:a', media_obj.audio_format]
+
+    media_name = type(media_obj).__name__
+
+    if media_name == 'HLS':
+        cmd += _get_hls_args(media_obj)
+    elif media_name == 'DASH':
+        cmd += _get_dash_args(media_obj)
+
+    return " ".join(cmd)

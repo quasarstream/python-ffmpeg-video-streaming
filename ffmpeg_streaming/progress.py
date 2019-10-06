@@ -1,9 +1,6 @@
 import re
 
-
-def convert_to_sec(time):
-    h, m, s = time.split(":")
-    return int(h) * 3600 + int(m) * 60 + int(s)
+from ffmpeg_streaming.utiles import convert_to_sec
 
 
 def progress(line, total_sec):

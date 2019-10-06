@@ -17,6 +17,11 @@ def get_path_info(path):
     name = str(os.path.basename(path).split('.')[0])
 
     if not os.path.exists(dirname):
-        os.mkdir(dirname)
+        os.makedirs(dirname)
 
     return dirname, name
+
+
+def convert_to_sec(time):
+    h, m, s = time.split(":")
+    return int(h) * 3600 + int(m) * 60 + int(s)

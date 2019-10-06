@@ -12,13 +12,13 @@ class Clouds(object):
 
 class GoogleCloudStorage(Clouds):
     def __init__(self, dirname, bucket_name, **kwargs):
+        self.storage_client = storage.Client(**kwargs)
         self.bucket_name = bucket_name
         self.dirname = dirname
-        self.options = kwargs
 
     def __enter__(self):
-        storage_client = storage.Client(self.options)
-        self.bucket = storage_client.get_bucket(self.bucket_name)
+        self.bucket = self.storage_client.get_bucket(self.bucket_name)
+        return self.bucket
 
     def __exit__(self):
         files = [f for f in listdir(self.dirname) if isfile(join(self.dirname, f))]
@@ -26,7 +26,6 @@ class GoogleCloudStorage(Clouds):
             local_file = self.dirname + file
             blob = self.bucket.blob(self.bucket_name + file)
             blob.upload_from_filename(local_file)
-        return f'Uploaded {files} to "{self.bucket_name}" bucket.'
 
     @staticmethod
     def download(bucket_name, object_name, **kwargs):

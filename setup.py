@@ -1,7 +1,9 @@
 import setuptools
 
 requires = [
-   dfnzfgv
+    'requests>=2.22.0,<2.20.0',
+    'boto3>=1.9.243,<1.9.1',
+    'google-cloud-storage>=1.20.0,<1.19.0'
 ]
 
 with open("README.md", "r") as fh:

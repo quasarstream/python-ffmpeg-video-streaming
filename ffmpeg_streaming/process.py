@@ -1,103 +1,90 @@
 import shlex
 import subprocess
+import threading
+
 from .progress import progress, get_duration_sec
 from .utiles import clear_tmp_file
-from .args import get_hls_args, get_dash_args
 
 
-def build_command(cmd, media_obj):
-    if type(cmd) != list:
-        cmd = [cmd]
+def _p_open(commands, p_stdin=False, p_stdout=False, p_stderr=subprocess.STDOUT, universal_newlines=False):
 
-    cmd += ['-y', '-i', '"' + media_obj.filename.replace("\\", "/") + '"']
-    cmd += ['-c:v', media_obj.video_format]
-
-    if media_obj.audio_format is not None:
-        cmd += ['-c:a', media_obj.audio_format]
-
-    media_name = type(media_obj).__name__
-
-    if media_name == 'HLS':
-        cmd += get_hls_args(media_obj)
-    elif media_name == 'DASH':
-        cmd += get_dash_args(media_obj)
-
-    return " ".join(cmd)
-
-
-def run_async(media, cmd='ffmpeg', pipe_stdin=False, pipe_stdout=False, pipe_stderr=subprocess.STDOUT,
-              universal_newlines=False):
-
-    commands = build_command(cmd, media)
-    stdin_stream = subprocess.PIPE if pipe_stdin else None
-    stdout_stream = subprocess.PIPE if pipe_stdout else None
-    stderr_stream = pipe_stderr
+    stdin_stream = subprocess.PIPE if p_stdin else None
+    stdout_stream = subprocess.PIPE if p_stdout else None
+    stderr_stream = p_stderr
 
     return subprocess.Popen(shlex.split(commands), stdout=stdout_stream, stderr=stderr_stream, stdin=stdin_stream
                             , universal_newlines=universal_newlines)
 
 
-def clear_tmp_files(media):
-    clear_tmp_file(media.filename)
-    if media.__class__.__name__ == 'HLS':
-        clear_tmp_file(media.hls_key_info_file)
+class Process(object):
+    out = None
+    err = None
 
+    def __init__(self, media, c_progress, commands, c_stdout, c_stderr, c_stdin):
+        self.c_progress = c_progress
 
-def show_progress(media, callable_progress, cmd, c_stdin):
-    process = run_async(
-        media,
-        cmd,
-        pipe_stdin=c_stdin,
-        pipe_stdout=True,
-        pipe_stderr=subprocess.STDOUT,
-        universal_newlines=True
-    )
-
-    total_sec = None
-    log = []
-    percentage = 0
-
-    while True:
-        line = process.stdout.readline().strip()
-
-        if line != '':
-            log += [line]
-
-        if line == '' and process.poll() is not None:
-            break
-
-        if total_sec is None:
-            total_sec = get_duration_sec(line)
+        if callable(c_progress):
+            self.p = _p_open(commands, c_stdin, True, universal_newlines=True)
         else:
-            c_percentage = progress(line, total_sec)
-            if c_percentage is not None:
-                percentage = c_percentage
+            self.p = _p_open(commands, c_stdin, c_stdout, subprocess.PIPE if c_stderr else False)
 
-        callable_progress(percentage, line, media)
+        self.media = media
 
-    clear_tmp_files(media)
+    def __enter__(self):
+        return self
 
-    if process.poll():
-        raise RuntimeError('ffmpeg', " ".join(log[-3:]), " ".join(log))
+    def __del__(self):
+        clear_tmp_file(self.media.filename)
+        if self.media.__class__.__name__ == 'HLS':
+            clear_tmp_file(self.media.hls_key_info_file)
 
-    return media, log
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.p.kill()
 
+    def _show_progress(self):
+        total_sec = None
+        log = []
+        percentage = 0
 
-def run(media, c_progress=None, cmd='ffmpeg', c_stdout=False, c_stderr=True, c_stdin=False, c_input=None, timeout=None):
-    if callable(c_progress):
-        return show_progress(media, c_progress, cmd, c_stdin)
+        while True:
+            line = self.p.stdout.readline().strip()
 
-    process = run_async(
-        media,
-        cmd,
-        pipe_stdin=c_stdin,
-        pipe_stdout=c_stdout,
-        pipe_stderr=subprocess.PIPE if c_stderr else False,
-    )
-    out, err = process.communicate(c_input, timeout=timeout)
+            if line != '':
+                log += [line]
 
-    clear_tmp_files(media)
+            if line == '' and self.p.poll() is not None:
+                break
 
-    if process.poll():
-        raise RuntimeError('ffmpeg', err, out)
-    return media, [out, err]
+            if total_sec is None:
+                total_sec = get_duration_sec(line)
+            else:
+                c_percentage = progress(line, total_sec)
+                if c_percentage is not None:
+                    percentage = c_percentage
+
+            self.c_progress(percentage, line, self.media)
+
+        Process.out = log
+
+    def _thread_progress(self, timeout):
+        thread = threading.Thread(target=self._show_progress)
+        thread.start()
+
+        thread.join(timeout)
+        if thread.is_alive():
+            self.p.terminate()
+            thread.join()
+
+            raise RuntimeError('Timeout! The process stopped!')
+
+    def run(self, c_input=None, timeout=None):
+
+        if callable(self.c_progress):
+            self._thread_progress(timeout)
+        else:
+            Process.out, Process.err = self.p.communicate(c_input, timeout=timeout)
+
+        if self.p.poll():
+            raise RuntimeError('ffmpeg', Process.err, Process.out)
+
+        return self.media, [Process.out, Process.err]
