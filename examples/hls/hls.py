@@ -1,3 +1,16 @@
+"""
+examples.hls.hls
+~~~~~~~~~~~~
+
+Create HlS streams
+
+
+:copyright: (c) 2019 by Amin Yazdanpanah.
+:website: https://www.aminyazdanpanah.com
+:email: contact@aminyazdanpanah.com
+:license: MIT, see LICENSE for more details.
+"""
+
 import argparse
 import sys
 import ffmpeg_streaming

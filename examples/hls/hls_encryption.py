@@ -1,10 +1,23 @@
+"""
+examples.hls.hls_encryption
+~~~~~~~~~~~~
+
+Create encrypted HlS streams and manifests
+
+
+:copyright: (c) 2019 by Amin Yazdanpanah.
+:website: https://www.aminyazdanpanah.com
+:email: contact@aminyazdanpanah.com
+:license: MIT, see LICENSE for more details.
+"""
+
 import argparse
 import sys
 import ffmpeg_streaming
 
 
 def transcode_progress(percentage, ffmpeg, media):
-    # You can update a field in your database
+    # You can update a field in your database(or log it)
     # You can also create a socket connection and show a progress bar to users
     sys.stdout.write("\rTranscoding...(%s%%)[%s%s]" % (percentage, '#' * percentage, '-' * (100 - percentage)))
     sys.stdout.flush()

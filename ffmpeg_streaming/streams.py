@@ -1,3 +1,17 @@
+"""
+ffmpeg_streaming.streams
+~~~~~~~~~~~~
+
+Parse streams that is the output of the FFProbe
+
+
+:copyright: (c) 2019 by Amin Yazdanpanah.
+:website: https://www.aminyazdanpanah.com
+:email: contact@aminyazdanpanah.com
+:license: MIT, see LICENSE for more details.
+"""
+
+
 class Streams:
     def __init__(self, streams):
         self.streams = streams

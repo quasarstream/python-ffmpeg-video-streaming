@@ -1,3 +1,16 @@
+"""
+ffmpeg_streaming.build_commands
+~~~~~~~~~~~~
+
+Build a command for the FFmpeg
+
+
+:copyright: (c) 2019 by Amin Yazdanpanah.
+:website: https://www.aminyazdanpanah.com
+:email: contact@aminyazdanpanah.com
+:license: MIT, see LICENSE for more details.
+"""
+
 from .utiles import get_path_info
 from .rep import Representation
 

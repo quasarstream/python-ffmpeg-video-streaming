@@ -8,14 +8,9 @@ clone_folder: c:\projects\project-code
 cache:
   - c:\ProgramData\chocolatey\bin -> .appveyor.yml
   - c:\ProgramData\chocolatey\lib -> .appveyor.yml
-  - c:\ProgramData\ComposerSetup -> .appveyor.yml
-  - c:\tools\php -> .appveyor.yml
 
 environment:
   global:
-    COMPOSER_NO_INTERACTION: 1
-    ANSICON: 121x90 (121x90) # Console colors
-
   ffmpeg_download: https://ffmpeg.zeranoe.com/builds/win64/static/ffmpeg-20190225-f948082-win64-static.zip
 
   matrix:

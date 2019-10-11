@@ -1,12 +1,45 @@
+"""
+ffmpeg_streaming.media
+~~~~~~~~~~~~
+
+Media object to build a stream objects
+
+
+:copyright: (c) 2019 by Amin Yazdanpanah.
+:website: https://www.aminyazdanpanah.com
+:email: contact@aminyazdanpanah.com
+:license: MIT, see LICENSE for more details.
+"""
+
 import os
+import shutil
+import tempfile
 
 from ffmpeg_streaming.build_commands import build_command
+from ffmpeg_streaming.clouds import open_from_cloud, save_to_clouds
 from ffmpeg_streaming.export_hls_playlist import export_hls_playlist
-from ffmpeg_streaming.utiles import get_path_info
+from ffmpeg_streaming.utiles import get_path_info, clear_tmp_file
 from .key_info_file import generate_key_info_file
 from .process import Process
 from ._ffprobe import *
 from .auto_rep import AutoRepresentation
+
+
+def _get_paths(output, _input, clouds):
+    is_tmp = False
+
+    if output is not None:
+        dirname, name = get_path_info(output)
+    else:
+        dirname, name = get_path_info(_input)
+        output = _input
+    if clouds is not None:
+        is_tmp = True
+        basename = os.path.basename(output)
+        output = os.path.join(tempfile.mkdtemp(suffix='ffmpeg_streaming'), basename)
+        dirname, name = get_path_info(output)
+
+    return output, dirname, name, is_tmp
 
 
 class Export(object):
@@ -14,10 +47,18 @@ class Export(object):
     audio_format = str
     reps = list
     output = str
+    _is_tmp_directory = False
 
     def __init__(self, filename, options):
         self.filename = filename
         self.options = options
+
+    def __del__(self):
+        clear_tmp_file(self.filename)
+        if isinstance(self, HLS):
+            clear_tmp_file(self.hls_key_info_file)
+        if Export._is_tmp_directory:
+            shutil.rmtree(os.path.dirname(str(Export.output)), ignore_errors=True)
 
     def add_rep(self, *args):
         Export.reps = list(args)
@@ -35,6 +76,7 @@ class Export(object):
     def package(
             self,
             output=None,
+            clouds=None,
             progress=None,
             cmd='ffmpeg',
             c_stdout=False,
@@ -43,19 +85,18 @@ class Export(object):
             c_input=None,
             timeout=None
          ):
-        if output is None:
-            Export.output = self.filename
-        else:
-            Export.output = output
+        Export.output, dirname, name, Export._is_tmp_directory = _get_paths(output, self.filename, clouds)
 
         if isinstance(self, HLS):
-            dirname, name = get_path_info(Export.output)
             export_hls_playlist(dirname, name, Export.reps)
 
-        commands = build_command(cmd, self)
-
-        with Process(self, progress, commands, c_stdout, c_stderr, c_stdin) as process:
+        with Process(self, progress, build_command(cmd, self), c_stdout, c_stderr, c_stdin) as process:
             p = process.run(c_input, timeout)
+
+        save_to_clouds(clouds, dirname)
+
+        if output is not None and clouds is not None:
+            shutil.move(dirname, os.path.dirname(output))
 
         return p
 
@@ -80,16 +121,22 @@ class DASH(Export):
         super(DASH, self).__init__(filename, options)
 
 
-def dash(filename, **kwargs):
-    if not os.path.isfile(filename):
+def _check_file(file):
+    if type(file) == tuple:
+        file = open_from_cloud(file)
+
+    if not os.path.isfile(file):
         raise RuntimeError('The file is not exist')
-    return DASH(filename, kwargs)
+
+    return file
 
 
-def hls(filename, **kwargs):
-    if not os.path.isfile(filename):
-        raise RuntimeError('The file is not exist')
-    return HLS(filename, kwargs)
+def dash(file, **kwargs):
+    return DASH(_check_file(file), kwargs)
+
+
+def hls(file, **kwargs):
+    return HLS(_check_file(file), kwargs)
 
 
 __all__ = [

@@ -1,3 +1,16 @@
+"""
+ffmpeg_streaming._ffprobe
+~~~~~~~~~~~~
+
+Probe the video
+
+
+:copyright: (c) 2019 by Amin Yazdanpanah.
+:website: https://www.aminyazdanpanah.com
+:email: contact@aminyazdanpanah.com
+:license: MIT, see LICENSE for more details.
+"""
+
 import json
 import os
 import subprocess

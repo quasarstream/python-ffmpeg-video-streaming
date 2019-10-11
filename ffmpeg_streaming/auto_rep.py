@@ -1,9 +1,22 @@
+"""
+ffmpeg_streaming.auto_rep
+~~~~~~~~~~~~
+
+Auto-generate regulations(size and bitrates)
+
+
+:copyright: (c) 2019 by Amin Yazdanpanah.
+:website: https://www.aminyazdanpanah.com
+:email: contact@aminyazdanpanah.com
+:license: MIT, see LICENSE for more details.
+"""
+
 from ffmpeg_streaming import FFProbe
 from .utiles import round_to_even
 from .rep import Representation
 
 
-def get_kilo_bit_rates(kilo_bit_rate, count):
+def _get_kilo_bit_rates(kilo_bit_rate, count):
     kilo_bites = []
     divided_by = 1.5
 
@@ -31,14 +44,14 @@ class AutoRepresentation:
         self.heights = heights
         
     def generate(self):
-        width, height, ratio = self.dimension()
-        video_bitrate, audio_bitrate = self.kilo_bitrate()
+        width, height, ratio = self._dimension()
+        video_bitrate, audio_bitrate = self._kilo_bitrate()
 
         reps = [Representation(width=width, height=height, kilo_bitrate=video_bitrate, audio_k_bitrate=audio_bitrate)]
 
         heights = list(filter(lambda x: x < height, self.heights))
-        v_b_r = get_kilo_bit_rates(video_bitrate, len(heights))
-        a_b_r = get_kilo_bit_rates(audio_bitrate, len(heights))
+        v_b_r = _get_kilo_bit_rates(video_bitrate, len(heights))
+        a_b_r = _get_kilo_bit_rates(audio_bitrate, len(heights))
         i = 0
 
         for height in heights:
@@ -48,14 +61,14 @@ class AutoRepresentation:
 
         return reps
 
-    def dimension(self):
+    def _dimension(self):
         width = self.video.get('width', 0)
         height = self.video.get('height', 0)
         ratio = width / height
 
         return width, height, ratio
 
-    def kilo_bitrate(self):
+    def _kilo_bitrate(self):
         overall_k_bitrate = round((int(self.format.get('bit_rate', 0)) / 1024) * .9)
         video_k_bitrate = round(int(self.video.get('bit_rate', 0)) / 1024)
         audio_k_bitrate = round(int(self.audio.get('bit_rate', 0)) / 1024)

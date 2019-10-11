@@ -1,3 +1,16 @@
+"""
+ffmpeg_streaming.key_info_file
+~~~~~~~~~~~~
+
+Generate a random key and key info file to pass to the FFmpeg to create encrypted HLS streams
+
+
+:copyright: (c) 2019 by Amin Yazdanpanah.
+:website: https://www.aminyazdanpanah.com
+:email: contact@aminyazdanpanah.com
+:license: MIT, see LICENSE for more details.
+"""
+
 import tempfile
 from secrets import token_bytes, token_hex
 

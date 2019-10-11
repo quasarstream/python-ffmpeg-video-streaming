@@ -1,3 +1,17 @@
+"""
+ffmpeg_streaming.export_hls_playlist
+~~~~~~~~~~~~
+
+Export HLS playlist(HLS manifest)
+
+
+:copyright: (c) 2019 by Amin Yazdanpanah.
+:website: https://www.aminyazdanpanah.com
+:email: contact@aminyazdanpanah.com
+:license: MIT, see LICENSE for more details.
+"""
+
+
 def _get_contents(reps, name):
     content = ['#EXTM3U', '#EXT-X-VERSION:3']
     for rep in reps:

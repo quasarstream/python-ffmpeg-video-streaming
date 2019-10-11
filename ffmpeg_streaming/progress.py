@@ -1,3 +1,16 @@
+"""
+ffmpeg_streaming.progress
+~~~~~~~~~~~~
+
+Parse realtime FFmpeg lines to gives a percentage of transcoding
+
+
+:copyright: (c) 2019 by Amin Yazdanpanah.
+:website: https://www.aminyazdanpanah.com
+:email: contact@aminyazdanpanah.com
+:license: MIT, see LICENSE for more details.
+"""
+
 import re
 
 from ffmpeg_streaming.utiles import convert_to_sec

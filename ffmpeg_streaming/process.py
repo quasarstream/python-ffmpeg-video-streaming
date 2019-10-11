@@ -1,9 +1,21 @@
+"""
+ffmpeg_streaming.process
+~~~~~~~~~~~~
+
+Run FFmpeg commands and monitor FFmpeg
+
+
+:copyright: (c) 2019 by Amin Yazdanpanah.
+:website: https://www.aminyazdanpanah.com
+:email: contact@aminyazdanpanah.com
+:license: MIT, see LICENSE for more details.
+"""
+
 import shlex
 import subprocess
 import threading
 
 from .progress import progress, get_duration_sec
-from .utiles import clear_tmp_file
 
 
 def _p_open(commands, p_stdin=False, p_stdout=False, p_stderr=subprocess.STDOUT, universal_newlines=False):
@@ -32,11 +44,6 @@ class Process(object):
 
     def __enter__(self):
         return self
-
-    def __del__(self):
-        clear_tmp_file(self.media.filename)
-        if self.media.__class__.__name__ == 'HLS':
-            clear_tmp_file(self.media.hls_key_info_file)
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.p.kill()

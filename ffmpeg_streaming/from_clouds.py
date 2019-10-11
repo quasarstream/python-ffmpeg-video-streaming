@@ -1,9 +1,14 @@
+#
 import sys
 import tempfile
+
 import requests
 import boto3
 
+from ffmpeg_streaming.utiles import deprecated
 
+
+@deprecated
 def from_url(url, method='get', **kwargs):
     progress = kwargs.pop('progress', None)
     with tempfile.NamedTemporaryFile(delete=False, suffix='_py_ff_vi_st.tmp') as tmp:
@@ -25,6 +30,7 @@ def from_url(url, method='get', **kwargs):
         return tmp.name
 
 
+@deprecated
 def from_s3(**kwargs):
     bucket_name = kwargs.pop('bucket_name', None)
     object_name = kwargs.pop('object_name', None)

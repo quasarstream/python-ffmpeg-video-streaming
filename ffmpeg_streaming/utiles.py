@@ -1,5 +1,19 @@
+"""
+ffmpeg_streaming.streams
+~~~~~~~~~~~~
+
+Useful methods
+
+
+:copyright: (c) 2019 by Amin Yazdanpanah.
+:website: https://www.aminyazdanpanah.com
+:email: contact@aminyazdanpanah.com
+:license: MIT, see LICENSE for more details.
+"""
+
 import os
 import tempfile
+import warnings
 
 
 def round_to_even(num):
@@ -25,3 +39,11 @@ def get_path_info(path):
 def convert_to_sec(time):
     h, m, s = time.split(":")
     return int(h) * 3600 + int(m) * 60 + int(s)
+
+
+def deprecated(func):
+    def deprecated_fun(*args, **kwargs):
+        warnings.warn('This method is deprecated and will be removed in the next release.'
+                      , DeprecationWarning, stacklevel=2)
+        return func(*args, **kwargs)
+    return deprecated_fun
