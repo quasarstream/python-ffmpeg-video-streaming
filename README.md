@@ -151,7 +151,7 @@ See **[HLS examples](https://github.com/aminyazdanpanah/python-ffmpeg-video-stre
 See also **[HLS options](https://ffmpeg.org/ffmpeg-formats.html#hls-2)** for more information about options.
 
 ### Progress
-You can get realtime information about transcoding and downloading by passing callable methods to the `package` and `from_url` methods respectively:
+You can get realtime information about transcoding by passing callable methods to the `package`:
 ```python
 import sys
 import ffmpeg_streaming
