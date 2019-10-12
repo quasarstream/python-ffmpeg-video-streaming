@@ -7,6 +7,7 @@ verify_ssl = true
 requests = "2.22.0"
 boto3 = "1.9.243"
 google-cloud-storage = "1.20.0"
+azure-storage-blob = "2.1.0"
 
 [requires]
 python_version = "3.7"

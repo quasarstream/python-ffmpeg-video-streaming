@@ -43,7 +43,7 @@ def convert_to_sec(time):
 
 def deprecated(func):
     def deprecated_fun(*args, **kwargs):
-        warnings.warn('This method is deprecated and will be removed in the next release.'
+        warnings.warn('The {} method is deprecated and will be removed in a future release'.format(func.__name__)
                       , DeprecationWarning, stacklevel=2)
         return func(*args, **kwargs)
     return deprecated_fun

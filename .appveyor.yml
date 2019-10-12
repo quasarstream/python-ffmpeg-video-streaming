@@ -11,6 +11,9 @@ cache:
 
 environment:
   global:
+    COMPOSER_NO_INTERACTION: 1
+    ANSICON: 121x90 (121x90) # Console colors
+
   ffmpeg_download: https://ffmpeg.zeranoe.com/builds/win64/static/ffmpeg-20190225-f948082-win64-static.zip
 
   matrix:
@@ -36,6 +39,7 @@ install:
 #  - pip install -r requirements.txt
   - pip install requests
   - pip install boto3
+  - pip install azure-storage-blob
   - pip install google-cloud-storage
   - ps: Start-FileDownload $env:ffmpeg_download
 

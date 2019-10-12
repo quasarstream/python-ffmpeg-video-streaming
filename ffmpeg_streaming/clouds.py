@@ -2,7 +2,7 @@
 ffmpeg_streaming.clouds
 ~~~~~~~~~~~~
 
-Upload and download files to clouds
+Upload and download files -> clouds
 
 
 :copyright: (c) 2019 by Amin Yazdanpanah.
@@ -38,7 +38,11 @@ class Clouds(abc.ABC):
 class Cloud(Clouds):
 
     def upload_directory(self, directory, **options):
-        field_name = options.pop('method', 'get')
+        field_name = options.pop('field_name', None)
+
+        if field_name is None:
+            raise ValueError('You should specify a field_name')
+
         method = options.pop('method', 'post')
         url = options.pop('url', None)
         upload_files = []
@@ -116,7 +120,7 @@ class AWS(Clouds):
             if e.response['Error']['Code'] == "404":
                 raise RuntimeError("The object does not exist.")
             else:
-                raise RuntimeError("Could not connect to server")
+                raise RuntimeError("Could not connect to the server")
 
         return filename
 

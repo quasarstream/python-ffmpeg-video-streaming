@@ -23,6 +23,7 @@ jobs:
         pip install requests
         pip install boto3
         pip install google-cloud-storage
+        pip install azure-storage-blob
     - name: Install ffmpeg
       run: |
         sudo apt-get update

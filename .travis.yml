@@ -5,6 +5,7 @@ before_install:
   - pip install requests
   - pip install boto3
   - pip install google-cloud-storage
+  - pip install azure-storage-blob
   - >
     [ -f ffmpeg-release/ffmpeg ] || (
         curl -O https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz &&

@@ -40,6 +40,7 @@ def main():
     upload_options = {
         'url': 'https://localhost:8000/api/upload',
         'method': 'post',
+        'field_name': 'YOUR_FIELD_NAME',
         'auth': ('username', 'password'),
         'headers': {
             'User-Agent': 'Mozilla/5.0 (compatible; AminYazdanpanahBot/1.0; +http://aminyazdanpanah.com/bots)',

@@ -4,6 +4,7 @@ requires = [
     'requests>=2.22.0,<2.20.0',
     'boto3>=1.9.243,<1.9.1',
     'google-cloud-storage>=1.20.0,<1.19.0'
+    'azure-storage-blob>=2.1.0,<2.0.0'
 ]
 
 with open("README.md", "r") as fh:
@@ -11,7 +12,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="python-ffmpeg-video-streaming",
-    version="0.0.12",
+    version="0.0.13",
     author="Amin Yazdanpanah",
     author_email="contact@aminyazdanpanah.com",
     description="Package media content for online streaming(DASH and HLS) using ffmpeg",

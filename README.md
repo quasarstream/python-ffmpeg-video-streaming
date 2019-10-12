@@ -5,7 +5,8 @@
 [![PyPI version](https://badge.fury.io/py/python-ffmpeg-video-streaming.svg)](https://badge.fury.io/py/python-ffmpeg-video-streaming)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat)](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/blob/master/LICENSE)
 
-This package uses the **[FFmpeg](https://ffmpeg.org)** to package media content for online streaming(DASH and HLS)
+## Overview
+This package uses the **[FFmpeg](https://ffmpeg.org)** to package media content for online streaming such as DASH and HLS. You can also use **[DRM](https://en.wikipedia.org/wiki/Digital_rights_management)** for HLS packaging. There are several options to open a file from clouds and save files to them as well.
 
 **Contents**
 - [Requirements](#requirements)
@@ -17,6 +18,7 @@ This package uses the **[FFmpeg](https://ffmpeg.org)** to package media content 
     - [Encrypted HLS](#encrypted-hls)
   - [Progress](#progress)
   - [Probe](#probe)
+  - [Saving Files](#saving-files)
 - [Several Open Source Players](#several-open-source-players)
 - [Contributing and Reporting Bugs](#contributing-and-reporting-bugs)
 - [Credits](#credits)
@@ -43,15 +45,14 @@ There are two ways to open a file:
 video = '/var/www/media/videos/test.mp4'
 ```
 
-#### 2. From a cloud
-```python
-from ffmpeg_streaming.from_clouds import from_url
+#### 2. From Clouds
+You can open a file from a cloud by passing a tuple of cloud configuration to the method. There are some options to open a file from **[Amazon Web Services (AWS)](https://aws.amazon.com/)**, **[Google Cloud Storage](https://console.cloud.google.com/storage)**, **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**, and a custom cloud. 
 
-url = 'https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/blob/master/examples/_example.mp4?raw=true'
-video = from_url(url)
+Please **[visit the 'open a file from a cloud' page](https://video.aminyazdanpanah.com/python/start/open-clouds)** to see more examples and usage of these clouds.
+```python
+video = (google_cloud, download_options, None)
 ```
-**NOTE:** This package uses **[Requests](https://2.python-requests.org/en/master/)** to send and receive files. 
- 
+
 ### DASH
 **[Dynamic Adaptive Streaming over HTTP (DASH)](https://dashif.org/)**, also known as MPEG-DASH, is an adaptive bitrate streaming technique that enables high quality streaming of media content over the Internet delivered from conventional HTTP web servers.
 
@@ -60,8 +61,6 @@ Similar to Apple's HTTP Live Streaming (HLS) solution, MPEG-DASH works by breaki
 Create DASH Files:
 ```python
 import ffmpeg_streaming
-
-video = '/var/www/media/videos/test.mp4'
 
 (
     ffmpeg_streaming
@@ -75,25 +74,21 @@ You can also create representations manually:
 ```python
 import ffmpeg_streaming
 from ffmpeg_streaming import Representation
-from ffmpeg_streaming.from_clouds import from_url
 
-url = 'https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/blob/master/examples/_example.mp4?raw=true'
-video = from_url(url)
-
-rep1 = Representation(width=256, height=144, kilo_bitrate=200)
-rep2 = Representation(width=426, height=240, kilo_bitrate=500)
-rep3 = Representation(width=640, height=360, kilo_bitrate=1000)
+rep_144 = Representation(width=256, height=144, kilo_bitrate=200)
+rep_240 = Representation(width=426, height=240, kilo_bitrate=500)
+rep_360 = Representation(width=640, height=360, kilo_bitrate=1000)
 
 (
     ffmpeg_streaming
         .dash(video, adaption='"id=0,streams=v id=1,streams=a"')
         .format('libx265')
-        .add_rep(rep1, rep2, rep3)
+        .add_rep(rep_144, rep_240, rep_360)
         .package('/var/www/media/videos/dash/test.mpd')
 )
 
 ```
-See **[DASH examples](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/tree/master/examples)** for more information.
+See **[DASH examples](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/tree/master/examples/dash)** for more information.
 
 See also **[DASH options](https://ffmpeg.org/ffmpeg-formats.html#dash-2)** for more information about options.
 
@@ -105,10 +100,6 @@ HLS resembles MPEG-DASH in that it works by breaking the overall stream into a s
 Create HLS files based on original video(auto generate qualities).
 ```python
 import ffmpeg_streaming
-from ffmpeg_streaming.from_clouds import from_url
-
-url = 'https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/blob/master/examples/_example.mp4?raw=true'
-video = from_url(url)
 
 (
     ffmpeg_streaming
@@ -124,17 +115,15 @@ You can also create representations manually:
 import ffmpeg_streaming
 from ffmpeg_streaming import Representation
 
-video = '/var/www/media/videos/test.mp4'
-
-rep1 = Representation(width=256, height=144, kilo_bitrate=200)
-rep2 = Representation(width=426, height=240, kilo_bitrate=500)
-rep3 = Representation(width=640, height=360, kilo_bitrate=1000)
+rep_144 = Representation(width=256, height=144, kilo_bitrate=200)
+rep_240 = Representation(width=426, height=240, kilo_bitrate=500)
+rep_360 = Representation(width=640, height=360, kilo_bitrate=1000)
 
 (
     ffmpeg_streaming
         .hls(video, hls_time=10, hls_allow_cache=1)
         .format('libx264')
-        .add_rep(rep1, rep2, rep3)
+        .add_rep(rep_144, rep_240, rep_360)
         .package('/var/www/media/videos/hls/test.m3u8')
 )
 ```
@@ -143,15 +132,10 @@ rep3 = Representation(width=640, height=360, kilo_bitrate=1000)
 #### Encrypted HLS
 The encryption process requires some kind of secret (key) together with an encryption algorithm. HLS uses AES in cipher block chaining (CBC) mode. This means each block is encrypted using the ciphertext of the preceding block. [Learn more](https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation)
 
-You need to pass both `URL to the key` and `path to save a random key` to the `encryption` method:
+You need to pass both `URL to the key` and `a path to save a random key on your local machine` to the `encryption` method:
 
 ```python
 import ffmpeg_streaming
-from ffmpeg_streaming.from_clouds import from_url
-
-url = 'https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/blob/master/examples/_example.mp4?raw=true'
-video = from_url(url)
-
 (
     ffmpeg_streaming
         .hls(video, hls_time=10, hls_allow_cache=1)
@@ -162,7 +146,7 @@ video = from_url(url)
 )
 ```
 **NOTE:** It is very important to protect your key on your website using a token or a session/cookie(****It is highly recommended****).    
-See **[HLS examples](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/tree/master/examples)** for more information.
+See **[HLS examples](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/tree/master/examples/hls)** for more information.
 
 See also **[HLS options](https://ffmpeg.org/ffmpeg-formats.html#hls-2)** for more information about options.
 
@@ -171,23 +155,13 @@ You can get realtime information about transcoding and downloading by passing ca
 ```python
 import sys
 import ffmpeg_streaming
-from ffmpeg_streaming.from_clouds import from_url
 
-def download_progress(percentage, downloaded, total):
-    # You can update a field in your database
-    # You can also create a socket connection and show a progress bar to users
-    sys.stdout.write("\r Downloading... (%s%%)[%s%s]" % (percentage, '#' * percentage, '-' * (100 - percentage)))
-    sys.stdout.flush()
-
-
-def progress(percentage, line, sec):
+def progress(percentage, ffmpeg, media):
     # You can update a field in your database
     # You can also create a socket connection and show a progress bar to users
     sys.stdout.write("\r Transcoding... (%s%%)[%s%s]" % (percentage, '#' * percentage, '-' * (100 - percentage)))
     sys.stdout.flush()
 
-url = 'https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/blob/master/examples/_example.mp4?raw=true'
-video = from_url(url, progress=download_progress)
 
 (
     ffmpeg_streaming
@@ -210,7 +184,57 @@ ffprobe = FFProbe('/var/www/media/test.mp4')
 **NOTE:** You can save these metadata to your database.
 
 See the **[example](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/blob/master/examples/probe.py)** for more information.
+### Saving Files
+There are several options to save your files.
 
+#### 1. To a Local Path
+You can pass a local path to the `package` method. If there was no directory in the path, then the package auto makes the directory.
+```python
+(
+    ffmpeg_streaming
+        .hls(video)
+        .format('libx264')
+        .auto_rep()
+        .package('/var/www/media/videos/hls/test.m3u8', progress)
+)
+```
+It can also be null. The default path to save files is the input path.
+```python
+(
+    ffmpeg_streaming
+        .hls(video)
+        .format('libx264')
+        .auto_rep()
+        .package(progress=progress)
+)
+```
+**NOTE:** If you open a file from cloud and did not pass a path to save a file, you will have to pass a local path to the `package` method.
+
+#### 2. To Clouds
+You can save your files to clouds by passing a array of cloud configuration to the `package` method. There are some options to save files to **[Amazon Web Services (AWS)](https://aws.amazon.com/)**, **[Google Cloud Storage](https://console.cloud.google.com/storage)**, **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**, and a custom cloud. 
+
+Please **[visit the 'save files to clouds' page](https://video.aminyazdanpanah.com/python/start/save-clouds)** to see more examples and usage of these clouds.
+```python
+(
+    ffmpeg_streaming
+        .dash('/var/www/media/video.mkv', adaption='"id=0,streams=v id=1,streams=a"')
+        .format('libx265')
+        .auto_rep()
+        .package(clouds=[to_aws_cloud, to_azure_cloud, to_google_cloud],
+                 progress=progress)
+)
+``` 
+A path can also be passed to save a copy of files on your local machine.
+```python
+(
+    ffmpeg_streaming
+        .dash('/var/www/media/video.mkv', adaption='"id=0,streams=v id=1,streams=a"')
+        .format('libx265')
+        .auto_rep()
+        .package(output='/var/www/media/stream.mpd', clouds=[to_aws_cloud, to_google_cloud],
+                 progress=progress)
+)
+```
 ## Several Open Source Players
 You can use these libraries to play your streams.
 - **WEB**
@@ -237,10 +261,9 @@ I'd love your help in improving, correcting, adding to the specification.
 Please **[file an issue](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/issues)** or **[submit a pull request](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/pulls)**.
 - Please see **[Contributing File](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/blob/master/CONTRIBUTING.md)** for more information.
 - If you have any questions or you want to report a bug, please just **[file an issue](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/issues)**
-- If you discover a security vulnerability within this package, please see **[SECURITY File](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/blob/master/SECURITY.md)** for more information to help with that.
+- If you discover a security vulnerability within this package, please see **[SECURITY File](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/blob/master/SECURITY.md)** for more information.
 
-**NOTE:** If you have any questions about this package or FFMpeg, please **DO NOT** send an email to me or submit the contact form on my website. Emails related to these issues **will be ignored**.
-
+**NOTE:** If you have any questions about this package or FFmpeg, please **DO NOT** send an email to me (or submit the contact form on my website). Emails regarding these issues **will be ignored**.
 
 ## Credits
 - **[Amin Yazdanpanah](https://www.aminyazdanpanah.com/?u=github.com/aminyazdanpanah/python-ffmpeg-video-streaming)**
