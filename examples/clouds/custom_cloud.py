@@ -44,7 +44,7 @@ def custom_cloud():
     return from_custom_cloud, to_custom_cloud
 
 
-def transcode_progress(percentage, ffmpeg, media):
+def transcode_progress(percentage, ffmpeg):
     # You can update a field in your database
     # You can also create a socket connection and show a progress bar to users
     sys.stdout.write("\rTranscoding...(%s%%)[%s%s]" % (percentage, '#' * percentage, '-' * (100 - percentage)))

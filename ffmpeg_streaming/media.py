@@ -90,7 +90,7 @@ class Export(object):
         if isinstance(self, HLS):
             export_hls_playlist(dirname, name, Export.reps)
 
-        with Process(self, progress, build_command(cmd, self), c_stdout, c_stderr, c_stdin) as process:
+        with Process(progress, build_command(cmd, self), c_stdout, c_stderr, c_stdin) as process:
             p = process.run(c_input, timeout)
 
         save_to_clouds(clouds, dirname)
@@ -98,7 +98,7 @@ class Export(object):
         if output is not None and clouds is not None:
             shutil.move(dirname, os.path.dirname(output))
 
-        return p
+        return self, p
 
 
 class HLS(Export):

@@ -34,7 +34,7 @@ def aws_cloud(bucket_name, key):
     return from_aws_cloud, to_aws_cloud
 
 
-def transcode_progress(percentage, ffmpeg, media):
+def transcode_progress(percentage, ffmpeg):
     # You can update a field in your database
     # You can also create a socket connection and show a progress bar to users
     sys.stdout.write("\rTranscoding...(%s%%)[%s%s]" % (percentage, '#' * percentage, '-' * (100 - percentage)))

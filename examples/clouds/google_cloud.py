@@ -33,7 +33,7 @@ def google_cloud(bucket_name, object_name):
     return from_google_cloud, to_google_cloud
 
 
-def transcode_progress(percentage, ffmpeg, media):
+def transcode_progress(percentage, ffmpeg):
     # You can update a field in your database
     # You can also create a socket connection and show a progress bar to users
     sys.stdout.write("\rTranscoding...(%s%%)[%s%s]" % (percentage, '#' * percentage, '-' * (100 - percentage)))

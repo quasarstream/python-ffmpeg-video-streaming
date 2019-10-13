@@ -17,8 +17,8 @@ This package uses the **[FFmpeg](https://ffmpeg.org)** to package media content 
   - [HLS](#hls)
     - [Encrypted HLS](#encrypted-hls)
   - [Progress](#progress)
-  - [Probe](#probe)
   - [Saving Files](#saving-files)
+  - [Probe](#probe)
 - [Several Open Source Players](#several-open-source-players)
 - [Contributing and Reporting Bugs](#contributing-and-reporting-bugs)
 - [Credits](#credits)
@@ -48,7 +48,7 @@ video = '/var/www/media/videos/test.mp4'
 #### 2. From Clouds
 You can open a file from a cloud by passing a tuple of cloud configuration to the method. There are some options to open a file from **[Amazon Web Services (AWS)](https://aws.amazon.com/)**, **[Google Cloud Storage](https://console.cloud.google.com/storage)**, **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**, and a custom cloud. 
 
-Please **[visit the 'open a file from a cloud' page](https://video.aminyazdanpanah.com/python/start/open-clouds)** to see more examples and usage of these clouds.
+Please visit **[this page](https://video.aminyazdanpanah.com/python/start/open-clouds)** to see more examples and usage of these clouds.
 ```python
 video = (google_cloud, download_options, None)
 ```
@@ -156,7 +156,7 @@ You can get realtime information about transcoding by passing callable methods t
 import sys
 import ffmpeg_streaming
 
-def progress(percentage, ffmpeg, media):
+def progress(percentage, ffmpeg):
     # You can update a field in your database
     # You can also create a socket connection and show a progress bar to users
     sys.stdout.write("\r Transcoding... (%s%%)[%s%s]" % (percentage, '#' * percentage, '-' * (100 - percentage)))
@@ -174,16 +174,6 @@ def progress(percentage, ffmpeg, media):
 Output of the progress:
 ![progress](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/blob/master/docs/progress.gif?raw=true "progress" )
 
-### Probe
-You can extract the metadata of video file using the following code:
-```python
-from ffmpeg_streaming import FFProbe
-
-ffprobe = FFProbe('/var/www/media/test.mp4')
-```
-**NOTE:** You can save these metadata to your database.
-
-See the **[example](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/blob/master/examples/probe.py)** for more information.
 ### Saving Files
 There are several options to save your files.
 
@@ -213,7 +203,7 @@ It can also be null. The default path to save files is the input path.
 #### 2. To Clouds
 You can save your files to clouds by passing a array of cloud configuration to the `package` method. There are some options to save files to **[Amazon Web Services (AWS)](https://aws.amazon.com/)**, **[Google Cloud Storage](https://console.cloud.google.com/storage)**, **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**, and a custom cloud. 
 
-Please **[visit the 'save files to clouds' page](https://video.aminyazdanpanah.com/python/start/save-clouds)** to see more examples and usage of these clouds.
+Please visit **[this page](https://video.aminyazdanpanah.com/python/start/save-clouds)** to see more examples and usage of these clouds.
 ```python
 (
     ffmpeg_streaming
@@ -235,6 +225,21 @@ A path can also be passed to save a copy of files on your local machine.
                  progress=progress)
 )
 ```
+**NOTE:** You can open a file from your local machine(or a cloud) and save files to a local path or a cloud(or multiple clouds) or both.   
+
+<p align="center"><img src="https://github.com/aminyazdanpanah/aminyazdanpanah.github.io/blob/master/video-streaming/video-streaming.gif?raw=true" width="100%"></p>
+
+### Probe
+You can extract the metadata of video file using the following code:
+```python
+from ffmpeg_streaming import FFProbe
+
+ffprobe = FFProbe('/var/www/media/test.mp4')
+```
+**NOTE:** You can save these metadata to your database.
+
+See the **[example](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/blob/master/examples/probe.py)** for more information.
+
 ## Several Open Source Players
 You can use these libraries to play your streams.
 - **WEB**

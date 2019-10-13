@@ -32,15 +32,13 @@ class Process(object):
     out = None
     err = None
 
-    def __init__(self, media, c_progress, commands, c_stdout, c_stderr, c_stdin):
+    def __init__(self, c_progress, commands, c_stdout, c_stderr, c_stdin):
         self.c_progress = c_progress
 
         if callable(c_progress):
             self.p = _p_open(commands, c_stdin, True, universal_newlines=True)
         else:
             self.p = _p_open(commands, c_stdin, c_stdout, subprocess.PIPE if c_stderr else False)
-
-        self.media = media
 
     def __enter__(self):
         return self
@@ -69,7 +67,7 @@ class Process(object):
                 if c_percentage is not None:
                     percentage = c_percentage
 
-            self.c_progress(percentage, line, self.media)
+            self.c_progress(percentage, line)
 
         Process.out = log
 
@@ -94,4 +92,4 @@ class Process(object):
         if self.p.poll():
             raise RuntimeError('ffmpeg', Process.err, Process.out)
 
-        return self.media, [Process.out, Process.err]
+        return Process.out, Process.err
