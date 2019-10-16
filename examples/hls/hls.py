@@ -36,7 +36,7 @@ def main():
             .hls(args.input, hls_time=20)
             .format('libx264')
             .auto_rep()
-            .package(args.output, transcode_progress)
+            .package(args.output, progress=transcode_progress)
     )
 
 

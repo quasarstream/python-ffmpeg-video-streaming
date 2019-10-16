@@ -42,7 +42,7 @@ def main():
             .hls(args.input, hls_time=10, hls_allow_cache=1)
             .format('libx264')
             .add_rep(rep1, rep2, rep3)
-            .package(args.output, transcode_progress)
+            .package(args.output, progress=transcode_progress)
     )
 
 

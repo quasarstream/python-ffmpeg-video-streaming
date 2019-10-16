@@ -56,7 +56,7 @@ def main():
             .dash(from_aws_cloud, adaption='"id=0,streams=v id=1,streams=a"')
             .format('libx265')
             .auto_rep()
-            .package('/var/www/media/stream.mpd', to_aws_cloud, transcode_progress)
+            .package('/var/www/media/stream.mpd', to_aws_cloud, progress=transcode_progress)
     )
 
 

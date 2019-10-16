@@ -55,7 +55,7 @@ def main():
             .hls(from_google_cloud)
             .format('libx264')
             .auto_rep()
-            .package('/var/www/media/stream.mpd', to_google_cloud, transcode_progress)
+            .package('/var/www/media/stream.mpd', to_google_cloud, progress=transcode_progress)
     )
 
 

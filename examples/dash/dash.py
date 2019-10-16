@@ -36,7 +36,7 @@ def main():
             .dash(args.input, adaption='"id=0,streams=v id=1,streams=a"')
             .format('libx265')
             .auto_rep()
-            .package(args.output, transcode_progress)
+            .package(args.output, progress=transcode_progress)
     )
 
 

@@ -45,7 +45,7 @@ def main():
             .encryption(args.key, args.url)
             .format('libx264')
             .auto_rep()
-            .package(args.output, transcode_progress)
+            .package(args.output, progress=transcode_progress)
     )
 
 

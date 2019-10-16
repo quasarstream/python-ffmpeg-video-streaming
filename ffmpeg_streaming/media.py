@@ -103,7 +103,7 @@ class Export(object):
 
 class HLS(Export):
 
-    def __init__(self, filename, options):
+    def __init__(self, filename, **options):
         self.hls_time = options.pop('hls_time', 10)
         self.hls_allow_cache = options.pop('hls_allow_cache', 0)
         self.hls_key_info_file = options.pop('hls_key_info_file', None)
@@ -116,7 +116,7 @@ class HLS(Export):
 
 class DASH(Export):
 
-    def __init__(self, filename, options):
+    def __init__(self, filename, **options):
         self.adaption = options.pop('adaption', None)
         super(DASH, self).__init__(filename, options)
 
@@ -131,12 +131,12 @@ def _check_file(file):
     return file
 
 
-def dash(file, **kwargs):
-    return DASH(_check_file(file), kwargs)
+def dash(file, **options):
+    return DASH(_check_file(file), **options)
 
 
-def hls(file, **kwargs):
-    return HLS(_check_file(file), kwargs)
+def hls(file, **options):
+    return HLS(_check_file(file), **options)
 
 
 __all__ = [
