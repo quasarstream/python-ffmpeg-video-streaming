@@ -42,7 +42,7 @@ The best way to learn how to use this library is to review ****[the examples](ht
 There are two ways to open a file:
 #### 1. From a Local Path
 ```python
-video = '/var/www/media/videos/test.mp4'
+video = '/var/www/media/videos/video.mp4'
 ```
 
 #### 2. From Clouds
@@ -89,7 +89,7 @@ rep_1440 = Representation(width=2560, height=1440, kilo_bitrate=6096)
         .dash(video, adaption='"id=0,streams=v id=1,streams=a"')
         .format('libx265')
         .add_rep(rep_144, rep_240, rep_360, rep_480, rep_720, rep_1080, rep_1440)
-        .package('/var/www/media/videos/dash/test.mpd')
+        .package('/var/www/media/videos/dash/dash-stream.mpd')
 )
 
 ```
@@ -111,7 +111,7 @@ import ffmpeg_streaming
         .hls(video, hls_time=10, hls_allow_cache=1)
         .format('libx264')
         .auto_rep()
-        .package('/var/www/media/videos/hls/test.m3u8')
+        .package('/var/www/media/videos/hls/hls-stream.m3u8')
 )
 ```
 
@@ -129,7 +129,7 @@ rep_720 = Representation(width=1280, height=720, kilo_bitrate=2048)
         .hls(video, hls_time=10, hls_allow_cache=1)
         .format('libx264')
         .add_rep(rep_360, rep_480, rep_720)
-        .package('/var/www/media/videos/hls/test.m3u8')
+        .package('/var/www/media/videos/hls/hls-stream.m3u8')
 )
 ```
 **NOTE:** You cannot use HEVC(libx265) and VP9 formats for HLS packaging.
@@ -147,7 +147,7 @@ import ffmpeg_streaming
         .encryption('https://www.aminyazdanpanah.com/keys/enc.key', '/var/www/my_website_project/keys/enc.key')
         .format('libx264')
         .auto_rep(heights=[480, 360, 240])
-        .package('/var/www/media/videos/hls/test.m3u8')
+        .package('/var/www/media/videos/hls/hls-stream.m3u8')
 )
 ```
 **NOTE:** It is very important to protect your key on your website using a token or a session/cookie(****It is highly recommended****).    
@@ -173,7 +173,7 @@ def progress(percentage, ffmpeg):
         .hls(video)
         .format('libx264')
         .auto_rep()
-        .package('/var/www/media/videos/hls/test.m3u8', progress=progress)
+        .package('/var/www/media/videos/hls/hls-stream.m3u8', progress=progress)
 )
 ```
 Output of the progress:
@@ -190,7 +190,7 @@ You can pass a local path to the `package` method. If there was no directory in 
         .hls(video)
         .format('libx264')
         .auto_rep()
-        .package('/var/www/media/videos/hls/test.m3u8', progress=progress)
+        .package('/var/www/media/videos/hls/hls-stream.m3u8', progress=progress)
 )
 ```
 It can also be null. The default path to save files is the input path.
@@ -241,7 +241,7 @@ You can extract the metadata of video file using the following code:
 ```python
 from ffmpeg_streaming import FFProbe
 
-ffprobe = FFProbe('/var/www/media/test.mp4')
+ffprobe = FFProbe('/var/www/media/video.mp4')
 ```
 **NOTE:** You can save these metadata to your database.
 
@@ -266,7 +266,7 @@ You can use these libraries to play your streams.
     - DASH and HLS: **[VLC media player](https://github.com/videolan/vlc)**
  
 
-**NOTE:** You should pass a manifest of stream(e.g. `https://www.aminyazdanpanah.com/videos/dash/lesson-1/test.mpd` or `/videos/hls/lesson-2/test.m3u8` ) to these players.
+**NOTE:** You should pass a manifest of stream(e.g. `https://www.aminyazdanpanah.com/PATH_TO_STREAM_DIRECTORY/dash-stream.mpd` or `/PATH_TO_STREAM_DIRECTORY/hls-stream.m3u8` ) to these players.
 
 ## Contributing and Reporting Bugs
 I'd love your help in improving, correcting, adding to the specification.
