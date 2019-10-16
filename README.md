@@ -48,10 +48,11 @@ video = '/var/www/media/videos/test.mp4'
 #### 2. From Clouds
 You can open a file from a cloud by passing a tuple of cloud configuration to the method. There are some options to open a file from **[Amazon Web Services (AWS)](https://aws.amazon.com/)**, **[Google Cloud Storage](https://console.cloud.google.com/storage)**, **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**, and a custom cloud. 
 
-Please visit **[this page](https://video.aminyazdanpanah.com/python/start/open-clouds)** to see more examples and usage of these clouds.
 ```python
 video = (google_cloud, download_options, None)
 ```
+
+Please visit **[this page](https://video.aminyazdanpanah.com/python/start/open-clouds)** to see more examples and usage of these clouds.
 
 ### DASH
 **[Dynamic Adaptive Streaming over HTTP (DASH)](https://dashif.org/)**, also known as MPEG-DASH, is an adaptive bitrate streaming technique that enables high quality streaming of media content over the Internet delivered from conventional HTTP web servers.
@@ -67,7 +68,7 @@ import ffmpeg_streaming
         .dash(video, adaption='"id=0,streams=v id=1,streams=a"')
         .format('libx265')
         .auto_rep()
-        .package('/var/www/media/videos/dash/test.mpd')
+        .package('/var/www/media/videos/dash/dash-stream.mpd')
 )
 ```
 You can also create representations manually:
@@ -75,15 +76,19 @@ You can also create representations manually:
 import ffmpeg_streaming
 from ffmpeg_streaming import Representation
 
-rep_144 = Representation(width=256, height=144, kilo_bitrate=200)
-rep_240 = Representation(width=426, height=240, kilo_bitrate=500)
-rep_360 = Representation(width=640, height=360, kilo_bitrate=1000)
+rep_144 = Representation(width=256, height=144, kilo_bitrate=95)
+rep_240 = Representation(width=426, height=240, kilo_bitrate=150)
+rep_360 = Representation(width=640, height=360, kilo_bitrate=276)
+rep_480 = Representation(width=854, height=480, kilo_bitrate=750)
+rep_720 = Representation(width=1280, height=720, kilo_bitrate=2048)
+rep_1080 = Representation(width=1920, height=1080, kilo_bitrate=4096)
+rep_1440 = Representation(width=2560, height=1440, kilo_bitrate=6096)
 
 (
     ffmpeg_streaming
         .dash(video, adaption='"id=0,streams=v id=1,streams=a"')
         .format('libx265')
-        .add_rep(rep_144, rep_240, rep_360)
+        .add_rep(rep_144, rep_240, rep_360, rep_480, rep_720, rep_1080, rep_1440)
         .package('/var/www/media/videos/dash/test.mpd')
 )
 
@@ -115,15 +120,15 @@ You can also create representations manually:
 import ffmpeg_streaming
 from ffmpeg_streaming import Representation
 
-rep_144 = Representation(width=256, height=144, kilo_bitrate=200)
-rep_240 = Representation(width=426, height=240, kilo_bitrate=500)
-rep_360 = Representation(width=640, height=360, kilo_bitrate=1000)
+rep_360 = Representation(width=640, height=360, kilo_bitrate=276)
+rep_480 = Representation(width=854, height=480, kilo_bitrate=750)
+rep_720 = Representation(width=1280, height=720, kilo_bitrate=2048)
 
 (
     ffmpeg_streaming
         .hls(video, hls_time=10, hls_allow_cache=1)
         .format('libx264')
-        .add_rep(rep_144, rep_240, rep_360)
+        .add_rep(rep_360, rep_480, rep_720)
         .package('/var/www/media/videos/hls/test.m3u8')
 )
 ```
@@ -141,7 +146,7 @@ import ffmpeg_streaming
         .hls(video, hls_time=10, hls_allow_cache=1)
         .encryption('https://www.aminyazdanpanah.com/keys/enc.key', '/var/www/my_website_project/keys/enc.key')
         .format('libx264')
-        .auto_rep()
+        .auto_rep(heights=[480, 360, 240])
         .package('/var/www/media/videos/hls/test.m3u8')
 )
 ```
@@ -159,7 +164,7 @@ import ffmpeg_streaming
 def progress(percentage, ffmpeg):
     # You can update a field in your database
     # You can also create a socket connection and show a progress bar to users
-    sys.stdout.write("\r Transcoding... (%s%%)[%s%s]" % (percentage, '#' * percentage, '-' * (100 - percentage)))
+    sys.stdout.write("\rTranscoding...(%s%%)[%s%s]" % (percentage, '#' * percentage, '-' * (100 - percentage)))
     sys.stdout.flush()
 
 
@@ -168,7 +173,7 @@ def progress(percentage, ffmpeg):
         .hls(video)
         .format('libx264')
         .auto_rep()
-        .package('/var/www/media/videos/hls/test.m3u8', progress)
+        .package('/var/www/media/videos/hls/test.m3u8', progress=progress)
 )
 ```
 Output of the progress:
@@ -185,7 +190,7 @@ You can pass a local path to the `package` method. If there was no directory in 
         .hls(video)
         .format('libx264')
         .auto_rep()
-        .package('/var/www/media/videos/hls/test.m3u8', progress)
+        .package('/var/www/media/videos/hls/test.m3u8', progress=progress)
 )
 ```
 It can also be null. The default path to save files is the input path.
@@ -203,7 +208,6 @@ It can also be null. The default path to save files is the input path.
 #### 2. To Clouds
 You can save your files to clouds by passing a array of cloud configuration to the `package` method. There are some options to save files to **[Amazon Web Services (AWS)](https://aws.amazon.com/)**, **[Google Cloud Storage](https://console.cloud.google.com/storage)**, **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**, and a custom cloud. 
 
-Please visit **[this page](https://video.aminyazdanpanah.com/python/start/save-clouds)** to see more examples and usage of these clouds.
 ```python
 (
     ffmpeg_streaming
@@ -225,6 +229,9 @@ A path can also be passed to save a copy of files on your local machine.
                  progress=progress)
 )
 ```
+
+Please visit **[this page](https://video.aminyazdanpanah.com/python/start/save-clouds)** to see more examples and usage of these clouds.
+
 **NOTE:** You can open a file from your local machine(or a cloud) and save files to a local path or a cloud(or multiple clouds) or both.   
 
 <p align="center"><img src="https://github.com/aminyazdanpanah/aminyazdanpanah.github.io/blob/master/video-streaming/video-streaming.gif?raw=true" width="100%"></p>
