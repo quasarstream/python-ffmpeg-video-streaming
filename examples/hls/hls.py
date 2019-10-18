@@ -40,19 +40,19 @@ def transcode_progress(per, ffmpeg):
 
 
 def main():
-    # parser = argparse.ArgumentParser()
-    #
-    # parser.add_argument('-i', '--input', required=True, help='The path to the video file (required).')
-    # parser.add_argument('-o', '--output', default=None, help='The output to write files.')
-    #
-    # args = parser.parse_args()
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument('-i', '--input', required=True, help='The path to the video file (required).')
+    parser.add_argument('-o', '--output', default=None, help='The output to write files.')
+
+    args = parser.parse_args()
 
     (
         ffmpeg_streaming
-            .hls("c:\\test\\test8.mkv", hls_time=20)
+            .hls(args.input, hls_time=20)
             .format('libx264')
             .auto_rep()
-            .package("c:\\test\\maman\\ahmad.m3u8", progress=transcode_progress)
+            .package(args.output, progress=transcode_progress)
     )
 
 
