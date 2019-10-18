@@ -10,8 +10,9 @@ Open a file from a cloud and save dash files to it
 :email: contact@aminyazdanpanah.com
 :license: MIT, see LICENSE for more details.
 """
-
+import datetime
 import sys
+import time
 
 import ffmpeg_streaming
 from ffmpeg_streaming import Cloud
@@ -24,15 +25,8 @@ def download_progress(percentage, downloaded, total):
     sys.stdout.flush()
 
 
-def transcode_progress(percentage, ffmpeg):
-    # You can update a field in your database
-    # You can also create a socket connection and show a progress bar to users
-    sys.stdout.write("\rTranscoding...(%s%%)[%s%s]" % (percentage, '#' * percentage, '-' * (100 - percentage)))
-    sys.stdout.flush()
-
-
-def main():
-    cloud = Cloud()
+def cloud():
+    _cloud = Cloud()
     download_options = {
         'url': 'https://www.aminyazdanpanah.com/my_sweetie.mp4',
         'progress': download_progress
@@ -49,8 +43,35 @@ def main():
         }
     }
 
-    from_cloud = (cloud, download_options, None)
-    to_cloud = (cloud, upload_options)
+    from_cloud = (_cloud, download_options, None)
+    to_cloud = (_cloud, upload_options)
+
+    return from_cloud, to_cloud
+
+
+start_time = time.time()
+
+
+def per_to_time_left(percentage):
+    if percentage != 0:
+        diff_time = time.time() - start_time
+        seconds_left = 100 * diff_time / percentage - diff_time
+        time_left = str(datetime.timedelta(seconds=int(seconds_left))) + ' left'
+    else:
+        time_left = 'calculating...'
+
+    return time_left
+
+
+def transcode_progress(per, ffmpeg):
+    # You can update a field in your database or can log it to a file
+    # You can also create a socket connection and show a progress bar to users
+    sys.stdout.write("\rTranscoding...(%s%%) %s [%s%s]" % (per, per_to_time_left(per), '#' * per, '-' * (100 - per)))
+    sys.stdout.flush()
+
+
+def main():
+    from_cloud, to_cloud = cloud()
 
     (
         ffmpeg_streaming

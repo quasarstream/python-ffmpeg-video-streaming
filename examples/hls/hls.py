@@ -12,31 +12,47 @@ Create HlS streams
 """
 
 import argparse
+import datetime
 import sys
+import time
+
 import ffmpeg_streaming
 
+start_time = time.time()
 
-def transcode_progress(percentage, ffmpeg):
-    # You can update a field in your database
+
+def per_to_time_left(percentage):
+    if percentage != 0:
+        diff_time = time.time() - start_time
+        seconds_left = 100 * diff_time / percentage - diff_time
+        time_left = str(datetime.timedelta(seconds=int(seconds_left))) + ' left'
+    else:
+        time_left = 'calculating...'
+
+    return time_left
+
+
+def transcode_progress(per, ffmpeg):
+    # You can update a field in your database or can log it to a file
     # You can also create a socket connection and show a progress bar to users
-    sys.stdout.write("\rTranscoding...(%s%%)[%s%s]" % (percentage, '#' * percentage, '-' * (100 - percentage)))
+    sys.stdout.write("\rTranscoding...(%s%%) %s [%s%s]" % (per, per_to_time_left(per), '#' * per, '-' * (100 - per)))
     sys.stdout.flush()
 
 
 def main():
-    parser = argparse.ArgumentParser()
-
-    parser.add_argument('-i', '--input', required=True, help='The path to the video file (required).')
-    parser.add_argument('-o', '--output', default=None, help='The output to write files.')
-
-    args = parser.parse_args()
+    # parser = argparse.ArgumentParser()
+    #
+    # parser.add_argument('-i', '--input', required=True, help='The path to the video file (required).')
+    # parser.add_argument('-o', '--output', default=None, help='The output to write files.')
+    #
+    # args = parser.parse_args()
 
     (
         ffmpeg_streaming
-            .hls(args.input, hls_time=20)
+            .hls("c:\\test\\test8.mkv", hls_time=20)
             .format('libx264')
             .auto_rep()
-            .package(args.output, progress=transcode_progress)
+            .package("c:\\test\\maman\\ahmad.m3u8", progress=transcode_progress)
     )
 
 

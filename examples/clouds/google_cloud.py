@@ -12,7 +12,9 @@ Open a file from a google cloud and save hls files to it
 """
 
 import argparse
+import datetime
 import sys
+import time
 
 import ffmpeg_streaming
 from ffmpeg_streaming import GoogleCloudStorage
@@ -33,10 +35,24 @@ def google_cloud(bucket_name, object_name):
     return from_google_cloud, to_google_cloud
 
 
-def transcode_progress(percentage, ffmpeg):
-    # You can update a field in your database
+start_time = time.time()
+
+
+def per_to_time_left(percentage):
+    if percentage != 0:
+        diff_time = time.time() - start_time
+        seconds_left = 100 * diff_time / percentage - diff_time
+        time_left = str(datetime.timedelta(seconds=int(seconds_left))) + ' left'
+    else:
+        time_left = 'calculating...'
+
+    return time_left
+
+
+def transcode_progress(per, ffmpeg):
+    # You can update a field in your database or can log it to a file
     # You can also create a socket connection and show a progress bar to users
-    sys.stdout.write("\rTranscoding...(%s%%)[%s%s]" % (percentage, '#' * percentage, '-' * (100 - percentage)))
+    sys.stdout.write("\rTranscoding...(%s%%) %s [%s%s]" % (per, per_to_time_left(per), '#' * per, '-' * (100 - per)))
     sys.stdout.flush()
 
 
