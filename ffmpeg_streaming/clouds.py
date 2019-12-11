@@ -24,6 +24,8 @@ import requests
 from azure.storage.blob import BlockBlobService
 from google.cloud import storage
 
+from ffmpeg_streaming.utiles import deprecated
+
 
 class Clouds(abc.ABC):
     @abc.abstractmethod
@@ -36,7 +38,7 @@ class Clouds(abc.ABC):
 
 
 class Cloud(Clouds):
-
+    @deprecated
     def upload_directory(self, directory, **options):
         field_name = options.pop('field_name', None)
 
@@ -58,6 +60,7 @@ class Cloud(Clouds):
         if not r.ok:
             raise RuntimeError('Error uploading file!')
 
+    @deprecated
     def download(self, filename=None, **options):
         progress = options.pop('progress', None)
         method = options.pop('method', 'get')
@@ -94,6 +97,7 @@ class AWS(Clouds):
     def __init__(self, **options):
         self.s3 = boto3.client('s3', options)
 
+    @deprecated
     def upload_directory(self, directory, **options):
         bucket_name = options.pop('bucket_name', None)
         if bucket_name is None:
@@ -104,6 +108,7 @@ class AWS(Clouds):
             full_path_file = directory + file
             self.s3.upload_file(full_path_file, bucket_name, file)
 
+    @deprecated
     def download(self, filename=None, **options):
         if filename is None:
             tmp = tempfile.NamedTemporaryFile(suffix='_py_ff_vi_st.tmp', delete=False)
@@ -131,6 +136,7 @@ class GoogleCloudStorage(Clouds):
         self.bucket_name = bucket_name
         self.bucket = storage_client.get_bucket(bucket_name)
 
+    @deprecated
     def upload_directory(self, directory, **options):
         files = [f for f in listdir(directory) if isfile(join(directory, f))]
 
@@ -139,6 +145,7 @@ class GoogleCloudStorage(Clouds):
             blob = self.bucket.blob(self.bucket_name + file, options)
             blob.upload_from_filename(full_path_file)
 
+    @deprecated
     def download(self, filename=None, **options):
         if filename is None:
             tmp = tempfile.NamedTemporaryFile(suffix='_py_ff_vi_st.tmp', delete=False)
@@ -158,6 +165,7 @@ class MicrosoftAzure(Clouds):
     def __init__(self, **options):
         self.block_blob_service = BlockBlobService(**options)
 
+    @deprecated
     def upload_directory(self, directory, **options):
         files = [f for f in listdir(directory) if isfile(join(directory, f))]
         container = options.pop('container', None)
@@ -165,6 +173,7 @@ class MicrosoftAzure(Clouds):
             full_path_file = directory + file
             self.block_blob_service.create_blob_from_path(container, file, full_path_file)
 
+    @deprecated
     def download(self, filename=None, **options):
         if filename is None:
             tmp = tempfile.NamedTemporaryFile(suffix='_py_ff_vi_st.tmp', delete=False)

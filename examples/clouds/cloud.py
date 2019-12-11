@@ -11,11 +11,71 @@ Open a file from a cloud and save dash files to it
 :license: MIT, see LICENSE for more details.
 """
 import datetime
+import socket
 import sys
+import tempfile
 import time
+from os import listdir
+from os.path import isfile, join
+
+import requests
 
 import ffmpeg_streaming
-from ffmpeg_streaming import Cloud
+from ffmpeg_streaming import Clouds
+
+
+class Cloud(Clouds):
+    def upload_directory(self, directory, **options):
+        field_name = options.pop('field_name', None)
+
+        if field_name is None:
+            raise ValueError('You should specify a field_name')
+
+        method = options.pop('method', 'post')
+        url = options.pop('url', None)
+        upload_files = []
+
+        files = [f for f in listdir(directory) if isfile(join(directory, f))]
+
+        for file in files:
+            full_path_file = directory + file
+            upload_files.append((field_name, open(full_path_file, 'rb')))
+
+        r = requests.request(method, url, files=upload_files, **options)
+
+        if not r.ok:
+            raise RuntimeError('Error uploading file!')
+
+    def download(self, filename=None, **options):
+        progress = options.pop('progress', None)
+        method = options.pop('method', 'get')
+        url = options.pop('url', None)
+
+        if url is None:
+            raise ValueError('You should specify an url')
+
+        if filename is None:
+            file = tempfile.NamedTemporaryFile(suffix='_py_ff_vi_st.tmp', delete=False)
+        else:
+            file = open(filename, 'wb')
+
+        with file as f:
+            response = requests.request(method, url, stream=True, **options)
+            total_byte = response.headers.get('content-length')
+
+            if total_byte is None or not callable(progress):
+                f.write(response.content)
+            else:
+                downloaded = 0
+                total_byte = int(total_byte)
+                for data in response.iter_content(chunk_size=4096):
+                    downloaded += len(data)
+                    f.write(data)
+                    percentage = round(100 * downloaded / total_byte)
+                    progress(percentage, downloaded, total_byte)
+                sys.stdout.write('\n')
+
+            return f.name
 
 
 def download_progress(percentage, downloaded, total):
@@ -37,7 +97,7 @@ def cloud():
         'field_name': 'YOUR_FIELD_NAME',
         'auth': ('username', 'password'),
         'headers': {
-            'User-Agent': 'Mozilla/5.0 (compatible; AminYazdanpanahBot/1.0; +http://aminyazdanpanah.com/bots)',
+            'User-Agent': 'Mozilla/5.0 (compatible; ' + socket.gethostname() + 'Bot/1.0; +' + socket.getfqdn + '/bots)',
             'Accept': 'application/json',
             'Authorization': 'Bearer ACCESS_TOKEN'
         }

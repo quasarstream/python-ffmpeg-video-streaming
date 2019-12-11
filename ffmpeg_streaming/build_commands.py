@@ -1,5 +1,5 @@
 """
-ffmpeg_streaming.build_commands
+ffmpeg_streaming.build_args
 ~~~~~~~~~~~~
 
 Build a command for the FFmpeg
@@ -18,37 +18,41 @@ from .rep import Representation
 def _get_hls_args(hls):
     dirname, name = get_path_info(hls.output)
 
-    commands = []
-    for rep in hls.reps:
-            if isinstance(rep, Representation):
-                if hls.options is not None:
-                    for option in hls.options:
-                        commands += ['-' + option, hls.options[option]]
-                commands += ['-s:v', rep.size]
-                commands += ['-crf', '20']
-                commands += ['-sc_threshold', '0']
-                commands += ['-g', '48']
-                commands += ['-keyint_min', '48']
-                commands += ['-hls_list_size', '0']
-                commands += ['-hls_time', str(hls.hls_time)]
-                commands += ['-hls_allow_cache', str(hls.hls_allow_cache)]
-                commands += ['-b:v', rep.bit_rate]
-                if rep.audio_bit_rate is not None:
-                    commands += ['-b:a', rep.audio_bit_rate]
-                commands += ['-maxrate', str(round(rep.kilo_bitrate * 1.2)) + "k"]
-                commands += ['-hls_segment_filename', dirname + "/" + name + "_" + str(rep.height) + "p_%04d.ts"]
-                if hls.hls_key_info_file is not None:
-                    commands += ['-hls_key_info_file', hls.hls_key_info_file.replace("\\", "/")]
-                commands += ['-strict', hls.options.get('strict', "-2")]
-                commands += [dirname + "/" + name + "_" + str(rep.height) + "p.m3u8"]
+    args = []
+    for key, rep in enumerate(hls.reps):
+        if isinstance(rep, Representation):
+            if hls.options is not None:
+                for option in hls.options:
+                    args += ['-' + option, hls.options[option]]
+            if key > 0:
+                args += ['-c:v', hls.video_format]
+                if hls.audio_format is not None:
+                    args += ['-c:a', hls.audio_format]
+            args += ['-s:v', rep.size]
+            args += ['-crf', '20']
+            args += ['-sc_threshold', '0']
+            args += ['-g', '48']
+            args += ['-keyint_min', '48']
+            args += ['-hls_list_size', '0']
+            args += ['-hls_time', str(hls.hls_time)]
+            args += ['-hls_allow_cache', str(hls.hls_allow_cache)]
+            args += ['-b:v', rep.bit_rate]
+            if rep.audio_bit_rate is not None:
+                args += ['-b:a', rep.audio_bit_rate]
+            args += ['-maxrate', str(round(rep.kilo_bitrate * 1.2)) + "k"]
+            args += ['-hls_segment_filename', dirname + "/" + name + "_" + str(rep.height) + "p_%04d.ts"]
+            if hls.hls_key_info_file is not None:
+                args += ['-hls_key_info_file', hls.hls_key_info_file.replace("\\", "/")]
+            args += ['-strict', hls.options.get('strict', "-2")]
+            args += [dirname + "/" + name + "_" + str(rep.height) + "p.m3u8"]
 
-    return commands
+    return args
 
 
 def _get_dash_args(dash):
     dirname, name = get_path_info(dash.output)
 
-    commands = [
+    args = [
         '-bf', '1',
         '-keyint_min', '120',
         '-g', '120',
@@ -61,24 +65,22 @@ def _get_dash_args(dash):
 
     if dash.options is not None:
         for option in dash.options:
-            commands += ['-' + option, dash.options[option]]
+            args += ['-' + option, dash.options[option]]
 
-    count = 0
-    for rep in reversed(dash.reps):
-            if isinstance(rep, Representation):
-                commands += ['-map', '0']
-                commands += ['-b:v:' + str(count), rep.bit_rate]
-                if rep.audio_bit_rate is not None:
-                    commands += ['-b:a:' + str(count), rep.audio_bit_rate]
-                commands += ['-s:v:' + str(count), rep.size]
-                count += 1
+    for key, rep in enumerate(dash.reps):
+        if isinstance(rep, Representation):
+            args += ['-map', '0']
+            args += ['-b:v:' + str(key), rep.bit_rate]
+            if rep.audio_bit_rate is not None:
+                args += ['-b:a:' + str(key), rep.audio_bit_rate]
+            args += ['-s:v:' + str(key), rep.size]
 
     if dash.adaption is not None:
-        commands += ['-adaptation_sets', dash.adaption]
-    commands += ['-strict', dash.options.get('strict', "-2")]
-    commands += ['"' + dirname + '/' + name + '.mpd"']
-
-    return commands
+        args += ['-adaptation_sets', dash.adaption]
+    args += ['-strict', dash.options.get('strict', "-2")]
+    args += ['"' + dirname + '/' + name + '.mpd"']
+    
+    return args
 
 
 def build_command(cmd, media_obj):

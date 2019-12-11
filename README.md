@@ -8,6 +8,9 @@
 ## Overview
 This package uses the **[FFmpeg](https://ffmpeg.org)** to package media content for online streaming such as DASH and HLS. You can also use **[DRM](https://en.wikipedia.org/wiki/Digital_rights_management)** for HLS packaging. There are several options to open a file from clouds and save files to them as well.
 
+- The best way to learn how to use this library is to review ****[the examples](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/tree/master/examples)**** and browse the source code.
+- Cloud dependencies are deprecated now and will be removed in a future release. For using clouds such as **[Amazon S3](https://aws.amazon.com/s3)**, **[Google Cloud Storage](https://console.cloud.google.com/storage)**, **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**, and a custom cloud, please visit **[this page](https://video.aminyazdanpanah.com/python/start/clouds)**
+
 **Contents**
 - [Requirements](#requirements)
 - [Installation](#installation)
@@ -36,7 +39,6 @@ pip install python-ffmpeg-video-streaming
 ```
 
 ## Quickstart
-The best way to learn how to use this library is to review ****[the examples](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/tree/master/examples)**** and browse the source code.
 
 ### opening a file
 There are two ways to open a file:
@@ -46,13 +48,14 @@ video = '/var/www/media/videos/video.mp4'
 ```
 
 #### 2. From Clouds
-You can open a file from a cloud by passing a tuple of cloud configuration to the method. There are some options to open a file from **[Amazon Web Services (AWS)](https://aws.amazon.com/)**, **[Google Cloud Storage](https://console.cloud.google.com/storage)**, **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**, and a custom cloud. 
+You can open a file from a cloud by passing a tuple of cloud configuration to the method.
+ 
+In **[this page](https://video.aminyazdanpanah.com/python/start/clouds?r=open)**, you will find some examples of opening a file from **[Amazon S3](https://aws.amazon.com/s3)**, **[Google Cloud Storage](https://console.cloud.google.com/storage)**, **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**, and a custom cloud. 
 
 ```python
 video = (google_cloud, download_options, None)
 ```
 
-Please visit **[this page](https://video.aminyazdanpanah.com/python/start/open-clouds)** to see more examples and usage of these clouds.
 
 ### DASH
 **[Dynamic Adaptive Streaming over HTTP (DASH)](https://dashif.org/)**, also known as MPEG-DASH, is an adaptive bitrate streaming technique that enables high quality streaming of media content over the Internet delivered from conventional HTTP web servers.
@@ -76,19 +79,20 @@ You can also create representations manually:
 import ffmpeg_streaming
 from ffmpeg_streaming import Representation
 
-rep_144 = Representation(width=256, height=144, kilo_bitrate=95)
-rep_240 = Representation(width=426, height=240, kilo_bitrate=150)
-rep_360 = Representation(width=640, height=360, kilo_bitrate=276)
-rep_480 = Representation(width=854, height=480, kilo_bitrate=750)
-rep_720 = Representation(width=1280, height=720, kilo_bitrate=2048)
-rep_1080 = Representation(width=1920, height=1080, kilo_bitrate=4096)
-rep_1440 = Representation(width=2560, height=1440, kilo_bitrate=6096)
+r_144p = Representation(width=256, height=144, kilo_bitrate=95)
+r_240p = Representation(width=426, height=240, kilo_bitrate=150)
+r_360p = Representation(width=640, height=360, kilo_bitrate=276)
+r_480p = Representation(width=854, height=480, kilo_bitrate=750)
+r_720p = Representation(width=1280, height=720, kilo_bitrate=2048)
+r_1080p = Representation(width=1920, height=1080, kilo_bitrate=4096)
+r_2k = Representation(width=2560, height=1440, kilo_bitrate=6144‬)
+r_4k = Representation(width=3840, height=2160, kilo_bitrate=17408)
 
 (
     ffmpeg_streaming
         .dash(video, adaption='"id=0,streams=v id=1,streams=a"')
         .format('libx265')
-        .add_rep(rep_144, rep_240, rep_360, rep_480, rep_720, rep_1080, rep_1440)
+        .add_rep(r_144p, r_240p, r_360p, r_480p, r_720p, r_1080p, r_2k, r_4k)
         .package('/var/www/media/videos/dash/dash-stream.mpd')
 )
 
@@ -120,15 +124,15 @@ You can also create representations manually:
 import ffmpeg_streaming
 from ffmpeg_streaming import Representation
 
-rep_360 = Representation(width=640, height=360, kilo_bitrate=276)
-rep_480 = Representation(width=854, height=480, kilo_bitrate=750)
-rep_720 = Representation(width=1280, height=720, kilo_bitrate=2048)
+r_360p = Representation(width=640, height=360, kilo_bitrate=276)
+r_480p = Representation(width=854, height=480, kilo_bitrate=750)
+r_720p = Representation(width=1280, height=720, kilo_bitrate=2048)
 
 (
     ffmpeg_streaming
         .hls(video, hls_time=10, hls_allow_cache=1)
         .format('libx264')
-        .add_rep(rep_360, rep_480, rep_720)
+        .add_rep(r_360p, r_480p, r_720p)
         .package('/var/www/media/videos/hls/hls-stream.m3u8')
 )
 ```
@@ -177,7 +181,7 @@ def progress(percentage, ffmpeg):
 )
 ```
 Output of the progress:
-![progress](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/blob/master/docs/progress.gif?raw=true "progress" )
+![transcoding](https://github.com/aminyazdanpanah/aminyazdanpanah.github.io/blob/master/video-streaming/transcoding.gif?raw=true "transcoding" )
 
 ### Saving Files
 There are several options to save your files.
@@ -206,7 +210,9 @@ It can also be null. The default path to save files is the input path.
 **NOTE:** If you open a file from cloud and did not pass a path to save a file, you will have to pass a local path to the `package` method.
 
 #### 2. To Clouds
-You can save your files to clouds by passing a array of cloud configuration to the `package` method. There are some options to save files to **[Amazon Web Services (AWS)](https://aws.amazon.com/)**, **[Google Cloud Storage](https://console.cloud.google.com/storage)**, **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**, and a custom cloud. 
+You can save your files to clouds by passing a array of cloud configuration to the `package` method.  
+
+In **[this page](https://video.aminyazdanpanah.com/python/start/clouds?r=save)**, you will find some examples of saving files to **[Amazon S3](https://aws.amazon.com/s3)**, **[Google Cloud Storage](https://console.cloud.google.com/storage)**, **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**, and a custom cloud. 
 
 ```python
 (
@@ -230,7 +236,6 @@ A path can also be passed to save a copy of files on your local machine.
 )
 ```
 
-Please visit **[this page](https://video.aminyazdanpanah.com/python/start/save-clouds)** to see more examples and usage of these clouds.
 
 **NOTE:** You can open a file from your local machine(or a cloud) and save files to a local path or a cloud(or multiple clouds) or both.   
 
@@ -250,21 +255,30 @@ See the **[example](https://github.com/aminyazdanpanah/python-ffmpeg-video-strea
 ## Several Open Source Players
 You can use these libraries to play your streams.
 - **WEB**
-    - DASH and HLS: **[video.js](https://github.com/videojs/video.js)**
-    - DASH and HLS: **[DPlayer](https://github.com/MoePlayer/DPlayer)**
-    - DASH and HLS: **[Plyr](https://github.com/sampotts/plyr)**
-    - DASH and HLS: **[MediaElement.js](https://github.com/mediaelement/mediaelement)**
-    - DASH and HLS: **[Clappr](https://github.com/clappr/clappr)**
-    - DASH and HLS: **[Flowplayer](https://github.com/flowplayer/flowplayer)**
-    - DASH and HLS: **[Shaka Player](https://github.com/google/shaka-player)**
-    - DASH and HLS: **[videojs-http-streaming (VHS)](https://github.com/videojs/http-streaming)**
-    - DASH: **[dash.js](https://github.com/Dash-Industry-Forum/dash.js)**
-    - HLS: **[hls.js](https://github.com/video-dev/hls.js)**
+    - DASH and HLS: 
+        - **[Shaka Player](https://github.com/google/shaka-player)**
+        - **[Flowplayer](https://github.com/flowplayer/flowplayer)**
+        - **[videojs-http-streaming (VHS)](https://github.com/videojs/http-streaming)**
+        - **[MediaElement.js](https://github.com/mediaelement/mediaelement)**
+        - **[DPlayer](https://github.com/MoePlayer/DPlayer)**
+        - **[Clappr](https://github.com/clappr/clappr)**
+        - **[Plyr](https://github.com/sampotts/plyr)**
+    - DASH:
+        - **[dash.js](https://github.com/Dash-Industry-Forum/dash.js)**
+    - HLS: 
+        - **[hls.js](https://github.com/video-dev/hls.js)**
 - **Android**
-    - DASH and HLS: **[ExoPlayer](https://github.com/google/ExoPlayer)**
+    - DASH and HLS: 
+        - **[ExoPlayer](https://github.com/google/ExoPlayer)**
+- **IOS**
+    - DASH: 
+        - **[MPEGDASH-iOS-Player](https://github.com/MPEGDASHPlayer/MPEGDASH-iOS-Player)**
+    - HLS: 
+        - **[Player](https://github.com/piemonte/Player)**
 - **Windows, Linux, and macOS**
-    - DASH and HLS: **[VLC media player](https://github.com/videolan/vlc)**
- 
+    - DASH and HLS:
+        - **[FFmpeg(ffplay)](https://github.com/FFmpeg/FFmpeg)**
+        - **[VLC media player](https://github.com/videolan/vlc)**
 
 **NOTE:** You should pass a manifest of stream(e.g. `https://www.aminyazdanpanah.com/PATH_TO_STREAM_DIRECTORY/dash-stream.mpd` or `/PATH_TO_STREAM_DIRECTORY/hls-stream.m3u8` ) to these players.
 

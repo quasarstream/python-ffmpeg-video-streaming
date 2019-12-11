@@ -14,10 +14,39 @@ Open a file from a Microsoft Azure cloud and save hls files to it
 import argparse
 import datetime
 import sys
+import tempfile
 import time
+from os import listdir
+from os.path import isfile, join
+
+from azure.storage.blob import BlockBlobService
 
 import ffmpeg_streaming
-from ffmpeg_streaming import MicrosoftAzure
+from ffmpeg_streaming import Clouds
+
+
+class MicrosoftAzure(Clouds):
+    def __init__(self, **options):
+        self.block_blob_service = BlockBlobService(**options)
+
+    def upload_directory(self, directory, **options):
+        files = [f for f in listdir(directory) if isfile(join(directory, f))]
+        container = options.pop('container', None)
+        for file in files:
+            full_path_file = directory + file
+            self.block_blob_service.create_blob_from_path(container, file, full_path_file)
+
+    def download(self, filename=None, **options):
+        if filename is None:
+            tmp = tempfile.NamedTemporaryFile(suffix='_py_ff_vi_st.tmp', delete=False)
+            filename = tmp.name
+
+        container = options.pop('container', None)
+        blob = options.pop('blob', None)
+
+        self.block_blob_service.get_blob_to_path(container, blob, filename)
+
+        return filename
 
 
 def azure_cloud(container, blob):

@@ -14,10 +14,44 @@ Open a file from a google cloud and save hls files to it
 import argparse
 import datetime
 import sys
+import tempfile
 import time
+from os import listdir
+from os.path import isfile, join
+
+from google.cloud import storage
 
 import ffmpeg_streaming
-from ffmpeg_streaming import GoogleCloudStorage
+from ffmpeg_streaming import Clouds
+
+
+class GoogleCloudStorage(Clouds):
+    def __init__(self, bucket_name, **kwargs):
+        storage_client = storage.Client(**kwargs)
+        self.bucket_name = bucket_name
+        self.bucket = storage_client.get_bucket(bucket_name)
+
+    def upload_directory(self, directory, **options):
+        files = [f for f in listdir(directory) if isfile(join(directory, f))]
+
+        for file in files:
+            full_path_file = directory + file
+            blob = self.bucket.blob(self.bucket_name + file, options)
+            blob.upload_from_filename(full_path_file)
+
+    def download(self, filename=None, **options):
+        if filename is None:
+            tmp = tempfile.NamedTemporaryFile(suffix='_py_ff_vi_st.tmp', delete=False)
+            filename = tmp.name
+
+        object_name = options.pop('object_name', None)
+        if object_name is None:
+            raise ValueError('You should pass an object name')
+
+        blob = self.bucket.get_blob(object_name, options)
+        blob.download_to_filename(filename)
+
+        return filename
 
 
 def google_cloud(bucket_name, object_name):

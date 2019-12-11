@@ -14,10 +14,51 @@ Open a file from a Amazon S3 cloud and save dash files to it
 import argparse
 import datetime
 import sys
+import tempfile
 import time
+from os import listdir
+from os.path import isfile, join
+
+import boto3
+import botocore
 
 import ffmpeg_streaming
-from ffmpeg_streaming import AWS
+from ffmpeg_streaming import Clouds
+
+
+class AWS(Clouds):
+    def __init__(self, **options):
+        self.s3 = boto3.client('s3', options)
+
+    def upload_directory(self, directory, **options):
+        bucket_name = options.pop('bucket_name', None)
+        if bucket_name is None:
+            raise ValueError('You should pass a bucket name')
+
+        files = [f for f in listdir(directory) if isfile(join(directory, f))]
+        for file in files:
+            full_path_file = directory + file
+            self.s3.upload_file(full_path_file, bucket_name, file)
+
+    def download(self, filename=None, **options):
+        if filename is None:
+            tmp = tempfile.NamedTemporaryFile(suffix='_py_ff_vi_st.tmp', delete=False)
+            filename = tmp.name
+
+        bucket_name = options.pop('bucket_name', None)
+        key = options.pop('key', None)
+        if bucket_name is None or key is None:
+            raise ValueError('You should pass a bucket name and a key')
+
+        try:
+            self.s3.Bucket(bucket_name).download_file(key, filename)
+        except botocore.exceptions.ClientError as e:
+            if e.response['Error']['Code'] == "404":
+                raise RuntimeError("The object does not exist.")
+            else:
+                raise RuntimeError("Could not connect to the server")
+
+        return filename
 
 
 def aws_cloud(bucket_name, key):
