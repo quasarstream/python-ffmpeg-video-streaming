@@ -141,14 +141,21 @@ r_720p = Representation(width=1280, height=720, kilo_bitrate=2048)
 #### Encrypted HLS
 The encryption process requires some kind of secret (key) together with an encryption algorithm. HLS uses AES in cipher block chaining (CBC) mode. This means each block is encrypted using the ciphertext of the preceding block. [Learn more](https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation)
 
-You need to pass both `URL to the key` and `a path to save a random key on your local machine` to the `encryption` method:
+You must specify a path to save a random key to your local machine and also a URL(or a path) to access the key on your website(the key you will save must be accessible from your website). You must pass both these parameters to the `encryption` method:
 
 ```python
+#A path you want to save a random key to your server
+save_to = '/home/public_html/PATH_TO_KEY_DIRECTORY/random_key.key'
+
+#A URL (or a path) to access the key on your website
+url = 'https://www.aminyazdanpanah.com/PATH_TO_KEY_DIRECTORY/random_key.key'
+# or url = '/PATH_TO_KEY_DIRECTORY/random_key.key'
+
 import ffmpeg_streaming
 (
     ffmpeg_streaming
         .hls(video, hls_time=10, hls_allow_cache=1)
-        .encryption('https://www.aminyazdanpanah.com/keys/enc.key', '/var/www/my_website_project/keys/enc.key')
+        .encryption(url, save_to)
         .format('libx264')
         .auto_rep(heights=[480, 360, 240])
         .package('/var/www/media/videos/hls/hls-stream.m3u8')
