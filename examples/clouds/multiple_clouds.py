@@ -11,6 +11,7 @@ Open a file from a local path and save dash files to multiple clouds
 :license: MIT, see LICENSE for more details.
 """
 import datetime
+import logging
 import sys
 import time
 
@@ -21,6 +22,7 @@ from examples.clouds.google_cloud import google_cloud
 
 
 start_time = time.time()
+logging.basicConfig(filename='Transcoding-' + str(start_time) + '.log', level=logging.DEBUG)
 
 
 def per_to_time_left(percentage):
@@ -37,6 +39,7 @@ def per_to_time_left(percentage):
 def transcode_progress(per, ffmpeg):
     # You can update a field in your database or can log it to a file
     # You can also create a socket connection and show a progress bar to users
+    logging.debug(ffmpeg)
     sys.stdout.write("\rTranscoding...(%s%%) %s [%s%s]" % (per, per_to_time_left(per), '#' * per, '-' * (100 - per)))
     sys.stdout.flush()
 

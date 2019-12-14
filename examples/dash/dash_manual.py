@@ -15,10 +15,14 @@ import argparse
 import datetime
 import sys
 import time
+import logging
 
 import ffmpeg_streaming
 
 from ffmpeg_streaming import Representation
+
+start_time = time.time()
+logging.basicConfig(filename='Transcoding-' + str(start_time) + '.log', level=logging.DEBUG)
 
 
 start_time = time.time()
@@ -38,6 +42,7 @@ def per_to_time_left(percentage):
 def transcode_progress(per, ffmpeg):
     # You can update a field in your database or can log it to a file
     # You can also create a socket connection and show a progress bar to users
+    logging.debug(ffmpeg)
     sys.stdout.write("\rTranscoding...(%s%%) %s [%s%s]" % (per, per_to_time_left(per), '#' * per, '-' * (100 - per)))
     sys.stdout.flush()
 
@@ -49,6 +54,10 @@ def main():
     parser.add_argument('-o', '--output', default=None, help='The output to write files.')
 
     args = parser.parse_args()
+
+    logging.debug("input: " + args.input
+                  + ", output: " + str(args.output)
+                  + ", datetime: " + str(datetime.datetime.now()))
 
     rep1 = Representation(width=256, height=144, kilo_bitrate=200, audio_k_bitrate=64)
     rep2 = Representation(width=854, height=480, kilo_bitrate=500, audio_k_bitrate=128)

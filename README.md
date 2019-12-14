@@ -58,11 +58,10 @@ video = (google_cloud, download_options, None)
 
 
 ### DASH
-**[Dynamic Adaptive Streaming over HTTP (DASH)](https://dashif.org/)**, also known as MPEG-DASH, is an adaptive bitrate streaming technique that enables high quality streaming of media content over the Internet delivered from conventional HTTP web servers.
+**[Dynamic Adaptive Streaming over HTTP (DASH)](https://dashif.org/)**, also known as MPEG-DASH, is an adaptive bitrate streaming technique that enables high quality streaming of media content over the Internet delivered from conventional HTTP web servers. [Learn more](https://en.wikipedia.org/wiki/Dynamic_Adaptive_Streaming_over_HTTP)
 
-Similar to Apple's HTTP Live Streaming (HLS) solution, MPEG-DASH works by breaking the content into a sequence of small HTTP-based file segments, each segment containing a short interval of playback time of content that is potentially many hours in duration, such as a movie or the live broadcast of a sports event. The content is made available at a variety of different bit rates, i.e., alternative segments encoded at different bit rates covering aligned short intervals of playback time. While the content is being played back by an MPEG-DASH client, the client uses a bit rate adaptation (ABR) algorithm to automatically select the segment with the highest bit rate possible that can be downloaded in time for playback without causing stalls or re-buffering events in the playback. The current MPEG-DASH reference client dash.js offers both buffer-based (BOLA) and hybrid (DYNAMIC) bit rate adaptation algorithms. Thus, an MPEG-DASH client can seamlessly adapt to changing network conditions and provide high quality playback with fewer stalls or re-buffering events. [Learn more](https://en.wikipedia.org/wiki/Dynamic_Adaptive_Streaming_over_HTTP)
  
-Create DASH Files:
+Create DASH files:
 ```python
 import ffmpeg_streaming
 
@@ -74,7 +73,7 @@ import ffmpeg_streaming
         .package('/var/www/media/videos/dash/dash-stream.mpd')
 )
 ```
-You can also create representations manually:
+Generate representations manually:
 ```python
 import ffmpeg_streaming
 from ffmpeg_streaming import Representation
@@ -85,7 +84,7 @@ r_360p = Representation(width=640, height=360, kilo_bitrate=276)
 r_480p = Representation(width=854, height=480, kilo_bitrate=750)
 r_720p = Representation(width=1280, height=720, kilo_bitrate=2048)
 r_1080p = Representation(width=1920, height=1080, kilo_bitrate=4096)
-r_2k = Representation(width=2560, height=1440, kilo_bitrate=6144‬)
+r_2k = Representation(width=2560, height=1440, kilo_bitrate=6144)
 r_4k = Representation(width=3840, height=2160, kilo_bitrate=17408)
 
 (
@@ -97,16 +96,12 @@ r_4k = Representation(width=3840, height=2160, kilo_bitrate=17408)
 )
 
 ```
-See **[DASH examples](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/tree/master/examples/dash)** for more information.
-
-See also **[DASH options](https://ffmpeg.org/ffmpeg-formats.html#dash-2)** for more information about options.
+See **[DASH examples](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/tree/master/examples/dash)** and **[DASH options](https://ffmpeg.org/ffmpeg-formats.html#dash-2)** for more information.
 
 ### HLS
-**[HTTP Live Streaming (also known as HLS)](https://developer.apple.com/streaming/)** is an HTTP-based adaptive bitrate streaming communications protocol implemented by Apple Inc. as part of its QuickTime, Safari, OS X, and iOS software. Client implementations are also available in Microsoft Edge, Firefox and some versions of Google Chrome. Support is widespread in streaming media servers.
+**[HTTP Live Streaming (also known as HLS)](https://developer.apple.com/streaming/)** is an HTTP-based adaptive bitrate streaming communications protocol implemented by Apple Inc. as part of its QuickTime, Safari, OS X, and iOS software. Client implementations are also available in Microsoft Edge, Firefox and some versions of Google Chrome. Support is widespread in streaming media servers. [Learn more](https://en.wikipedia.org/wiki/HTTP_Live_Streaming)
 
-HLS resembles MPEG-DASH in that it works by breaking the overall stream into a sequence of small HTTP-based file downloads, each download loading one short chunk of an overall potentially unbounded transport stream. A list of available streams, encoded at different bit rates, is sent to the client using an extended M3U playlist. [Learn more](https://en.wikipedia.org/wiki/HTTP_Live_Streaming)
- 
-Create HLS files based on original video(auto generate qualities).
+Create HLS files:
 ```python
 import ffmpeg_streaming
 
@@ -119,7 +114,7 @@ import ffmpeg_streaming
 )
 ```
 
-You can also create representations manually:
+Generate representations manually:
 ```python
 import ffmpeg_streaming
 from ffmpeg_streaming import Representation
@@ -144,6 +139,8 @@ The encryption process requires some kind of secret (key) together with an encry
 You must specify a path to save a random key to your local machine and also a URL(or a path) to access the key on your website(the key you will save must be accessible from your website). You must pass both these parameters to the `encryption` method:
 
 ```python
+import ffmpeg_streaming
+
 #A path you want to save a random key to your server
 save_to = '/home/public_html/PATH_TO_KEY_DIRECTORY/random_key.key'
 
@@ -151,7 +148,6 @@ save_to = '/home/public_html/PATH_TO_KEY_DIRECTORY/random_key.key'
 url = 'https://www.aminyazdanpanah.com/PATH_TO_KEY_DIRECTORY/random_key.key'
 # or url = '/PATH_TO_KEY_DIRECTORY/random_key.key'
 
-import ffmpeg_streaming
 (
     ffmpeg_streaming
         .hls(video, hls_time=10, hls_allow_cache=1)
@@ -162,19 +158,26 @@ import ffmpeg_streaming
 )
 ```
 **NOTE:** It is very important to protect your key on your website using a token or a session/cookie(****It is highly recommended****).    
-See **[HLS examples](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/tree/master/examples/hls)** for more information.
 
-See also **[HLS options](https://ffmpeg.org/ffmpeg-formats.html#hls-2)** for more information about options.
+See **[HLS examples](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/tree/master/examples/hls)** and **[HLS options](https://ffmpeg.org/ffmpeg-formats.html#hls-2)** for more information.
 
 ### Progress
-You can get realtime information about transcoding by passing callable methods to the `package`:
+You can get realtime information about transcoding by passing a callable method to the `package` method:
 ```python
 import sys
+import time
+import logging
+
 import ffmpeg_streaming
+
+
+start_time = time.time()
+logging.basicConfig(filename='Transcoding-' + str(start_time) + '.log', level=logging.DEBUG)
 
 def progress(percentage, ffmpeg):
     # You can update a field in your database
     # You can also create a socket connection and show a progress bar to users
+    logging.debug(ffmpeg)
     sys.stdout.write("\rTranscoding...(%s%%)[%s%s]" % (percentage, '#' * percentage, '-' * (100 - percentage)))
     sys.stdout.flush()
 
@@ -187,11 +190,11 @@ def progress(percentage, ffmpeg):
         .package('/var/www/media/videos/hls/hls-stream.m3u8', progress=progress)
 )
 ```
-Output of the progress:
+Output from a terminal:
 ![transcoding](https://github.com/aminyazdanpanah/aminyazdanpanah.github.io/blob/master/video-streaming/transcoding.gif?raw=true "transcoding" )
 
 ### Saving Files
-There are several options to save your files.
+There are two ways to save your files.
 
 #### 1. To a Local Path
 You can pass a local path to the `package` method. If there was no directory in the path, then the package auto makes the directory.
@@ -214,10 +217,10 @@ It can also be null. The default path to save files is the input path.
         .package(progress=progress)
 )
 ```
-**NOTE:** If you open a file from cloud and did not pass a path to save a file, you will have to pass a local path to the `package` method.
+**NOTE:** If you open a file from a cloud and do not pass a path to save the file to your local machine, you will have to pass a local path to the `package` method.
 
 #### 2. To Clouds
-You can save your files to clouds by passing a array of cloud configuration to the `package` method.  
+You can save your files to a cloud by passing an array of cloud configuration to the `package` method.
 
 In **[this page](https://video.aminyazdanpanah.com/python/start/clouds?r=save)**, you will find some examples of saving files to **[Amazon S3](https://aws.amazon.com/s3)**, **[Google Cloud Storage](https://console.cloud.google.com/storage)**, **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**, and a custom cloud. 
 
@@ -231,7 +234,7 @@ In **[this page](https://video.aminyazdanpanah.com/python/start/clouds?r=save)**
                  progress=progress)
 )
 ``` 
-A path can also be passed to save a copy of files on your local machine.
+A path can also be passed to save a copy of files to your local machine.
 ```python
 (
     ffmpeg_streaming
@@ -243,13 +246,11 @@ A path can also be passed to save a copy of files on your local machine.
 )
 ```
 
-
-**NOTE:** You can open a file from your local machine(or a cloud) and save files to a local path or a cloud(or multiple clouds) or both.   
-
+**Schema:** The relation is `one-to-many`.
 <p align="center"><img src="https://github.com/aminyazdanpanah/aminyazdanpanah.github.io/blob/master/video-streaming/video-streaming.gif?raw=true" width="100%"></p>
 
 ### Probe
-You can extract the metadata of video file using the following code:
+You can extract the metadata of the video file using the following code:
 ```python
 from ffmpeg_streaming import FFProbe
 

@@ -15,11 +15,13 @@ import argparse
 import datetime
 import sys
 import time
+import logging
 
 import ffmpeg_streaming
 
 
 start_time = time.time()
+logging.basicConfig(filename='Transcoding-' + str(start_time) + '.log', level=logging.DEBUG)
 
 
 def per_to_time_left(percentage):
@@ -55,6 +57,10 @@ def main():
     parser.add_argument('-o', '--output', default=None, help='The output to write files.')
 
     args = parser.parse_args()
+
+    logging.debug("input: " + args.input
+                  + ", output: " + str(args.output)
+                  + ", datetime: " + str(datetime.datetime.now()))
 
     (
         ffmpeg_streaming

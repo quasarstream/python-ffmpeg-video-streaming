@@ -15,11 +15,13 @@ import argparse
 import datetime
 import sys
 import time
+import logging
 
 import ffmpeg_streaming
 
 
 start_time = time.time()
+logging.basicConfig(filename='Transcoding-' + str(start_time) + '.log', level=logging.DEBUG)
 
 
 def per_to_time_left(percentage):
@@ -36,6 +38,7 @@ def per_to_time_left(percentage):
 def transcode_progress(per, ffmpeg):
     # You can update a field in your database or can log it to a file
     # You can also create a socket connection and show a progress bar to users
+    logging.debug(ffmpeg)
     sys.stdout.write("\rTranscoding...(%s%%) %s [%s%s]" % (per, per_to_time_left(per), '#' * per, '-' * (100 - per)))
     sys.stdout.flush()
 
@@ -48,6 +51,9 @@ def main():
 
     args = parser.parse_args()
 
+    logging.debug("input: " + args.input
+                  + ", output: " + str(args.output)
+                  + ", datetime: " + str(datetime.datetime.now()))
     (
         ffmpeg_streaming
             .dash(args.input, adaption='"id=0,streams=v id=1,streams=a"')
