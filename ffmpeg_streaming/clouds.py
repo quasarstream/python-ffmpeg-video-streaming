@@ -205,7 +205,7 @@ def open_from_cloud(cloud):
 
 def save_to_clouds(clouds, dirname):
     if clouds is not None:
-        if type(clouds) != list or type(clouds) != tuple:
+        if not isinstance(clouds, (list, tuple)):
             raise TypeError('Clouds must be type of list or tuple')
 
         if type(clouds) == tuple:
