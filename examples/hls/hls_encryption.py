@@ -38,6 +38,7 @@ def per_to_time_left(percentage):
 def transcode_progress(per, ffmpeg):
     # You can update a field in your database or can log it to a file
     # You can also create a socket connection and show a progress bar to users
+    logging.debug(ffmpeg)
     sys.stdout.write("\rTranscoding...(%s%%) %s [%s%s]" % (per, per_to_time_left(per), '#' * per, '-' * (100 - per)))
     sys.stdout.flush()
 

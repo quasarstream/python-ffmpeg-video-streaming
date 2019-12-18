@@ -78,14 +78,14 @@ Generate representations manually:
 import ffmpeg_streaming
 from ffmpeg_streaming import Representation
 
-r_144p = Representation(width=256, height=144, kilo_bitrate=95)
-r_240p = Representation(width=426, height=240, kilo_bitrate=150)
-r_360p = Representation(width=640, height=360, kilo_bitrate=276)
-r_480p = Representation(width=854, height=480, kilo_bitrate=750)
-r_720p = Representation(width=1280, height=720, kilo_bitrate=2048)
+r_144p  = Representation(width=256, height=144, kilo_bitrate=95)
+r_240p  = Representation(width=426, height=240, kilo_bitrate=150)
+r_360p  = Representation(width=640, height=360, kilo_bitrate=276)
+r_480p  = Representation(width=854, height=480, kilo_bitrate=750)
+r_720p  = Representation(width=1280, height=720, kilo_bitrate=2048)
 r_1080p = Representation(width=1920, height=1080, kilo_bitrate=4096)
-r_2k = Representation(width=2560, height=1440, kilo_bitrate=6144)
-r_4k = Representation(width=3840, height=2160, kilo_bitrate=17408)
+r_2k    = Representation(width=2560, height=1440, kilo_bitrate=6144)
+r_4k    = Representation(width=3840, height=2160, kilo_bitrate=17408)
 
 (
     ffmpeg_streaming
@@ -301,6 +301,7 @@ Please **[file an issue](https://github.com/aminyazdanpanah/python-ffmpeg-video-
 
 ## Credits
 - **[Amin Yazdanpanah](https://www.aminyazdanpanah.com/?u=github.com/aminyazdanpanah/python-ffmpeg-video-streaming)**
+- **[All Contributors](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/graphs/contributors)**
 
 ## License
 The MIT License (MIT). Please see **[License File](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/blob/master/LICENSE)** for more information.
