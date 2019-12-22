@@ -38,7 +38,7 @@ class AWS(Clouds):
 
         files = [f for f in listdir(directory) if isfile(join(directory, f))]
         for file in files:
-            full_path_file = directory + file
+            full_path_file = join(directory, file)
             self.s3.upload_file(full_path_file, bucket_name, file)
 
     def download(self, filename=None, **options):
