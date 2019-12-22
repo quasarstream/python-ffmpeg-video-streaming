@@ -29,7 +29,7 @@ from ffmpeg_streaming import Clouds
 
 class AWS(Clouds):
     def __init__(self, **options):
-        self.s3 = boto3.client('s3', options)
+        self.s3 = boto3.client('s3', **options)
 
     def upload_directory(self, directory, **options):
         bucket_name = options.pop('bucket_name', None)
