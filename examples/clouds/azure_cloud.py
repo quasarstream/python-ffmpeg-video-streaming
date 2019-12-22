@@ -34,8 +34,7 @@ class MicrosoftAzure(Clouds):
         files = [f for f in listdir(directory) if isfile(join(directory, f))]
         container = options.pop('container', None)
         for file in files:
-            full_path_file = directory + file
-            self.block_blob_service.create_blob_from_path(container, file, full_path_file)
+            self.block_blob_service.create_blob_from_path(container, file, join(directory, file))
 
     def download(self, filename=None, **options):
         if filename is None:

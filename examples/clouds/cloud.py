@@ -39,8 +39,7 @@ class Cloud(Clouds):
         files = [f for f in listdir(directory) if isfile(join(directory, f))]
 
         for file in files:
-            full_path_file = directory + file
-            upload_files.append((field_name, open(full_path_file, 'rb')))
+            upload_files.append((field_name, open(join(directory, file), 'rb')))
 
         r = requests.request(method, url, files=upload_files, **options)
 

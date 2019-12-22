@@ -36,9 +36,8 @@ class GoogleCloudStorage(Clouds):
         files = [f for f in listdir(directory) if isfile(join(directory, f))]
 
         for file in files:
-            full_path_file = directory + file
             blob = self.bucket.blob(self.bucket_name + file, options)
-            blob.upload_from_filename(full_path_file)
+            blob.upload_from_filename(join(directory, file))
 
     def download(self, filename=None, **options):
         if filename is None:
