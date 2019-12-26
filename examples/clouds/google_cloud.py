@@ -60,7 +60,7 @@ def google_cloud(bucket_name, object_name):
         'object_name': object_name,
     }
     upload_options = {
-        'encryption': 'SOME_BASE64_ENCRYPTION',
+        'encryption': 'BASE64_ENCRYPTION',
     }
 
     from_google_cloud = (cloud, download_options, None)

@@ -9,7 +9,7 @@
 This package uses the **[FFmpeg](https://ffmpeg.org)** to package media content for online streaming such as DASH and HLS. You can also use **[DRM](https://en.wikipedia.org/wiki/Digital_rights_management)** for HLS packaging. There are several options to open a file from clouds and save files to them as well.
 
 - The best way to learn how to use this library is to review ****[the examples](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/tree/master/examples)**** and browse the source code.
-- Cloud dependencies are deprecated now and will be removed in a future release. For using clouds such as **[Amazon S3](https://aws.amazon.com/s3)**, **[Google Cloud Storage](https://console.cloud.google.com/storage)**, **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**, and a custom cloud, please visit **[this page](https://video.aminyazdanpanah.com/python/start/clouds)**
+- For using clouds such as **[Amazon S3](https://aws.amazon.com/s3)**, **[Google Cloud Storage](https://console.cloud.google.com/storage)**, **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**, and a custom cloud, please visit **[this page](https://video.aminyazdanpanah.com/python/start/clouds)**.
 
 **Contents**
 - [Requirements](#requirements)
