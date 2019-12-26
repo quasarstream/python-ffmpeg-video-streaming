@@ -4,7 +4,6 @@ import unittest
 
 
 from ffmpeg_streaming import *
-from ffmpeg_streaming.from_clouds import from_url
 from ffmpeg_streaming.media import (HLS, DASH)
 from ffmpeg_streaming.streams import Streams
 import ffmpeg_streaming
@@ -121,12 +120,6 @@ class TestStreaming(unittest.TestCase):
         _get_duration_sec = get_duration_sec(d_line)
 
         self.assertEqual(_get_duration_sec, 3600)
-
-    def test_from_clouds(self):
-        url = 'https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/blob/master/examples/_example.mp4' \
-              '?raw=true'
-        self.assertTrue(os.path.isfile(from_url(url)))
-
 
 if __name__ == '__main__':
     unittest.main()
