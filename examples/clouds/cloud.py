@@ -109,8 +109,8 @@ def cloud():
     return from_cloud, to_cloud
 
 
+logging.basicConfig(filename='streaming.log', level=logging.NOTSET, format='[%(asctime)s] %(levelname)s: %(message)s')
 start_time = time.time()
-logging.basicConfig(filename='Transcoding-' + str(start_time) + '.log', level=logging.DEBUG)
 
 
 def per_to_time_left(percentage):
@@ -125,9 +125,9 @@ def per_to_time_left(percentage):
 
 
 def transcode_progress(per, ffmpeg):
-    # You can update a field in your database or can log it to a file
+    # You can update a field in your database or log it to a file
     # You can also create a socket connection and show a progress bar to users
-    logging.debug(ffmpeg)
+    logging.info(ffmpeg)
     sys.stdout.write("\rTranscoding...(%s%%) %s [%s%s]" % (per, per_to_time_left(per), '#' * per, '-' * (100 - per)))
     sys.stdout.flush()
 

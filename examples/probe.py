@@ -13,9 +13,12 @@ Probe the video
 
 import argparse
 import datetime
+import logging
 import os
 
 from ffmpeg_streaming import FFProbe
+
+logging.basicConfig(filename='probe.log', level=logging.NOTSET, format='[%(asctime)s] %(levelname)s: %(message)s')
 
 
 def main():

@@ -14,6 +14,7 @@ Run FFmpeg commands and monitor FFmpeg
 import shlex
 import subprocess
 import threading
+import logging
 
 from .progress import progress, get_duration_sec
 
@@ -23,6 +24,7 @@ def _p_open(commands, p_stdin=False, p_stdout=False, p_stderr=subprocess.STDOUT,
     stdin_stream = subprocess.PIPE if p_stdin else None
     stdout_stream = subprocess.PIPE if p_stdout else None
     stderr_stream = p_stderr
+    logging.info("ffmpeg running command: {}".format(commands))
 
     return subprocess.Popen(shlex.split(commands), stdout=stdout_stream, stderr=stderr_stream, stdin=stdin_stream
                             , universal_newlines=universal_newlines)
@@ -79,8 +81,9 @@ class Process(object):
         if thread.is_alive():
             self.p.terminate()
             thread.join()
-
-            raise RuntimeError('Timeout! The process stopped!')
+            error = 'Timeout! exceeded the timeout of {} seconds.'.format(str(timeout))
+            logging.error(error)
+            raise RuntimeError(error)
 
     def run(self, c_input=None, timeout=None):
 
@@ -90,6 +93,10 @@ class Process(object):
             Process.out, Process.err = self.p.communicate(c_input, timeout=timeout)
 
         if self.p.poll():
-            raise RuntimeError('ffmpeg', Process.err, Process.out)
+            error = str(Process.err) if Process.err else str(Process.out)
+            logging.error('ffmpeg failed to execute command: {}'.format(error))
+            raise RuntimeError('ffmpeg failed to execute command: ', error)
+
+        logging.info("ffmpeg executed command successfully")
 
         return Process.out, Process.err

@@ -165,19 +165,13 @@ See **[HLS examples](https://github.com/aminyazdanpanah/python-ffmpeg-video-stre
 You can get realtime information about transcoding by passing a callable method to the `package` method:
 ```python
 import sys
-import time
-import logging
 
 import ffmpeg_streaming
 
 
-start_time = time.time()
-logging.basicConfig(filename='Transcoding-' + str(start_time) + '.log', level=logging.DEBUG)
-
 def progress(percentage, ffmpeg):
     # You can update a field in your database
     # You can also create a socket connection and show a progress bar to users
-    logging.debug(ffmpeg)
     sys.stdout.write("\rTranscoding...(%s%%)[%s%s]" % (percentage, '#' * percentage, '-' * (100 - percentage)))
     sys.stdout.flush()
 
@@ -220,7 +214,7 @@ It can also be null. The default path to save files is the input path.
 **NOTE:** If you open a file from a cloud and do not pass a path to save the file to your local machine, you will have to pass a local path to the `package` method.
 
 #### 2. To Clouds
-You can save your files to a cloud by passing an array of cloud configuration to the `package` method.
+You can save your files to clouds by passing an array of clouds configuration to the `package` method.
 
 In **[this page](https://video.aminyazdanpanah.com/python/start/clouds?r=save)**, you will find some examples of saving files to **[Amazon S3](https://aws.amazon.com/s3)**, **[Google Cloud Storage](https://console.cloud.google.com/storage)**, **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**, and a custom cloud. 
 
