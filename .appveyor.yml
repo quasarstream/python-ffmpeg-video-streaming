@@ -14,7 +14,7 @@ environment:
     COMPOSER_NO_INTERACTION: 1
     ANSICON: 121x90 (121x90) # Console colors
 
-  ffmpeg_download: https://ffmpeg.zeranoe.com/builds/win64/static/ffmpeg-20190225-f948082-win64-static.zip
+  ffmpeg_download: https://ffmpeg.zeranoe.com/builds/win64/static/ffmpeg-20200124-e931119-win64-static.zip
 
   matrix:
     - PYTHON: "C:\\Python37"
@@ -37,8 +37,8 @@ install:
   - pip install -r requirements.txt
   - ps: Start-FileDownload $env:ffmpeg_download
 
-  - 7z x ffmpeg-20190225-f948082-win64-static.zip
-  - PATH=%PATH%;%cd%\ffmpeg-20190225-f948082-win64-static\bin
+  - 7z x ffmpeg-20200124-e931119-win64-static.zip
+  - PATH=%PATH%;%cd%\ffmpeg-20200124-e931119-win64-static\bin
 
 test_script:
   - cd c:\projects\project-code
