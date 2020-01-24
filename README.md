@@ -1,6 +1,7 @@
 # 📼 Python FFmpeg Video Streaming
 [![Build Status](https://travis-ci.org/aminyazdanpanah/python-ffmpeg-video-streaming.svg?branch=master)](https://travis-ci.org/aminyazdanpanah/python-ffmpeg-video-streaming)
 [![Build status](https://ci.appveyor.com/api/projects/status/qy712tou5pvq629y?svg=true)](https://ci.appveyor.com/project/aminyazdanpanah/python-ffmpeg-video-streaming)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/aminyazdanpanah/python-ffmpeg-video-streaming/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/aminyazdanpanah/python-ffmpeg-video-streaming/?branch=master)
 [![Downloads](https://pepy.tech/badge/python-ffmpeg-video-streaming)](https://pepy.tech/project/python-ffmpeg-video-streaming)
 [![PyPI version](https://badge.fury.io/py/python-ffmpeg-video-streaming.svg)](https://badge.fury.io/py/python-ffmpeg-video-streaming)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat)](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/blob/master/LICENSE)
