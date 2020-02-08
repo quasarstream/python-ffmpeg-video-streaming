@@ -13,7 +13,6 @@ Probe the video
 
 import json
 import logging
-import os
 import subprocess
 from .streams import Streams
 
@@ -44,8 +43,6 @@ class FFProbe:
 
 
 def ffprobe(filename, cmd='ffprobe'):
-    if not os.path.isfile(filename):
-        raise RuntimeError('The file is not exist')
     return FFProbe(filename, cmd)
 
 

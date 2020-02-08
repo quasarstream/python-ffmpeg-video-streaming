@@ -23,7 +23,7 @@ def _get_hls_args(hls):
         if isinstance(rep, Representation):
             if hls.options is not None:
                 for option in hls.options:
-                    args += ['-' + option, hls.options[option]]
+                    args += ['-' + option, str(hls.options[option])]
             if key > 0:
                 args += ['-c:v', hls.video_format]
                 if hls.audio_format is not None:
@@ -33,7 +33,7 @@ def _get_hls_args(hls):
             args += ['-sc_threshold', '0']
             args += ['-g', '48']
             args += ['-keyint_min', '48']
-            args += ['-hls_list_size', '0']
+            args += ['-hls_list_size', str(hls.hls_list_size)]
             args += ['-hls_time', str(hls.hls_time)]
             args += ['-hls_allow_cache', str(hls.hls_allow_cache)]
             args += ['-b:v', rep.bit_rate]
@@ -60,12 +60,14 @@ def _get_dash_args(dash):
         '-b_strategy', '0',
         '-use_timeline', '1',
         '-use_template', '1',
+        '-init_seg_name', (name + '_init_$RepresentationID$.$ext$') if dash.init_seg_name is None else dash.init_seg_name,
+        "-media_seg_name", (name + '_chunk_$RepresentationID$_$Number%05d$.$ext$') if dash.media_seg_name is None else dash.media_seg_name,
         '-f', 'dash'
     ]
 
     if dash.options is not None:
         for option in dash.options:
-            args += ['-' + option, dash.options[option]]
+            args += ['-' + option, str(dash.options[option])]
 
     for key, rep in enumerate(dash.reps):
         if isinstance(rep, Representation):
@@ -80,6 +82,17 @@ def _get_dash_args(dash):
     args += ['-strict', dash.options.get('strict', "-2")]
     args += ['"' + dirname + '/' + name + '.mpd"']
     
+    return args
+
+
+def _get_stream2file_args(stream2file):
+    args = ['-c', 'copy']
+
+    if stream2file.options is not None:
+        for option in stream2file.options:
+            args += ['-' + option, str(stream2file.options[option])]
+    args += ['"' + stream2file.output + '"']
+
     return args
 
 
@@ -99,5 +112,7 @@ def build_command(cmd, media_obj):
         cmd += _get_hls_args(media_obj)
     elif media_name == 'DASH':
         cmd += _get_dash_args(media_obj)
+    elif media_name == 'StreamToFile':
+        cmd += _get_stream2file_args(media_obj)
 
     return " ".join(cmd)

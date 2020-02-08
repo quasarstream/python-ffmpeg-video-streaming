@@ -40,7 +40,7 @@ class AutoRepresentation:
         self.audio = ffprobe.streams().audio()
 
         if heights is None:
-            heights = [2160, 1080, 720, 480, 360, 240, 144]
+            heights = [2160, 1440, 1080, 720, 480, 360, 240, 144]
         self.heights = heights
         
     def generate(self):

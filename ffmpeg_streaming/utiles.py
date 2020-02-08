@@ -14,6 +14,7 @@ Useful methods
 import os
 import tempfile
 import warnings
+from urllib.parse import urlparse
 
 
 def round_to_even(num):
@@ -30,10 +31,18 @@ def get_path_info(path):
     dirname = os.path.dirname(path).replace("\\", "/")
     name = str(os.path.basename(path).split('.')[0])
 
-    if not os.path.exists(dirname):
+    if not is_url(path) and not os.path.exists(dirname):
         os.makedirs(dirname)
 
     return dirname, name
+
+
+def is_url(url):
+    try:
+        parsed_url = urlparse(url)
+        return all([parsed_url.scheme, parsed_url.netloc, parsed_url.path])
+    except:
+        return False
 
 
 def convert_to_sec(time):

@@ -16,13 +16,15 @@ This package uses the **[FFmpeg](https://ffmpeg.org)** to package media content 
 - [Requirements](#requirements)
 - [Installation](#installation)
 - [Quickstart](#quickstart)
-  - [Opening a File](#opening-a-file)
+  - [Opening a Resource](#opening-a-resource)
   - [DASH](#dash)
   - [HLS](#hls)
     - [Encrypted HLS](#encrypted-hls)
   - [Progress](#progress)
   - [Saving Files](#saving-files)
   - [Probe](#probe)
+  - [Live](#live)
+  - [Conversion](#conversion)
 - [Several Open Source Players](#several-open-source-players)
 - [Contributing and Reporting Bugs](#contributing-and-reporting-bugs)
 - [Credits](#credits)
@@ -41,26 +43,32 @@ pip install python-ffmpeg-video-streaming
 
 ## Quickstart
 
-### opening a file
+### Opening a Resource
 There are two ways to open a file:
-#### 1. From a Local Path
+
+#### 1. From a FFmpeg supported resources
+You can pass a local path of video(or a supported resource) to the `open` method:
 ```python
 video = '/var/www/media/videos/video.mp4'
 ```
 
-#### 2. From Clouds
-You can open a file from a cloud by passing a tuple of cloud configuration to the method.
- 
-In **[this page](https://video.aminyazdanpanah.com/python/start/clouds?r=open)**, you will find some examples of opening a file from **[Amazon S3](https://aws.amazon.com/s3)**, **[Google Cloud Storage](https://console.cloud.google.com/storage)**, **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**, and a custom cloud. 
+For opening a file from a supported FFmpeg resource such as `http`, `ftp`, `pipe`, `rtmp` and etc. please see **[FFmpeg Protocols Documentation](https://ffmpeg.org/ffmpeg-protocols.html)**
 
+**For example:** 
+```python
+video = 'https://www.aminyazdanpanah.com/PATH/TO/VIDEO.MP4'
+```
+
+#### 2. From Clouds
+You can open a file from a cloud by passing an array of cloud configuration to the `openFromCloud` method. 
+
+In **[this page](https://video.aminyazdanpanah.com/python/start/clouds?r=open)**, you will find some examples of opening a file from **[Amazon S3](https://aws.amazon.com/s3)**, **[Google Cloud Storage](https://console.cloud.google.com/storage)**, **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**, and a custom cloud. 
 ```python
 video = (google_cloud, download_options, None)
 ```
 
-
 ### DASH
-**[Dynamic Adaptive Streaming over HTTP (DASH)](https://dashif.org/)**, also known as MPEG-DASH, is an adaptive bitrate streaming technique that enables high quality streaming of media content over the Internet delivered from conventional HTTP web servers. [Learn more](https://en.wikipedia.org/wiki/Dynamic_Adaptive_Streaming_over_HTTP)
-
+**[Dynamic Adaptive Streaming over HTTP (DASH)](http://dashif.org/)**, also known as MPEG-DASH, is an adaptive bitrate streaming technique that enables high quality streaming of media content over the Internet delivered from conventional HTTP web servers. [Learn more](https://en.wikipedia.org/wiki/Dynamic_Adaptive_Streaming_over_HTTP)
  
 Create DASH files:
 ```python
@@ -101,7 +109,7 @@ See **[DASH examples](https://github.com/aminyazdanpanah/python-ffmpeg-video-str
 
 ### HLS
 **[HTTP Live Streaming (also known as HLS)](https://developer.apple.com/streaming/)** is an HTTP-based adaptive bitrate streaming communications protocol implemented by Apple Inc. as part of its QuickTime, Safari, OS X, and iOS software. Client implementations are also available in Microsoft Edge, Firefox and some versions of Google Chrome. Support is widespread in streaming media servers. [Learn more](https://en.wikipedia.org/wiki/HTTP_Live_Streaming)
-
+ 
 Create HLS files:
 ```python
 import ffmpeg_streaming
@@ -166,7 +174,6 @@ See **[HLS examples](https://github.com/aminyazdanpanah/python-ffmpeg-video-stre
 You can get realtime information about transcoding by passing a callable method to the `package` method:
 ```python
 import sys
-
 import ffmpeg_streaming
 
 
@@ -185,7 +192,7 @@ def progress(percentage, ffmpeg):
         .package('/var/www/media/videos/hls/hls-stream.m3u8', progress=progress)
 )
 ```
-Output from a terminal:
+##### Output From a Terminal:
 ![transcoding](https://github.com/aminyazdanpanah/aminyazdanpanah.github.io/blob/master/video-streaming/transcoding.gif?raw=true "transcoding" )
 
 ### Saving Files
@@ -212,10 +219,10 @@ It can also be null. The default path to save files is the input path.
         .package(progress=progress)
 )
 ```
-**NOTE:** If you open a file from a cloud and do not pass a path to save the file to your local machine, you will have to pass a local path to the `package` method.
+**NOTE:** If you open a file from a cloud and do not pass a path to save the file to your local machine, you will have to pass a local path to the `save` method.
 
 #### 2. To Clouds
-You can save your files to clouds by passing an array of clouds configuration to the `package` method.
+You can save your files to a cloud by passing an array of cloud configuration to the `package` method. 
 
 In **[this page](https://video.aminyazdanpanah.com/python/start/clouds?r=save)**, you will find some examples of saving files to **[Amazon S3](https://aws.amazon.com/s3)**, **[Google Cloud Storage](https://console.cloud.google.com/storage)**, **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**, and a custom cloud. 
 
@@ -240,8 +247,10 @@ A path can also be passed to save a copy of files to your local machine.
                  progress=progress)
 )
 ```
+**NOTE:** This option(Save To Clouds) is only for **[VOD](https://en.wikipedia.org/wiki/Video_on_demand)** (it does not support live streaming).
 
 **Schema:** The relation is `one-to-many`.
+
 <p align="center"><img src="https://github.com/aminyazdanpanah/aminyazdanpanah.github.io/blob/master/video-streaming/video-streaming.gif?raw=true" width="100%"></p>
 
 ### Probe
@@ -255,17 +264,91 @@ ffprobe = FFProbe('/var/www/media/video.mp4')
 
 See the **[example](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/blob/master/examples/probe.py)** for more information.
 
+### Live
+You can pass a url(or a supported resource like `ftp`) to live method to upload all the segments files to the HTTP server(or other protocols) using the HTTP PUT method, and update the manifest files every refresh times.
+
+If you want to save stream files to your local machine, please use the `package` method.
+
+```python
+# DASH live
+import ffmpeg_streaming
+
+(
+    ffmpeg_streaming
+        .dash('/var/www/media/video.avi', adaption='"id=0,streams=v id=1,streams=a"')
+        .format('libx265')
+        .auto_rep()
+        .live('http://YOUR-WEBSITE.COM/live-stream/out.mpd', progress=progress)
+)
+
+# HLS live
+(
+    ffmpeg_streaming
+        .hls('/var/www/media/video.mp4', master_playlist_path='/var/www/stream/live-master-manifest.m3u8')
+        .format('libx264')
+        .auto_rep()
+        .live('http://YOUR-WEBSITE.COM/live-stream/out.m3u8', progress=progress)
+)
+```
+**NOTE:** In the HLS streaming method, you should pass the master playlist to your player. So you should upload the master manifest to your server as well as other files.
+
+Please see **[FFmpeg Protocols Documentation](https://ffmpeg.org/ffmpeg-protocols.html)** for more information.
+
+### Conversion
+You can convert your stream to a file or to another stream protocols. You should pass a manifest of a stream to the method:
+
+#### 1. HLS To DASH
+```python
+import ffmpeg_streaming
+from ffmpeg_streaming import Representation
+
+r_360p = Representation(width=640, height=360, kilo_bitrate=276)
+
+(
+    ffmpeg_streaming
+        .dash('https://www.aminyazdanpanah.com/PATH/TO/HLS-MANIFEST.M3U8')
+        .format('libx265')
+        .add_rep(r_360p)
+        .package('/var/www/media/dash-stream.mpd', progress=progress)
+)
+```
+
+#### 2. DASH To HLS
+```python
+import ffmpeg_streaming
+
+(
+    ffmpeg_streaming
+        .hls('https://www.aminyazdanpanah.com/PATH/TO/DASH-MANIFEST.MPD')
+        .format('libx264')
+        .auto_rep(heights=[360, 240])
+        .package('/var/www/media/hls-stream.mpd', progress=progress)
+)
+```
+
+#### 3. Stream(DASH or HLS) To File
+```python
+import ffmpeg_streaming
+
+(
+    ffmpeg_streaming
+        .stream2file('https://www.aminyazdanpanah.com/PATH/TO/MANIFEST.MPD or M3U8')
+        .format('libx264')
+        .save('/var/www/media/new-video.mp4', progress=progress)
+)
+```
+
 ## Several Open Source Players
 You can use these libraries to play your streams.
 - **WEB**
     - DASH and HLS: 
+        - **[Video.js 7](https://github.com/videojs/video.js) - [videojs-http-streaming (VHS)](https://github.com/videojs/http-streaming)**
+        - **[Plyr](https://github.com/sampotts/plyr)**
+        - **[DPlayer](https://github.com/MoePlayer/DPlayer)**
+        - **[MediaElement.js](https://github.com/mediaelement/mediaelement)**
+        - **[Clappr](https://github.com/clappr/clappr)**
         - **[Shaka Player](https://github.com/google/shaka-player)**
         - **[Flowplayer](https://github.com/flowplayer/flowplayer)**
-        - **[videojs-http-streaming (VHS)](https://github.com/videojs/http-streaming)**
-        - **[MediaElement.js](https://github.com/mediaelement/mediaelement)**
-        - **[DPlayer](https://github.com/MoePlayer/DPlayer)**
-        - **[Clappr](https://github.com/clappr/clappr)**
-        - **[Plyr](https://github.com/sampotts/plyr)**
     - DASH:
         - **[dash.js](https://github.com/Dash-Industry-Forum/dash.js)**
     - HLS: 
@@ -282,6 +365,8 @@ You can use these libraries to play your streams.
     - DASH and HLS:
         - **[FFmpeg(ffplay)](https://github.com/FFmpeg/FFmpeg)**
         - **[VLC media player](https://github.com/videolan/vlc)**
+
+As you may know, **[IOS](https://www.apple.com/ios)** does not have native support for DASH. Although there are some libraries such as **[Viblast](https://github.com/Viblast/ios-player-sdk)** and **[MPEGDASH-iOS-Player](https://github.com/MPEGDASHPlayer/MPEGDASH-iOS-Player)** to support this technique, I have never tested them. So if you know any IOS player that supports DASH Stream and also works fine, please add it to the above list. 
 
 **NOTE:** You should pass a manifest of stream(e.g. `https://www.aminyazdanpanah.com/PATH_TO_STREAM_DIRECTORY/dash-stream.mpd` or `/PATH_TO_STREAM_DIRECTORY/hls-stream.m3u8` ) to these players.
 
