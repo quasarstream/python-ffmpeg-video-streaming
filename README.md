@@ -290,7 +290,7 @@ import ffmpeg_streaming
         .live('http://YOUR-WEBSITE.COM/live-stream/out.m3u8', progress=progress)
 )
 ```
-**NOTE:** In the HLS streaming method, you should pass the master playlist to your player. So you should upload the master manifest to your server as well as other files.
+**NOTE:** In the HLS method, you must upload the master manifest to the server manually. (Upload the `/var/www/stream/live-master-manifest.m3u8` file to the `http://YOUR-WEBSITE.COM`)
 
 Please see **[FFmpeg Protocols Documentation](https://ffmpeg.org/ffmpeg-protocols.html)** for more information.
 

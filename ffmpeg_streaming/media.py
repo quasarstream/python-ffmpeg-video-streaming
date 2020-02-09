@@ -47,11 +47,9 @@ def _save_hls_master_playlist(output, master_playlist_path, dirname, name):
         if master_playlist_path is None:
             raise ValueError("You must specify a path for master playlist")
         playlist_path = master_playlist_path
-        manifests = dirname + "/" + name
     else:
         playlist_path = dirname + "/" + name + ".m3u8"
-        manifests = name
-    export_hls_playlist(playlist_path, manifests, Export.reps)
+    export_hls_playlist(playlist_path, name, Export.reps)
 
 
 class Export(object):
