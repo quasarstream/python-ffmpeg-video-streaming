@@ -33,7 +33,7 @@ This package uses the **[FFmpeg](https://ffmpeg.org)** to package media content 
 ## Requirements
 1. This version of the package is only compatible with **[Python 3.6](https://www.python.org/downloads/)** or higher.
 
-2. To use this package, you need to **[install the FFMpeg](https://ffmpeg.org/download.html)**. You will need both FFMpeg and FFProbe binaries to use it.
+2. To use this package, you need to **[install the FFmpeg](https://ffmpeg.org/download.html)**. You will need both FFMpeg and FFProbe binaries to use it.
 
 ## Installation
 The latest version of `ffmpeg-streaming` can be acquired via pip:
@@ -47,7 +47,7 @@ pip install python-ffmpeg-video-streaming
 There are two ways to open a file:
 
 #### 1. From a FFmpeg supported resources
-You can pass a local path of video(or a supported resource) to the `open` method:
+You can pass a local path of video(or a supported resource) to the method(`hls` or `dash`):
 ```python
 video = '/var/www/media/videos/video.mp4'
 ```
@@ -60,7 +60,7 @@ video = 'https://www.aminyazdanpanah.com/PATH/TO/VIDEO.MP4'
 ```
 
 #### 2. From Clouds
-You can open a file from a cloud by passing an array of cloud configuration to the `openFromCloud` method. 
+You can open a file from a cloud by passing a tuple of cloud configuration to the method. 
 
 In **[this page](https://video.aminyazdanpanah.com/python/start/clouds?r=open)**, you will find some examples of opening a file from **[Amazon S3](https://aws.amazon.com/s3)**, **[Google Cloud Storage](https://console.cloud.google.com/storage)**, **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**, and a custom cloud. 
 ```python
@@ -195,6 +195,35 @@ def progress(percentage, ffmpeg):
 ##### Output From a Terminal:
 ![transcoding](https://github.com/aminyazdanpanah/aminyazdanpanah.github.io/blob/master/video-streaming/transcoding.gif?raw=true "transcoding" )
 
+##### Show a progress bar using **[tqdm](https://github.com/tqdm/tqdm)** 
+You can get realtime information about transcoding by passing a callable method to the `package` method:
+```python
+import ffmpeg_streaming
+from tqdm import tqdm
+
+# initialize the tqdm object
+bar = tqdm(total=100)
+last_per = 0
+
+def progress(percentage, ffmpeg):
+    # update the progress bar
+    global last_per
+    if last_per != percentage:
+        bar.update(percentage - last_per)
+        last_per = percentage
+
+
+(
+    ffmpeg_streaming
+        .hls(video)
+        .format('libx264')
+        .auto_rep()
+        .package('/var/www/media/videos/hls/hls-stream.m3u8', progress=progress)
+)
+
+# close the progress bar
+bar.close()
+```
 ### Saving Files
 There are two ways to save your files.
 
@@ -219,10 +248,10 @@ It can also be null. The default path to save files is the input path.
         .package(progress=progress)
 )
 ```
-**NOTE:** If you open a file from a cloud and do not pass a path to save the file to your local machine, you will have to pass a local path to the `save` method.
+**NOTE:** If you open a file from a cloud and do not pass a path to save the file to your local machine, you will have to pass a local path to the `package` method.
 
 #### 2. To Clouds
-You can save your files to a cloud by passing an array of cloud configuration to the `package` method. 
+You can save your files to a cloud by passing a tuple of cloud configuration to the `package` method. 
 
 In **[this page](https://video.aminyazdanpanah.com/python/start/clouds?r=save)**, you will find some examples of saving files to **[Amazon S3](https://aws.amazon.com/s3)**, **[Google Cloud Storage](https://console.cloud.google.com/storage)**, **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**, and a custom cloud. 
 
@@ -322,7 +351,7 @@ import ffmpeg_streaming
         .hls('https://www.aminyazdanpanah.com/PATH/TO/DASH-MANIFEST.MPD')
         .format('libx264')
         .auto_rep(heights=[360, 240])
-        .package('/var/www/media/hls-stream.mpd', progress=progress)
+        .package('/var/www/media/hls-stream.m3u8', progress=progress)
 )
 ```
 
