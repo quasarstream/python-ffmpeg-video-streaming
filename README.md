@@ -195,7 +195,7 @@ def progress(percentage, ffmpeg):
 ##### Output From a Terminal:
 ![transcoding](https://github.com/aminyazdanpanah/aminyazdanpanah.github.io/blob/master/video-streaming/transcoding.gif?raw=true "transcoding" )
 
-##### Show a progress bar using **[tqdm](https://github.com/tqdm/tqdm)** 
+#### Show a progress bar using **[tqdm](https://github.com/tqdm/tqdm)** 
 You can get realtime information about transcoding by passing a callable method to the `package` method:
 ```python
 import ffmpeg_streaming
