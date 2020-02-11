@@ -55,7 +55,8 @@ def _save_hls_master_playlist(output, master_playlist_path, dirname, name):
 class Export(object):
     video_format = str
     audio_format = str
-    _ffprobe = dict
+    _ffprobe = None
+    _ffmpeg = None
     reps = list
     output = str
     _is_tmp_directory = False
@@ -113,14 +114,14 @@ class Export(object):
             _save_hls_master_playlist(output, self.master_playlist_path, dirname, name)
 
         with Process(progress, build_command(cmd, self), c_stdout, c_stderr, c_stdin) as process:
-            p = process.run(c_input, timeout)
+            Export._ffmpeg = process.run(c_input, timeout)
 
         save_to_clouds(clouds, dirname)
 
         if output is not None and clouds is not None:
             shutil.move(dirname, os.path.dirname(output))
 
-        return self, p, Export._ffprobe
+        return self
 
 
 class HLS(Export):
@@ -133,8 +134,8 @@ class HLS(Export):
         self.hls_key_info_file = options.pop('hls_key_info_file', None)
         super(HLS, self).__init__(filename, options)
 
-    def encryption(self, url, path, length=16):
-        self.hls_key_info_file = generate_key_info_file(url, path, length)
+    def encryption(self, url, path, key_info_path=None, length=16):
+        self.hls_key_info_file = generate_key_info_file(url, path, key_info_path, length)
         return self
 
 

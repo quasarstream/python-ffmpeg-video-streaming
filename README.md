@@ -19,7 +19,7 @@ This package uses the **[FFmpeg](https://ffmpeg.org)** to package media content 
   - [Opening a Resource](#opening-a-resource)
   - [DASH](#dash)
   - [HLS](#hls)
-    - [Encrypted HLS](#encrypted-hls)
+    - [DRM (Encrypted HLS)](#drm-encrypted-hls)
   - [Progress](#progress)
   - [Saving Files](#saving-files)
   - [Probe](#probe)
@@ -46,13 +46,13 @@ pip install python-ffmpeg-video-streaming
 ### Opening a Resource
 There are two ways to open a file:
 
-#### 1. From a FFmpeg supported resources
+#### 1. From a FFmpeg supported resource
 You can pass a local path of video(or a supported resource) to the method(`hls` or `dash`):
 ```python
 video = '/var/www/media/videos/video.mp4'
 ```
 
-For opening a file from a supported FFmpeg resource such as `http`, `ftp`, `pipe`, `rtmp` and etc. please see **[FFmpeg Protocols Documentation](https://ffmpeg.org/ffmpeg-protocols.html)**
+For opening a file from a supported resource such as `http`, `ftp`, `pipe`, `rtmp` and etc. please see **[FFmpeg Protocols Documentation](https://ffmpeg.org/ffmpeg-protocols.html)**
 
 **For example:** 
 ```python
@@ -142,10 +142,13 @@ r_720p = Representation(width=1280, height=720, kilo_bitrate=2048)
 ```
 **NOTE:** You cannot use HEVC(libx265) and VP9 formats for HLS packaging.
 
-#### Encrypted HLS
+#### DRM (Encrypted HLS)
 The encryption process requires some kind of secret (key) together with an encryption algorithm. HLS uses AES in cipher block chaining (CBC) mode. This means each block is encrypted using the ciphertext of the preceding block. [Learn more](https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation)
 
 You must specify a path to save a random key to your local machine and also a URL(or a path) to access the key on your website(the key you will save must be accessible from your website). You must pass both these parameters to the `encryption` method:
+
+##### Single Key
+The following code generates a key for all TS files.
 
 ```python
 import ffmpeg_streaming
@@ -166,7 +169,46 @@ url = 'https://www.aminyazdanpanah.com/PATH_TO_KEY_DIRECTORY/random_key.key'
         .package('/var/www/media/videos/hls/hls-stream.m3u8')
 )
 ```
-**NOTE:** It is very important to protect your key on your website using a token or a session/cookie(****It is highly recommended****).    
+
+##### Key Rotation
+The code below, allows you to encrypt each TS file with a new encryption key. This can improve security and allows for more flexibility. You can also modify the code to use a different key for each set of segments(i.e. if 10 TS files has been generated then rotate the key) or you can generate a new encryption key at every periodic time(i.e. every 10 seconds).
+```python
+import tempfile
+from os.path import join
+from random import randrange
+
+import ffmpeg_streaming
+from ffmpeg_streaming.key_info_file import generate_key_info_file
+
+save_to = '/home/public_html/PATH_TO_KEY_DIRECTORY/key_rotation'
+url = 'https://www.aminyazdanpanah.com/PATH_TO_KEY_DIRECTORY/key_rotation'
+key_info_file_path = join(tempfile.gettempdir(), str(randrange(1000, 100000)) + '_py_ff_vi_st.tmp')
+k_num = 1
+
+
+def k_format(name, num):
+    return str(name) + "_" + str(num)
+
+
+def progress(per, ffmpeg):
+    global k_num
+    if ".ts' for writing" in ffmpeg:
+        # A new TS file has been created!
+        generate_key_info_file(k_format(url, k_num), k_format(save_to, k_num), key_info_path=key_info_file_path)
+        k_num += 1
+
+(
+    ffmpeg_streaming
+        .hls(video, hls_flags="periodic_rekey")
+        .encryption(url, save_to, key_info_path=key_info_file_path)
+        .format('libx264')
+        .auto_rep()
+        .package('/var/www/media/videos/hls/hls-stream.m3u8', progress=progress)
+)
+```
+**NOTE:** It is very important to protect your key(s) on your website using a token or a session/cookie(****It is highly recommended****).    
+
+**NOTE:** However HLS supports AES encryption, that you can encrypt your streams, it is not a full DRM solution. If you want to use a full DRM solution, I recommend to try **[FairPlay Streaming](https://developer.apple.com/streaming/fps/)** solution which then securely exchange keys, and protect playback on devices.
 
 See **[HLS examples](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/tree/master/examples/hls)** and **[HLS options](https://ffmpeg.org/ffmpeg-formats.html#hls-2)** for more information.
 
@@ -276,7 +318,7 @@ A path can also be passed to save a copy of files to your local machine.
                  progress=progress)
 )
 ```
-**NOTE:** This option(Save To Clouds) is only for **[VOD](https://en.wikipedia.org/wiki/Video_on_demand)** (it does not support live streaming).
+**NOTE:** This option(Save To Clouds) is only valid for **[VOD](https://en.wikipedia.org/wiki/Video_on_demand)** (it does not support live streaming).
 
 **Schema:** The relation is `one-to-many`.
 

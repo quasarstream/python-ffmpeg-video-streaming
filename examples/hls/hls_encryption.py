@@ -62,7 +62,7 @@ def main():
     (
         ffmpeg_streaming
             .hls(args.input)
-            .encryption(args.key, args.url)
+            .encryption(args.url, args.key)
             .format('libx264')
             .auto_rep()
             .package(args.output, progress=transcode_progress)
