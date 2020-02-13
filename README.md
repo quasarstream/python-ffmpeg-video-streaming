@@ -52,7 +52,7 @@ You can pass a local path of video(or a supported resource) to the method(`hls` 
 video = '/var/www/media/videos/video.mp4'
 ```
 
-For opening a file from a supported resource such as `http`, `ftp`, `pipe`, `rtmp` and etc. please see **[FFmpeg Protocols Documentation](https://ffmpeg.org/ffmpeg-protocols.html)**
+Please see **[FFmpeg Protocols Documentation](https://ffmpeg.org/ffmpeg-protocols.html)** for opening a file from a supported resource such as `http`, `ftp`, `pipe`, `rtmp` and etc. 
 
 **For example:** 
 ```python
@@ -148,7 +148,7 @@ The encryption process requires some kind of secret (key) together with an encry
 You must specify a path to save a random key to your local machine and also a URL(or a path) to access the key on your website(the key you will save must be accessible from your website). You must pass both these parameters to the `encryption` method:
 
 ##### Single Key
-The following code generates a key for all TS files.
+The following code generates a key for all TS files in a stream.
 
 ```python
 import ffmpeg_streaming
@@ -171,7 +171,7 @@ url = 'https://www.aminyazdanpanah.com/PATH_TO_KEY_DIRECTORY/random_key.key'
 ```
 
 ##### Key Rotation
-The code below, allows you to encrypt each TS file with a new encryption key. This can improve security and allows for more flexibility. You can also modify the code to use a different key for each set of segments(i.e. if 10 TS files has been generated then rotate the key) or you can generate a new encryption key at every periodic time(i.e. every 10 seconds).
+This technique allows you to encrypt each TS file with a new encryption key. This can improve security and allows for more flexibility. You can also use a different key for each set of segments(e.g. if 10 TS files have been generated then rotate the key) or you can generate a new encryption key at every periodic time(e.g. every 10 seconds).
 ```python
 import tempfile
 from os.path import join
@@ -185,10 +185,8 @@ url = 'https://www.aminyazdanpanah.com/PATH_TO_KEY_DIRECTORY/key_rotation'
 key_info_file_path = join(tempfile.gettempdir(), str(randrange(1000, 100000)) + '_py_ff_vi_st.tmp')
 k_num = 1
 
-
 def k_format(name, num):
     return str(name) + "_" + str(num)
-
 
 def progress(per, ffmpeg):
     global k_num
@@ -208,7 +206,7 @@ def progress(per, ffmpeg):
 ```
 **NOTE:** It is very important to protect your key(s) on your website using a token or a session/cookie(****It is highly recommended****).    
 
-**NOTE:** However HLS supports AES encryption, that you can encrypt your streams, it is not a full DRM solution. If you want to use a full DRM solution, I recommend to try **[FairPlay Streaming](https://developer.apple.com/streaming/fps/)** solution which then securely exchange keys, and protect playback on devices.
+**NOTE:** However HLS supports AES encryption, which you can encrypt your streams, it is not a full DRM solution. If you want to use a full DRM solution, I recommend trying **[FairPlay Streaming](https://developer.apple.com/streaming/fps/)** solution which then securely exchange keys, and protect playback on devices.
 
 See **[HLS examples](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/tree/master/examples/hls)** and **[HLS options](https://ffmpeg.org/ffmpeg-formats.html#hls-2)** for more information.
 
@@ -220,7 +218,7 @@ import ffmpeg_streaming
 
 
 def progress(percentage, ffmpeg):
-    # You can update a field in your database
+    # You can update a field in your database or you can log it to a file(e.x. logging.debug(ffmpeg))
     # You can also create a socket connection and show a progress bar to users
     sys.stdout.write("\rTranscoding...(%s%%)[%s%s]" % (percentage, '#' * percentage, '-' * (100 - percentage)))
     sys.stdout.flush()
@@ -238,7 +236,6 @@ def progress(percentage, ffmpeg):
 ![transcoding](https://github.com/aminyazdanpanah/aminyazdanpanah.github.io/blob/master/video-streaming/transcoding.gif?raw=true "transcoding" )
 
 #### Show a progress bar using **[tqdm](https://github.com/tqdm/tqdm)** 
-You can get realtime information about transcoding by passing a callable method to the `package` method:
 ```python
 import ffmpeg_streaming
 from tqdm import tqdm
@@ -266,6 +263,8 @@ def progress(percentage, ffmpeg):
 # close the progress bar
 bar.close()
 ```
+**NOTE:** Please see **[tqdm documentation](https://github.com/tqdm/tqdm)** for more information.
+
 ### Saving Files
 There are two ways to save your files.
 
