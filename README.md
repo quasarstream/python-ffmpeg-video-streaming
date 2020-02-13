@@ -52,7 +52,7 @@ You can pass a local path of video(or a supported resource) to the method(`hls` 
 video = '/var/www/media/videos/video.mp4'
 ```
 
-Please see **[FFmpeg Protocols Documentation](https://ffmpeg.org/ffmpeg-protocols.html)** for opening a file from a supported resource such as `http`, `ftp`, `pipe`, `rtmp` and etc. 
+Please see **[FFmpeg Protocols Documentation](https://ffmpeg.org/ffmpeg-protocols.html)** for more information about supported resources such as `http`, `ftp`, `pipe`, `rtmp` and etc. 
 
 **For example:** 
 ```python
