@@ -5,7 +5,7 @@ examples.clouds.cloud
 Open a file from a cloud and save dash files to it
 
 
-:copyright: (c) 2019 by Amin Yazdanpanah.
+:copyright: (c) 2020 by Amin Yazdanpanah.
 :website: https://www.aminyazdanpanah.com
 :email: contact@aminyazdanpanah.com
 :license: MIT, see LICENSE for more details.
@@ -23,6 +23,10 @@ import requests
 
 import ffmpeg_streaming
 from ffmpeg_streaming import Clouds
+
+
+logging.basicConfig(filename='streaming.log', level=logging.NOTSET, format='[%(asctime)s] %(levelname)s: %(message)s')
+start_time = time.time()
 
 
 class Cloud(Clouds):
@@ -107,10 +111,6 @@ def cloud():
     to_cloud = (_cloud, upload_options)
 
     return from_cloud, to_cloud
-
-
-logging.basicConfig(filename='streaming.log', level=logging.NOTSET, format='[%(asctime)s] %(levelname)s: %(message)s')
-start_time = time.time()
 
 
 def per_to_time_left(percentage):

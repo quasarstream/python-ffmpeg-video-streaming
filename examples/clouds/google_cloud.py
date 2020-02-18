@@ -5,7 +5,7 @@ examples.clouds.google_cloud
 Open a file from a google cloud and save hls files to it
 
 
-:copyright: (c) 2019 by Amin Yazdanpanah.
+:copyright: (c) 2020 by Amin Yazdanpanah.
 :website: https://www.aminyazdanpanah.com
 :email: contact@aminyazdanpanah.com
 :license: MIT, see LICENSE for more details.
@@ -26,51 +26,63 @@ import ffmpeg_streaming
 from ffmpeg_streaming import Clouds
 
 
+logging.basicConfig(filename='streaming.log', level=logging.NOTSET, format='[%(asctime)s] %(levelname)s: %(message)s')
+start_time = time.time()
+
+
 class GoogleCloudStorage(Clouds):
-    def __init__(self, bucket_name, **kwargs):
-        storage_client = storage.Client(**kwargs)
-        self.bucket_name = bucket_name
-        self.bucket = storage_client.get_bucket(bucket_name)
+    def __init__(self, **options):
+        self.client = storage.Client(**options)
 
     def upload_directory(self, directory, **options):
+        bucket_name = options.pop('bucket_name', None)
+        if bucket_name is None:
+            raise ValueError('You should pass a bucket name')
+
+        bucket = self.client.get_bucket(bucket_name)
+
         files = [f for f in listdir(directory) if isfile(join(directory, f))]
 
         for file in files:
-            blob = self.bucket.blob(self.bucket_name + file, options)
+            blob = bucket.blob(bucket_name + file, **options)
             blob.upload_from_filename(join(directory, file))
 
     def download(self, filename=None, **options):
+        bucket_name = options.pop('bucket_name', None)
+        if bucket_name is None:
+            raise ValueError('You should pass a bucket name')
+
+        bucket = self.client.get_bucket(bucket_name)
+
         if filename is None:
-            tmp = tempfile.NamedTemporaryFile(suffix='_py_ff_vi_st.tmp', delete=False)
-            filename = tmp.name
+            with tempfile.NamedTemporaryFile(suffix='_py_ff_vi_st.tmp', delete=False) as tmp:
+                filename = tmp.name
 
         object_name = options.pop('object_name', None)
         if object_name is None:
             raise ValueError('You should pass an object name')
 
-        blob = self.bucket.get_blob(object_name, options)
+        blob = bucket.get_blob(object_name, options)
         blob.download_to_filename(filename)
 
         return filename
 
 
 def google_cloud(bucket_name, object_name):
-    cloud = GoogleCloudStorage(bucket_name)
+    # see https://cloud.google.com/storage/docs/authentication to authenticate your service
+    cloud = GoogleCloudStorage()
     download_options = {
-        'object_name': object_name,
+        'bucket_name': bucket_name,
+        'key': object_name,
     }
     upload_options = {
-        'encryption': 'BASE64_ENCRYPTION',
+        'bucket_name': bucket_name,
     }
 
     from_google_cloud = (cloud, download_options, None)
     to_google_cloud = (cloud, upload_options)
 
     return from_google_cloud, to_google_cloud
-
-
-logging.basicConfig(filename='streaming.log', level=logging.NOTSET, format='[%(asctime)s] %(levelname)s: %(message)s')
-start_time = time.time()
 
 
 def per_to_time_left(percentage):
@@ -87,7 +99,7 @@ def per_to_time_left(percentage):
 def transcode_progress(per, ffmpeg):
     # You can update a field in your database or log it to a file
     # You can also create a socket connection and show a progress bar to users
-    logging.info(ffmpeg)
+    # logging.info(ffmpeg)
     sys.stdout.write("\rTranscoding...(%s%%) %s [%s%s]" % (per, per_to_time_left(per), '#' * per, '-' * (100 - per)))
     sys.stdout.flush()
 

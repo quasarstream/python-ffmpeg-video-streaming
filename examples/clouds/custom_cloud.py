@@ -5,7 +5,7 @@ examples.clouds.cloud
 Open a file from a custom cloud and save dash files to it
 
 
-:copyright: (c) 2019 by Amin Yazdanpanah.
+:copyright: (c) 2020 by Amin Yazdanpanah.
 :website: https://www.aminyazdanpanah.com
 :email: contact@aminyazdanpanah.com
 :license: MIT, see LICENSE for more details.
@@ -17,6 +17,10 @@ import time
 
 import ffmpeg_streaming
 from ffmpeg_streaming import Clouds
+
+
+logging.basicConfig(filename='streaming.log', level=logging.NOTSET, format='[%(asctime)s] %(levelname)s: %(message)s')
+start_time = time.time()
 
 
 class CustomCloud(Clouds):
@@ -46,10 +50,6 @@ def custom_cloud():
     return from_custom_cloud, to_custom_cloud
 
 
-logging.basicConfig(filename='streaming.log', level=logging.NOTSET, format='[%(asctime)s] %(levelname)s: %(message)s')
-start_time = time.time()
-
-
 def per_to_time_left(percentage):
     if percentage != 0:
         diff_time = time.time() - start_time
@@ -64,7 +64,7 @@ def per_to_time_left(percentage):
 def transcode_progress(per, ffmpeg):
     # You can update a field in your database or log it to a file
     # You can also create a socket connection and show a progress bar to users
-    logging.info(ffmpeg)
+    # logging.info(ffmpeg)
     sys.stdout.write("\rTranscoding...(%s%%) %s [%s%s]" % (per, per_to_time_left(per), '#' * per, '-' * (100 - per)))
     sys.stdout.flush()
 

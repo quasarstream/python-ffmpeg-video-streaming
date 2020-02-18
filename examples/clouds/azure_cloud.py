@@ -5,7 +5,7 @@ examples.clouds.azure_clod
 Open a file from a Microsoft Azure cloud and save hls files to it
 
 
-:copyright: (c) 2019 by Amin Yazdanpanah.
+:copyright: (c) 2020 by Amin Yazdanpanah.
 :website: https://www.aminyazdanpanah.com
 :email: contact@aminyazdanpanah.com
 :license: MIT, see LICENSE for more details.
@@ -26,30 +26,53 @@ import ffmpeg_streaming
 from ffmpeg_streaming import Clouds
 
 
+logging.basicConfig(filename='streaming.log', level=logging.NOTSET, format='[%(asctime)s] %(levelname)s: %(message)s')
+start_time = time.time()
+
+
 class MicrosoftAzure(Clouds):
     def __init__(self, **options):
         self.block_blob_service = BlockBlobService(**options)
 
     def upload_directory(self, directory, **options):
-        files = [f for f in listdir(directory) if isfile(join(directory, f))]
         container = options.pop('container', None)
-        for file in files:
-            self.block_blob_service.create_blob_from_path(container, file, join(directory, file))
+        if container is None:
+            raise ValueError('You should pass a container name')
+
+        files = [f for f in listdir(directory) if isfile(join(directory, f))]
+
+        try:
+            for file in files:
+                self.block_blob_service.create_blob_from_path(container, file, join(directory, file))
+        except:
+            error = "An error occurred while uploading the directory"
+            logging.error(error)
+            raise RuntimeError(error)
 
     def download(self, filename=None, **options):
-        if filename is None:
-            tmp = tempfile.NamedTemporaryFile(suffix='_py_ff_vi_st.tmp', delete=False)
-            filename = tmp.name
-
         container = options.pop('container', None)
         blob = options.pop('blob', None)
 
-        self.block_blob_service.get_blob_to_path(container, blob, filename)
+        if container is None or blob is None:
+            raise ValueError('You should pass a container name and a blob name')
+
+        if filename is None:
+            with tempfile.NamedTemporaryFile(suffix='_py_ff_vi_st.tmp', delete=False) as tmp:
+                filename = tmp.name
+
+        try:
+            self.block_blob_service.get_blob_to_path(container, blob, filename)
+            logging.info("The " + filename + " file was downloaded")
+        except:
+            error = "An error occurred while downloading the file"
+            logging.error(error)
+            raise RuntimeError(error)
 
         return filename
 
 
 def azure_cloud(container, blob):
+    # see https://docs.microsoft.com/en-us/azure/storage/common/storage-account-keys-manage to get credentials
     cloud = MicrosoftAzure(account_name='account_name', account_key='account_key')
 
     download_options = {
@@ -66,10 +89,6 @@ def azure_cloud(container, blob):
     return from_azure_cloud, to_azure_cloud
 
 
-logging.basicConfig(filename='streaming.log', level=logging.NOTSET, format='[%(asctime)s] %(levelname)s: %(message)s')
-start_time = time.time()
-
-
 def per_to_time_left(percentage):
     if percentage != 0:
         diff_time = time.time() - start_time
@@ -84,7 +103,7 @@ def per_to_time_left(percentage):
 def transcode_progress(per, ffmpeg):
     # You can update a field in your database or log it to a file
     # You can also create a socket connection and show a progress bar to users
-    logging.info(ffmpeg)
+    # logging.info(ffmpeg)
     sys.stdout.write("\rTranscoding...(%s%%) %s [%s%s]" % (per, per_to_time_left(per), '#' * per, '-' * (100 - per)))
     sys.stdout.flush()
 

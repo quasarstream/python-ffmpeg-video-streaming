@@ -5,7 +5,7 @@ examples.clouds.google_cloud
 Open a file from a local path and save dash files to multiple clouds
 
 
-:copyright: (c) 2019 by Amin Yazdanpanah.
+:copyright: (c) 2020 by Amin Yazdanpanah.
 :website: https://www.aminyazdanpanah.com
 :email: contact@aminyazdanpanah.com
 :license: MIT, see LICENSE for more details.
@@ -39,7 +39,7 @@ def per_to_time_left(percentage):
 def transcode_progress(per, ffmpeg):
     # You can update a field in your database or log it to a file
     # You can also create a socket connection and show a progress bar to users
-    logging.info(ffmpeg)
+    # logging.info(ffmpeg)
     sys.stdout.write("\rTranscoding...(%s%%) %s [%s%s]" % (per, per_to_time_left(per), '#' * per, '-' * (100 - per)))
     sys.stdout.flush()
 
