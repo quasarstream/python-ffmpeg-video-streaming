@@ -62,10 +62,11 @@ video = 'https://www.aminyazdanpanah.com/PATH/TO/VIDEO.MP4'
 #### 2. From Clouds
 You can open a file from a cloud by passing a tuple of cloud configuration to the method. 
 
-In **[this page](https://video.aminyazdanpanah.com/python/start/clouds?r=open)**, you will find some examples of opening a file from **[Amazon S3](https://aws.amazon.com/s3)**, **[Google Cloud Storage](https://console.cloud.google.com/storage)**, **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**, and a custom cloud. 
 ```python
 video = (google_cloud, download_options, None)
 ```
+
+Please visit **[this page](https://video.aminyazdanpanah.com/python/start/clouds?r=open)** to see some examples of opening a file from **[Amazon S3](https://aws.amazon.com/s3)**, **[Google Cloud Storage](https://console.cloud.google.com/storage)**, **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**, and a custom cloud. 
 
 ### DASH
 **[Dynamic Adaptive Streaming over HTTP (DASH)](http://dashif.org/)**, also known as MPEG-DASH, is an adaptive bitrate streaming technique that enables high quality streaming of media content over the Internet delivered from conventional HTTP web servers. [Learn more](https://en.wikipedia.org/wiki/Dynamic_Adaptive_Streaming_over_HTTP)
@@ -294,7 +295,6 @@ It can also be null. The default path to save files is the input path.
 #### 2. To Clouds
 You can save your files to a cloud by passing a tuple of cloud configuration to the `package` method. 
 
-In **[this page](https://video.aminyazdanpanah.com/python/start/clouds?r=save)**, you will find some examples of saving files to **[Amazon S3](https://aws.amazon.com/s3)**, **[Google Cloud Storage](https://console.cloud.google.com/storage)**, **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**, and a custom cloud. 
 
 ```python
 (
@@ -317,6 +317,8 @@ A path can also be passed to save a copy of files to your local machine.
                  progress=progress)
 )
 ```
+Please visit **[this page](https://video.aminyazdanpanah.com/python/start/clouds?r=save)** to see some examples of saving files to **[Amazon S3](https://aws.amazon.com/s3)**, **[Google Cloud Storage](https://console.cloud.google.com/storage)**, **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**, and a custom cloud. 
+
 **NOTE:** This option(Save To Clouds) is only valid for **[VOD](https://en.wikipedia.org/wiki/Video_on_demand)** (it does not support live streaming).
 
 **Schema:** The relation is `one-to-many`.

@@ -27,17 +27,16 @@ from .auto_rep import AutoRepresentation
 
 def _get_paths(output, _input, clouds):
     is_tmp = False
-
-    if output is not None:
+    if clouds is not None:
+        is_tmp = True
+        basename = os.path.basename(output if output is not None else _input)
+        output = os.path.join(tempfile.mkdtemp(prefix='ffmpeg_streaming_'), basename)
+        dirname, name = get_path_info(output)
+    elif output is not None:
         dirname, name = get_path_info(output)
     else:
         dirname, name = get_path_info(_input)
         output = _input
-    if clouds is not None:
-        is_tmp = True
-        basename = os.path.basename(output)
-        output = os.path.join(tempfile.mkdtemp(suffix='ffmpeg_streaming'), basename)
-        dirname, name = get_path_info(output)
 
     return output, dirname, name, is_tmp
 
