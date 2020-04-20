@@ -5,7 +5,7 @@ ffmpeg_streaming._ffprobe
 Probe the video
 
 
-:copyright: (c) 2019 by Amin Yazdanpanah.
+:copyright: (c) 2020 by Amin Yazdanpanah.
 :website: https://www.aminyazdanpanah.com
 :email: contact@aminyazdanpanah.com
 :license: MIT, see LICENSE for more details.
@@ -14,7 +14,9 @@ Probe the video
 import json
 import logging
 import subprocess
-from .streams import Streams
+
+from ._media_streams import Streams
+from ._media_property import Size, Bitrate
 
 
 class FFProbe:
@@ -41,12 +43,32 @@ class FFProbe:
         with open(path, 'w') as probe:
             probe.write(self.out.decode('utf-8'))
 
+    @property
+    def video_size(self) -> Size:
+        width = int(self.streams().video().get('width', 0))
+        height = int(self.streams().video().get('height', 0))
+
+        if width == 0 or height == 0:
+            raise RuntimeError('It could not determine the value of width/height')
+
+        return Size(width, height)
+
+    @property
+    def bitrate(self, _type: str = "k") -> Bitrate:
+        overall = int(self.format().get('bit_rate', 0))
+        video = int(self.streams().video().get('bit_rate', 0))
+        audio = int(self.streams().audio().get('bit_rate', 0))
+
+        if overall == 0:
+            raise RuntimeError('It could not determine the value of bitrate')
+
+        return Bitrate(video, audio, overall, type=_type)
+
 
 def ffprobe(filename, cmd='ffprobe'):
     return FFProbe(filename, cmd)
 
 
 __all__ = [
-    'ffprobe',
     'FFProbe'
 ]

@@ -7,11 +7,10 @@
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat)](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/blob/master/LICENSE)
 
 ## Overview
-This package uses the **[FFmpeg](https://ffmpeg.org)** to package media content for online streaming such as DASH and HLS. You can also use **[DRM](https://en.wikipedia.org/wiki/Digital_rights_management)** for HLS packaging. There are several options to open a file from clouds and save files to them as well.
-
-- The best way to learn how to use this library is to review ****[the examples](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/tree/master/examples)**** and browse the source code.
-- For using clouds such as **[Amazon S3](https://aws.amazon.com/s3)**, **[Google Cloud Storage](https://console.cloud.google.com/storage)**, **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**, and a custom cloud, please visit **[this page](https://video.aminyazdanpanah.com/python/start/clouds)**.
-
+This package uses the **[FFmpeg](https://ffmpeg.org)** to package media content for online streaming such as DASH and HLS. You can also use **[DRM](https://en.wikipedia.org/wiki/Digital_rights_management)** for HLS packaging. There are several options to open a file from a cloud and save files to clouds as well.
+- **[Full Documentation](https://video.aminyazdanpanah.com/python/)** is available describing all features and components.
+- As of version `0.1.0`, almost all files have been renewed, see the documentation for more information. If you find any bugs in the library, please file an issue. Pull requests are also welcome.
+ 
 **Contents**
 - [Requirements](#requirements)
 - [Installation](#installation)
@@ -19,11 +18,10 @@ This package uses the **[FFmpeg](https://ffmpeg.org)** to package media content 
   - [Opening a Resource](#opening-a-resource)
   - [DASH](#dash)
   - [HLS](#hls)
-    - [DRM (Encrypted HLS)](#drm-encrypted-hls)
-  - [Progress](#progress)
+    - [Encryption(DRM)](#encryptiondrm)
+  - [Transcoding](#transcoding)
   - [Saving Files](#saving-files)
-  - [Probe](#probe)
-  - [Live](#live)
+  - [Metadata](#metadata)
   - [Conversion](#conversion)
 - [Several Open Source Players](#several-open-source-players)
 - [Contributing and Reporting Bugs](#contributing-and-reporting-bugs)
@@ -33,388 +31,283 @@ This package uses the **[FFmpeg](https://ffmpeg.org)** to package media content 
 ## Requirements
 1. This version of the package is only compatible with **[Python 3.6](https://www.python.org/downloads/)** or higher.
 
-2. To use this package, you need to **[install the FFmpeg](https://ffmpeg.org/download.html)**. You will need both FFMpeg and FFProbe binaries to use it.
+2. To use this package, you need to **[install the FFmpeg](https://ffmpeg.org/download.html)**. You will need both FFmpeg and FFProbe binaries to use it.
 
 ## Installation
-The latest version of `ffmpeg-streaming` can be acquired via pip:
-```
+Install the package via **[pip](https://pypi.org/project/pip/)**:
+``` bash
 pip install python-ffmpeg-video-streaming
+```
+Alternatively, add the dependency directly to your `requirements.txt` file:
+``` txt
+python-ffmpeg-video-streaming==0.1.0
 ```
 
 ## Quickstart
-
-### Opening a Resource
-There are two ways to open a file:
-
-#### 1. From a FFmpeg supported resource
-You can pass a local path of video(or a supported resource) to the method(`hls` or `dash`):
+First of all, you need to import the package in your code:
 ```python
-video = '/var/www/media/videos/video.mp4'
+import ffmpeg_streaming
 ```
 
-Please see **[FFmpeg Protocols Documentation](https://ffmpeg.org/ffmpeg-protocols.html)** for more information about supported resources such as `http`, `ftp`, `pipe`, `rtmp` and etc. 
+### Opening a Resource
+There are several ways to open a resource.
+
+#### 1. From a FFmpeg supported resource
+You can pass a local path of video(or a supported resource) to the `open` method:
+```python
+video = ffmpeg_streaming.input('/var/media/video.mp4')
+```
+
+See **[FFmpeg Protocols Documentation](https://ffmpeg.org/ffmpeg-protocols.html)** for more information about supported resources such as http, ftp, and etc.
 
 **For example:** 
 ```python
-video = 'https://www.aminyazdanpanah.com/PATH/TO/VIDEO.MP4'
+video = ffmpeg_streaming.input('https://www.aminyazdanpanah.com/?"PATH TO A VIDEO FILE" or "PATH TO A LIVE HTTP STREAM"')
 ```
 
 #### 2. From Clouds
-You can open a file from a cloud by passing a tuple of cloud configuration to the method. 
+You can open a file from a cloud by passing an array of cloud configuration to the `openFromCloud` method. 
 
 ```python
-video = (google_cloud, download_options, None)
+from ffmpeg_streaming import S3
+s3 = S3(aws_access_key_id='YOUR_KEY_ID', aws_secret_access_key='YOUR_KEY_SECRET', region_name='YOUR_REGION')
+
+video = ffmpeg_streaming.input(s3, bucket_name="bucket-name", key="video.mp4")
 ```
+Visit **[this page](https://video.aminyazdanpanah.com/python/start/clouds?r=open)** to see some examples of opening a file from **[Amazon S3](https://aws.amazon.com/s3)**, **[Google Cloud Storage](https://console.cloud.google.com/storage)**, **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**, and a custom cloud.
 
-Please visit **[this page](https://video.aminyazdanpanah.com/python/start/clouds?r=open)** to see some examples of opening a file from **[Amazon S3](https://aws.amazon.com/s3)**, **[Google Cloud Storage](https://console.cloud.google.com/storage)**, **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**, and a custom cloud. 
+#### 3. Capture Webcam or Screen (Live Streaming)
+You can pass a name of the supported, connected capture device(i.e. name of webcam, camera, screen and etc) to the `capture` method to stream a live media over network. 
 
+ ```python
+video = ffmpeg_streaming.input('CAMERA NAME OR SCREEN NAME', capture=True)
+ ```
+To list the supported, connected capture devices, see **[FFmpeg Capture Webcam](https://trac.ffmpeg.org/wiki/Capture/Webcam)** and **[FFmpeg Capture Desktop](https://trac.ffmpeg.org/wiki/Capture/Desktop)**.
+ 
+ 
 ### DASH
 **[Dynamic Adaptive Streaming over HTTP (DASH)](http://dashif.org/)**, also known as MPEG-DASH, is an adaptive bitrate streaming technique that enables high quality streaming of media content over the Internet delivered from conventional HTTP web servers. [Learn more](https://en.wikipedia.org/wiki/Dynamic_Adaptive_Streaming_over_HTTP)
  
 Create DASH files:
 ```python
-import ffmpeg_streaming
+from ffmpeg_streaming import Formats
 
-(
-    ffmpeg_streaming
-        .dash(video, adaption='"id=0,streams=v id=1,streams=a"')
-        .format('libx265')
-        .auto_rep()
-        .package('/var/www/media/videos/dash/dash-stream.mpd')
-)
+dash = video.dash(Formats.hevc())
+dash.auto_generate_representations()
+dash.output('/var/media/dash.mpd')
 ```
 Generate representations manually:
 ```python
-import ffmpeg_streaming
-from ffmpeg_streaming import Representation
+from ffmpeg_streaming import Formats, Bitrate, Representation, Size
 
-r_144p  = Representation(width=256, height=144, kilo_bitrate=95)
-r_240p  = Representation(width=426, height=240, kilo_bitrate=150)
-r_360p  = Representation(width=640, height=360, kilo_bitrate=276)
-r_480p  = Representation(width=854, height=480, kilo_bitrate=750)
-r_720p  = Representation(width=1280, height=720, kilo_bitrate=2048)
-r_1080p = Representation(width=1920, height=1080, kilo_bitrate=4096)
-r_2k    = Representation(width=2560, height=1440, kilo_bitrate=6144)
-r_4k    = Representation(width=3840, height=2160, kilo_bitrate=17408)
+_144p  = Representation(Size(256, 144), Bitrate(95 * 1024, 64 * 1024))
+_240p  = Representation(Size(426, 240), Bitrate(150 * 1024, 94 * 1024))
+_360p  = Representation(Size(640, 360), Bitrate(276 * 1024, 128 * 1024))
+_480p  = Representation(Size(854, 480), Bitrate(750 * 1024, 192 * 1024))
+_720p  = Representation(Size(1280, 720), Bitrate(2048 * 1024, 320 * 1024))
+_1080p = Representation(Size(1920, 1080), Bitrate(4096 * 1024, 320 * 1024))
+_2k    = Representation(Size(2560, 1440), Bitrate(6144 * 1024, 320 * 1024))
+_4k    = Representation(Size(3840, 2160), Bitrate(17408 * 1024, 320 * 1024))
 
-(
-    ffmpeg_streaming
-        .dash(video, adaption='"id=0,streams=v id=1,streams=a"')
-        .format('libx265')
-        .add_rep(r_144p, r_240p, r_360p, r_480p, r_720p, r_1080p, r_2k, r_4k)
-        .package('/var/www/media/videos/dash/dash-stream.mpd')
-)
-
+dash = video.dash(Formats.hevc())
+dash.representations(_144p, _240p, _360p, _480p, _720p, _1080p, _2k, _4k)
+dash.output('/var/media/dash.mpd')
 ```
-See **[DASH examples](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/tree/master/examples/dash)** and **[DASH options](https://ffmpeg.org/ffmpeg-formats.html#dash-2)** for more information.
+See **[DASH section](https://video.aminyazdanpanah.com/python/start?r=dash#dash)** in the documentation, for more examples.
 
 ### HLS
 **[HTTP Live Streaming (also known as HLS)](https://developer.apple.com/streaming/)** is an HTTP-based adaptive bitrate streaming communications protocol implemented by Apple Inc. as part of its QuickTime, Safari, OS X, and iOS software. Client implementations are also available in Microsoft Edge, Firefox and some versions of Google Chrome. Support is widespread in streaming media servers. [Learn more](https://en.wikipedia.org/wiki/HTTP_Live_Streaming)
  
 Create HLS files:
 ```python
-import ffmpeg_streaming
+from ffmpeg_streaming import Formats
 
-(
-    ffmpeg_streaming
-        .hls(video, hls_time=10, hls_allow_cache=1)
-        .format('libx264')
-        .auto_rep()
-        .package('/var/www/media/videos/hls/hls-stream.m3u8')
-)
+hls = video.hls(Formats.h264())
+hls.auto_generate_representations()
+hls.output('/var/media/hls.m3u8')
 ```
-
 Generate representations manually:
 ```python
-import ffmpeg_streaming
-from ffmpeg_streaming import Representation
+from ffmpeg_streaming import Formats, Bitrate, Representation, Size
 
-r_360p = Representation(width=640, height=360, kilo_bitrate=276)
-r_480p = Representation(width=854, height=480, kilo_bitrate=750)
-r_720p = Representation(width=1280, height=720, kilo_bitrate=2048)
+_360p  = Representation(Size(640, 360), Bitrate(276 * 1024, 128 * 1024))
+_480p  = Representation(Size(854, 480), Bitrate(750 * 1024, 192 * 1024))
+_720p  = Representation(Size(1280, 720), Bitrate(2048 * 1024, 320 * 1024))
 
-(
-    ffmpeg_streaming
-        .hls(video, hls_time=10, hls_allow_cache=1)
-        .format('libx264')
-        .add_rep(r_360p, r_480p, r_720p)
-        .package('/var/www/media/videos/hls/hls-stream.m3u8')
-)
+hls = video.hls(Formats.hevc())
+hls.representations(_360p, _480p, _720p)
+hls.output('/var/media/hls.m3u8')
 ```
-**NOTE:** You cannot use HEVC(libx265) and VP9 formats for HLS packaging.
+See **[HLS section](https://video.aminyazdanpanah.com/python/start?r=hls#hls)** in the documentation, for more examples such as Fragmented MP4, live from camera/screen and so on.
 
-#### DRM (Encrypted HLS)
+#### Encryption(DRM)
 The encryption process requires some kind of secret (key) together with an encryption algorithm. HLS uses AES in cipher block chaining (CBC) mode. This means each block is encrypted using the ciphertext of the preceding block. [Learn more](https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation)
 
 You must specify a path to save a random key to your local machine and also a URL(or a path) to access the key on your website(the key you will save must be accessible from your website). You must pass both these parameters to the `encryption` method:
 
 ##### Single Key
-The following code generates a key for all TS files in a stream.
+The following code generates a key for all segment files.
 
 ```python
-import ffmpeg_streaming
-
 #A path you want to save a random key to your server
-save_to = '/home/public_html/PATH_TO_KEY_DIRECTORY/random_key.key'
+save_to = '/home/public_html/"PATH TO THE KEY DIRECTORY"/key'
 
 #A URL (or a path) to access the key on your website
-url = 'https://www.aminyazdanpanah.com/PATH_TO_KEY_DIRECTORY/random_key.key'
-# or url = '/PATH_TO_KEY_DIRECTORY/random_key.key'
+url = 'https://www.aminyazdanpanah.com/?"PATH TO THE KEY DIRECTORY"/key'
+# or url = '/PATH TO THE KEY DIRECTORY/key';
 
-(
-    ffmpeg_streaming
-        .hls(video, hls_time=10, hls_allow_cache=1)
-        .encryption(url, save_to)
-        .format('libx264')
-        .auto_rep(heights=[480, 360, 240])
-        .package('/var/www/media/videos/hls/hls-stream.m3u8')
-)
+from ffmpeg_streaming import Formats
+
+hls = video.hls(Formats.h264())
+hls.encryption(save_to, url)
+hls.auto_generate_representations()
+hls.output('/var/media/hls.m3u8')
 ```
 
 ##### Key Rotation
-This technique allows you to encrypt each TS file with a new encryption key. This can improve security and allows for more flexibility. You can also use a different key for each set of segments(e.g. if 10 TS files have been generated then rotate the key) or you can generate a new encryption key at every periodic time(e.g. every 10 seconds).
+An integer as a "key rotation period" can also be passed to the `encryption` method (i.e. `encryption(save_to, url, 10)`) to use a different key for each set of segments, rotating to a new key after this many segments. For example, if 10 segment files have been generated then it will generate a new key. If you set this value to **`1`**, each segment file will be encrypted with a new encryption key. This can improve security and allows for more flexibility. 
+
+See **[the example](https://video.aminyazdanpanah.com/python/start?r=enc-hls#hls-encryption)** for more information.
+
+**IMPORTANT:** It is very important to protect your key(s) on your website. For example, you can check a token(using a Get or Post HTTP method) to access the key(s) on your website. You can also check a session(or cookie) on your website to restrict access to the key(s)(**It is highly recommended**).    
+
+##### DRM
+However FFmpeg supports AES encryption for HLS packaging, which you can encrypt your content, it is not a full **[DRM](https://en.wikipedia.org/wiki/Digital_rights_management)** solution. If you want to use a full DRM solution, I recommend trying **[FairPlay Streaming](https://developer.apple.com/streaming/fps/)** solution which then securely exchange keys, and protect playback on devices.
+
+**[Apple’s FairPlay](https://developer.apple.com/streaming/fps/)** is a recommended DRM system, but you can use other DRM systems such as **[Microsoft's PlayReady](https://www.microsoft.com/playready/overview/)** and **[Google’s Widevine](https://www.widevine.com/)**.
+
+### Transcoding
+You can get realtime information about the transcoding using the following code. 
 ```python
-import tempfile
-from os.path import join
-from random import randrange
-
-import ffmpeg_streaming
-from ffmpeg_streaming.key_info_file import generate_key_info_file
-
-save_to = '/home/public_html/PATH_TO_KEY_DIRECTORY/key_rotation'
-url = 'https://www.aminyazdanpanah.com/PATH_TO_KEY_DIRECTORY/key_rotation'
-key_info_file_path = join(tempfile.gettempdir(), str(randrange(1000, 100000)) + '_py_ff_vi_st.tmp')
-k_num = 1
-
-def k_format(name, num):
-    return str(name) + "_" + str(num)
-
-def progress(per, ffmpeg):
-    global k_num
-    if ".ts' for writing" in ffmpeg:
-        # A new TS file has been created!
-        generate_key_info_file(k_format(url, k_num), k_format(save_to, k_num), key_info_path=key_info_file_path)
-        k_num += 1
-
-(
-    ffmpeg_streaming
-        .hls(video, hls_flags="periodic_rekey")
-        .encryption(url, save_to, key_info_path=key_info_file_path)
-        .format('libx264')
-        .auto_rep()
-        .package('/var/www/media/videos/hls/hls-stream.m3u8', progress=progress)
-)
-```
-**NOTE:** It is very important to protect your key(s) on your website using a token or a session/cookie(****It is highly recommended****).    
-
-**NOTE:** However HLS supports AES encryption, which you can encrypt your streams, it is not a full DRM solution. If you want to use a full DRM solution, I recommend trying **[FairPlay Streaming](https://developer.apple.com/streaming/fps/)** solution which then securely exchange keys, and protect playback on devices.
-
-See **[HLS examples](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/tree/master/examples/hls)** and **[HLS options](https://ffmpeg.org/ffmpeg-formats.html#hls-2)** for more information.
-
-### Progress
-You can get realtime information about transcoding by passing a callable method to the `package` method:
-```python
+from ffmpeg_streaming import Formats
 import sys
-import ffmpeg_streaming
 
-
-def progress(percentage, ffmpeg):
-    # You can update a field in your database or you can log it to a file(e.x. logging.debug(ffmpeg))
-    # You can also create a socket connection and show a progress bar to users
-    sys.stdout.write("\rTranscoding...(%s%%)[%s%s]" % (percentage, '#' * percentage, '-' * (100 - percentage)))
+def monitor(ffmpeg, duration, time_):
+    per = round(time_ / duration * 100)
+    sys.stdout.write("\rTranscoding...(%s%%) [%s%s]" % (per, '#' * per, '-' * (100 - per)))
     sys.stdout.flush()
 
-
-(
-    ffmpeg_streaming
-        .hls(video)
-        .format('libx264')
-        .auto_rep()
-        .package('/var/www/media/videos/hls/hls-stream.m3u8', progress=progress)
-)
+hls = video.hls(Formats.h264())
+hls.auto_generate_representations()
+hls.output('/var/media/hls.m3u8')
 ```
+
 ##### Output From a Terminal:
 ![transcoding](https://github.com/aminyazdanpanah/aminyazdanpanah.github.io/blob/master/video-streaming/transcoding.gif?raw=true "transcoding" )
 
-#### Show a progress bar using **[tqdm](https://github.com/tqdm/tqdm)** 
-```python
-import ffmpeg_streaming
-from tqdm import tqdm
-
-# initialize the tqdm object
-bar = tqdm(total=100)
-last_per = 0
-
-def progress(percentage, ffmpeg):
-    # update the progress bar
-    global last_per
-    if last_per != percentage:
-        bar.update(percentage - last_per)
-        last_per = percentage
-
-
-(
-    ffmpeg_streaming
-        .hls(video)
-        .format('libx264')
-        .auto_rep()
-        .package('/var/www/media/videos/hls/hls-stream.m3u8', progress=progress)
-)
-
-# close the progress bar
-bar.close()
-```
-**NOTE:** Please see **[tqdm documentation](https://github.com/tqdm/tqdm)** for more information.
-
 ### Saving Files
-There are two ways to save your files.
+There are several ways to save files.
 
 #### 1. To a Local Path
-You can pass a local path to the `package` method. If there was no directory in the path, then the package auto makes the directory.
+You can pass a local path to the `output` method. If there was no directory in the path, then the package auto makes the directory.
 ```python
-(
-    ffmpeg_streaming
-        .hls(video)
-        .format('libx264')
-        .auto_rep()
-        .package('/var/www/media/videos/hls/hls-stream.m3u8', progress=progress)
-)
+from ffmpeg_streaming import Formats
+
+dash = video.dash(Formats.hevc())
+dash.auto_generate_representations()
+
+dash.output('/var/media/dash.mpd')
 ```
 It can also be null. The default path to save files is the input path.
-```python
-(
-    ffmpeg_streaming
-        .hls(video)
-        .format('libx264')
-        .auto_rep()
-        .package(progress=progress)
-)
+``` python
+from ffmpeg_streaming import Formats
+
+hls = video.hls(Formats.h264())
+hls.auto_generate_representations()
+
+hls.output()
 ```
-**NOTE:** If you open a file from a cloud and do not pass a path to save the file to your local machine, you will have to pass a local path to the `package` method.
+**NOTE:** If you open a file from a cloud and do not pass a path to save the file to your local machine, you will have to pass a local path to the `save` method.
 
 #### 2. To Clouds
-You can save your files to a cloud by passing a tuple of cloud configuration to the `package` method. 
-
+You can save your files to a cloud by passing an array of cloud configuration to the `save` method. 
 
 ```python
-(
-    ffmpeg_streaming
-        .dash('/var/www/media/video.mkv', adaption='"id=0,streams=v id=1,streams=a"')
-        .format('libx265')
-        .auto_rep()
-        .package(clouds=[to_aws_cloud, to_azure_cloud, to_google_cloud],
-                 progress=progress)
-)
+from ffmpeg_streaming import  S3, CloudManager
+
+s3_cloud = S3(aws_access_key_id='YOUR_KEY_ID', aws_secret_access_key='YOUR_KEY_SECRET', region_name='YOUR_REGION')
+s3 = CloudManager().add(s3_cloud, bucket_name="bucket-name")
+
+hls.output(clouds=s3)
 ``` 
 A path can also be passed to save a copy of files to your local machine.
 ```python
-(
-    ffmpeg_streaming
-        .dash('/var/www/media/video.mkv', adaption='"id=0,streams=v id=1,streams=a"')
-        .format('libx265')
-        .auto_rep()
-        .package(output='/var/www/media/stream.mpd', clouds=[to_aws_cloud, to_google_cloud],
-                 progress=progress)
-)
+hls.output('/var/media/hls.m3u8', clouds=s3)
 ```
-Please visit **[this page](https://video.aminyazdanpanah.com/python/start/clouds?r=save)** to see some examples of saving files to **[Amazon S3](https://aws.amazon.com/s3)**, **[Google Cloud Storage](https://console.cloud.google.com/storage)**, **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**, and a custom cloud. 
+
+Visit **[this page](https://video.aminyazdanpanah.com/python/start/clouds?r=save)** to see some examples of saving files to **[Amazon S3](https://aws.amazon.com/s3)**, **[Google Cloud Storage](https://console.cloud.google.com/storage)**, **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**, and a custom cloud. 
 
 **NOTE:** This option(Save To Clouds) is only valid for **[VOD](https://en.wikipedia.org/wiki/Video_on_demand)** (it does not support live streaming).
 
-**Schema:** The relation is `one-to-many`.
+**Schema:** The relation is `one-to-many`
 
 <p align="center"><img src="https://github.com/aminyazdanpanah/aminyazdanpanah.github.io/blob/master/video-streaming/video-streaming.gif?raw=true" width="100%"></p>
 
-### Probe
-You can extract the metadata of the video file using the following code:
+#### 3. To a Server Instantly
+You can pass a url(or a supported resource like `ftp`) to live method to upload all the segments files to the HTTP server(or other protocols) using the HTTP PUT method, and update the manifest files every refresh times.
+
+If you want to save stream files to your local machine, use the `save` method.
+
+```python
+# DASH
+dash.output('http://YOUR-WEBSITE.COM/live-stream/out.mpd')
+
+# HLS
+hls.output('http://YOUR-WEBSITE.COM/live-stream/out.m3u8')
+```
+**NOTE:** In the HLS format, you must upload the master playlist to the server manually. (Upload the `/var/www/stream/live-master-manifest.m3u8` file to the `http://YOUR-WEBSITE.COM`)
+
+See **[FFmpeg Protocols Documentation](https://ffmpeg.org/ffmpeg-protocols.html)** for more information.
+
+### Metadata
+You can get information from multimedia streams and the video file using the following code.
 ```python
 from ffmpeg_streaming import FFProbe
 
-ffprobe = FFProbe('/var/www/media/video.mp4')
+ffprobe = FFProbe('/var/media/video.mp4')
 ```
-**NOTE:** You can save these metadata to your database.
 
-See the **[example](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/blob/master/examples/probe.py)** for more information.
-
-### Live
-You can pass a url(or a supported resource like `ftp`) to live method to upload all the segments files to the HTTP server(or other protocols) using the HTTP PUT method, and update the manifest files every refresh times.
-
-If you want to save stream files to your local machine, please use the `package` method.
-
-```python
-# DASH live
-import ffmpeg_streaming
-
-(
-    ffmpeg_streaming
-        .dash('/var/www/media/video.avi', adaption='"id=0,streams=v id=1,streams=a"')
-        .format('libx265')
-        .auto_rep()
-        .live('http://YOUR-WEBSITE.COM/live-stream/out.mpd', progress=progress)
-)
-
-# HLS live
-(
-    ffmpeg_streaming
-        .hls('/var/www/media/video.mp4', master_playlist_path='/var/www/stream/live-master-manifest.m3u8')
-        .format('libx264')
-        .auto_rep()
-        .live('http://YOUR-WEBSITE.COM/live-stream/out.m3u8', progress=progress)
-)
-```
-**NOTE:** In the HLS method, you must upload the master manifest to the server manually. (Upload the `/var/www/stream/live-master-manifest.m3u8` file to the `http://YOUR-WEBSITE.COM`)
-
-Please see **[FFmpeg Protocols Documentation](https://ffmpeg.org/ffmpeg-protocols.html)** for more information.
+See **[the example](https://video.aminyazdanpanah.com/python/start?r=metadata#metadata)** for more information.
 
 ### Conversion
-You can convert your stream to a file or to another stream protocols. You should pass a manifest of a stream to the method:
+You can convert your stream to a file or to another stream protocols. You should pass a manifest of the stream to the `open` method:
 
 #### 1. HLS To DASH
 ```python
-import ffmpeg_streaming
-from ffmpeg_streaming import Representation
+from ffmpeg_streaming import Formats, Bitrate, Representation, Size
 
-r_360p = Representation(width=640, height=360, kilo_bitrate=276)
+video = ffmpeg_streaming.input('https://www.aminyazdanpanah.com/?PATH/TO/HLS-MANIFEST.M3U8')
 
-(
-    ffmpeg_streaming
-        .dash('https://www.aminyazdanpanah.com/PATH/TO/HLS-MANIFEST.M3U8')
-        .format('libx265')
-        .add_rep(r_360p)
-        .package('/var/www/media/dash-stream.mpd', progress=progress)
-)
+_480p  = Representation(Size(854, 480), Bitrate(750 * 1024, 192 * 1024))
+
+dash = video.dash(Formats.hevc())
+dash.representations(_480p)
+dash.output('/var/media/dash.mpd')
 ```
 
 #### 2. DASH To HLS
 ```python
-import ffmpeg_streaming
+video = ffmpeg_streaming.input('https://www.aminyazdanpanah.com/?PATH/TO/DASH-MANIFEST.MPD')
 
-(
-    ffmpeg_streaming
-        .hls('https://www.aminyazdanpanah.com/PATH/TO/DASH-MANIFEST.MPD')
-        .format('libx264')
-        .auto_rep(heights=[360, 240])
-        .package('/var/www/media/hls-stream.m3u8', progress=progress)
-)
+hls = video.hls(Formats.h264())
+hls.auto_generate_representations()
+hls.output('/var/media/hls.m3u8')
 ```
 
 #### 3. Stream(DASH or HLS) To File
 ```python
-import ffmpeg_streaming
+video = ffmpeg_streaming.input('https://www.aminyazdanpanah.com/?PATH/TO/MANIFEST.MPD or M3U8')
 
-(
-    ffmpeg_streaming
-        .stream2file('https://www.aminyazdanpanah.com/PATH/TO/MANIFEST.MPD or M3U8')
-        .format('libx264')
-        .save('/var/www/media/new-video.mp4', progress=progress)
-)
+stream = video.stream2file(Formats.h264())
+stream.output('/var/media/new-video.mp4')
+
 ```
 
 ## Several Open Source Players
 You can use these libraries to play your streams.
 - **WEB**
     - DASH and HLS: 
-        - **[Video.js 7](https://github.com/videojs/video.js) - [videojs-http-streaming (VHS)](https://github.com/videojs/http-streaming)**
+        - **[Video.js 7](https://github.com/videojs/video.js) (Recommended) - [videojs-http-streaming (VHS)](https://github.com/videojs/http-streaming)**
         - **[Plyr](https://github.com/sampotts/plyr)**
         - **[DPlayer](https://github.com/MoePlayer/DPlayer)**
         - **[MediaElement.js](https://github.com/mediaelement/mediaelement)**
@@ -438,9 +331,12 @@ You can use these libraries to play your streams.
         - **[FFmpeg(ffplay)](https://github.com/FFmpeg/FFmpeg)**
         - **[VLC media player](https://github.com/videolan/vlc)**
 
-As you may know, **[IOS](https://www.apple.com/ios)** does not have native support for DASH. Although there are some libraries such as **[Viblast](https://github.com/Viblast/ios-player-sdk)** and **[MPEGDASH-iOS-Player](https://github.com/MPEGDASHPlayer/MPEGDASH-iOS-Player)** to support this technique, I have never tested them. So if you know any IOS player that supports DASH Stream and also works fine, please add it to the above list. 
+**NOTE-1:** You must pass a **link of the master playlist(manifest)**(i.e. `https://www.aminyazdanpanah.com/?"PATH TO STREAM DIRECTORY"/dash-stream.mpd` or `/PATH_TO_STREAM_DIRECTORY/hls-stream.m3u8` ) to these players.
 
-**NOTE:** You should pass a manifest of stream(e.g. `https://www.aminyazdanpanah.com/PATH_TO_STREAM_DIRECTORY/dash-stream.mpd` or `/PATH_TO_STREAM_DIRECTORY/hls-stream.m3u8` ) to these players.
+**NOTE-2:** If you save your stream to a cloud(i.e. **[Amazon S3](https://aws.amazon.com/s3)**), the link of your playlist and also other content **MUST BE PUBLIC**. 
+
+**NOTE-3:** As you may know, **[IOS](https://www.apple.com/ios)** does not have native support for DASH. Although there are some libraries such as **[Viblast](https://github.com/Viblast/ios-player-sdk)** and **[MPEGDASH-iOS-Player](https://github.com/MPEGDASHPlayer/MPEGDASH-iOS-Player)** to support this technique, I have never tested them. So maybe som of them will not work correctly.
+
 
 ## Contributing and Reporting Bugs
 I'd love your help in improving, correcting, adding to the specification.
@@ -449,11 +345,11 @@ Please **[file an issue](https://github.com/aminyazdanpanah/python-ffmpeg-video-
 - If you have any questions or you want to report a bug, please just **[file an issue](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/issues)**
 - If you discover a security vulnerability within this package, please see **[SECURITY File](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/blob/master/SECURITY.md)** for more information.
 
-**NOTE:** If you have any questions about this package or FFmpeg, please **DO NOT** send an email to me (or submit the contact form on my website). Emails regarding these issues **will be ignored**.
+**NOTE:** If you have any questions about this package or FFmpeg, **DO NOT** send an email to me (or **DO NOT** submit the contact form on my website). Emails regarding these issues **will be ignored**.
 
 ## Credits
 - **[Amin Yazdanpanah](https://www.aminyazdanpanah.com/?u=github.com/aminyazdanpanah/python-ffmpeg-video-streaming)**
 - **[All Contributors](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/graphs/contributors)**
 
 ## License
-The MIT License (MIT). Please see **[License File](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/blob/master/LICENSE)** for more information.
+The MIT License (MIT). See **[License File](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/blob/master/LICENSE)** for more information.

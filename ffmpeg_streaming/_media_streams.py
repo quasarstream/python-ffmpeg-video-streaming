@@ -5,7 +5,7 @@ ffmpeg_streaming.streams
 Parse streams that is the output of the FFProbe
 
 
-:copyright: (c) 2019 by Amin Yazdanpanah.
+:copyright: (c) 2020 by Amin Yazdanpanah.
 :website: https://www.aminyazdanpanah.com
 :email: contact@aminyazdanpanah.com
 :license: MIT, see LICENSE for more details.

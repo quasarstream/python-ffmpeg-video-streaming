@@ -1,11 +1,11 @@
 """
-examples.dash.dash_manual
+examples.dash.dash
 ~~~~~~~~~~~~
 
-Create DASH files in the resolutions that you have specified
+Create DASH streams and manifest
 
 
-:copyright: (c) 2019 by Amin Yazdanpanah.
+:copyright: (c) 2020 by Amin Yazdanpanah.
 :website: https://www.aminyazdanpanah.com
 :email: contact@aminyazdanpanah.com
 :license: MIT, see LICENSE for more details.
@@ -19,16 +19,18 @@ import logging
 
 import ffmpeg_streaming
 
-from ffmpeg_streaming import Representation
+
+import ffmpeg_streaming
+from ffmpeg_streaming import Formats
 
 logging.basicConfig(filename='streaming.log', level=logging.NOTSET, format='[%(asctime)s] %(levelname)s: %(message)s')
 start_time = time.time()
 
 
-def per_to_time_left(percentage):
-    if percentage != 0:
+def time_left(time_, total):
+    if time_ != 0:
         diff_time = time.time() - start_time
-        seconds_left = 100 * diff_time / percentage - diff_time
+        seconds_left = total * diff_time / time_ - diff_time
         time_left = str(datetime.timedelta(seconds=int(seconds_left))) + ' left'
     else:
         time_left = 'calculating...'
@@ -36,11 +38,12 @@ def per_to_time_left(percentage):
     return time_left
 
 
-def transcode_progress(per, ffmpeg):
+def monitor(ffmpeg, duration, time_):
     # You can update a field in your database or log it to a file
     # You can also create a socket connection and show a progress bar to users
     # logging.info(ffmpeg)
-    sys.stdout.write("\rTranscoding...(%s%%) %s [%s%s]" % (per, per_to_time_left(per), '#' * per, '-' * (100 - per)))
+    per = round(time_ / duration * 100)
+    sys.stdout.write("\rTranscoding...(%s%%) %s [%s%s]" % (per, time_left(time_, duration), '#' * per, '-' * (100 - per)))
     sys.stdout.flush()
 
 
@@ -49,20 +52,13 @@ def main():
 
     parser.add_argument('-i', '--input', required=True, help='The path to the video file (required).')
     parser.add_argument('-o', '--output', default=None, help='The output to write files.')
-
     args = parser.parse_args()
 
-    rep1 = Representation(width=256, height=144, kilo_bitrate=200, audio_k_bitrate=64)
-    rep2 = Representation(width=854, height=480, kilo_bitrate=500, audio_k_bitrate=128)
-    rep3 = Representation(width=1080, height=720, kilo_bitrate=1000, audio_k_bitrate=320)
+    video = ffmpeg_streaming.input(args.input)
 
-    (
-        ffmpeg_streaming
-            .dash(args.input, adaption='"id=0,streams=v id=1,streams=a"')
-            .format('libx265')
-            .add_rep(rep1, rep2, rep3)
-            .package(args.output, progress=transcode_progress)
-    )
+    dash = video.dash(Formats.hevc())
+    dash.auto_generate_representations()
+    dash.output(args.output, monitor=monitor)
 
 
 if __name__ == "__main__":

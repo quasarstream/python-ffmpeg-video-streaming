@@ -2,12 +2,11 @@ import json
 import os
 import unittest
 
-
-from ffmpeg_streaming import *
-from ffmpeg_streaming.media import (HLS, DASH)
-from ffmpeg_streaming.streams import Streams
 import ffmpeg_streaming
-from ffmpeg_streaming.progress import progress, get_duration_sec
+from ffmpeg_streaming import Formats
+from ffmpeg_streaming import FFProbe, Representation, Size, Bitrate
+from ffmpeg_streaming._media import HLS, DASH
+from ffmpeg_streaming._media_streams import Streams
 
 
 class TestStreaming(unittest.TestCase):
@@ -31,36 +30,31 @@ class TestStreaming(unittest.TestCase):
         self.assertEqual(streams.audio()['codec_type'], 'audio')
 
     def test_hls(self):
-        hls_obj = ffmpeg_streaming.hls(self.src_video)
+        video = ffmpeg_streaming.input(self.src_video)
+        hls_obj = video.hls(Formats.h264())
         self.assertIsInstance(hls_obj, HLS)
-        self.assertEqual(hls_obj.filename, self.src_video)
-        self.assertEqual(hls_obj.hls_time, 10)
-        self.assertEqual(hls_obj.hls_allow_cache, 0)
+        self.assertEqual(hls_obj.media.input, self.src_video)
 
-        hls_obj.add_rep(Representation(width=256, height=144, kilo_bitrate=100))
+        hls_obj.representations(Representation(Size(256, 144), Bitrate(102400)))
         rep_1 = hls_obj.reps[0]
         self.assertIsInstance(rep_1, Representation)
-        self.assertEqual(rep_1.size, '256x144')
-        self.assertEqual(rep_1.bit_rate, '100k')
+        self.assertEqual(rep_1.size.normalize, '256x144')
+        self.assertEqual(rep_1.bitrate.video, '100k')
 
-        hls_obj.auto_rep()
-        self.assertEqual(len(hls_obj.reps), 3)
-        for rep_ in hls_obj.reps:
+        hls_obj.auto_generate_representations()
+        reps = list(hls_obj.reps)
+        self.assertEqual(len(reps), 3)
+
+        for rep_ in reps:
             self.assertIsInstance(rep_, Representation)
-        rep_1 = hls_obj.reps[0]
-        self.assertEqual(rep_1.size, '480x270')
-        self.assertEqual(rep_1.bit_rate, '176k')
-        rep_2 = hls_obj.reps[1]
-        self.assertEqual(rep_2.size, '426x240')
-        self.assertEqual(rep_2.bit_rate, '117k')
-        rep_3 = hls_obj.reps[2]
-        self.assertEqual(rep_3.size, '256x144')
-        self.assertEqual(rep_3.bit_rate, '88k')
+        self.assertEqual(reps[0].size.normalize, '480x270')
+        self.assertEqual(reps[0].bitrate.video, '176k')
+        self.assertEqual(reps[1].size.normalize, '426x240')
+        self.assertEqual(reps[1].bitrate.video, '88k')
+        self.assertEqual(reps[2].size.normalize, '256x144')
+        self.assertEqual(reps[2].bitrate.video, '71k')
 
-        hls_obj.format('libx264')
-        self.assertEqual(hls_obj.video_format, 'libx264')
-
-        hls_obj.package(os.path.join(self.src_dir, 'hls', 'test.m3u8'), c_stderr=False)
+        hls_obj.output(os.path.join(self.src_dir, 'hls', 'test.m3u8'))
         with open(os.path.join(self.src_dir, 'fixture_test.m3u8')) as test_m3u8:
             expected_m3u8 = test_m3u8.read()
         with open(os.path.join(self.src_dir, 'hls', 'test.m3u8')) as test_m3u8:
@@ -70,25 +64,23 @@ class TestStreaming(unittest.TestCase):
             actual_270_m3u8 = test_m3u8.readlines()
         self.assertEqual(actual_270_m3u8[0].replace('\n', ''), '#EXTM3U')
         self.assertEqual(actual_270_m3u8[1].replace('\n', ''), '#EXT-X-VERSION:3')
-        self.assertEqual(actual_270_m3u8[2].replace('\n', ''), '#EXT-X-ALLOW-CACHE:NO')
+        self.assertEqual(actual_270_m3u8[2].replace('\n', ''), '#EXT-X-ALLOW-CACHE:YES')
 
     def test_encrypted_hls(self):
-        encrypted_hls = ffmpeg_streaming.hls(self.src_video).encryption(
-            'https://www.aminyazdanpanah.com/enc.key',
-            os.path.join(self.src_dir, 'enc.key')
-        )
+        video = ffmpeg_streaming.input(self.src_video)
+        hls_obj = video.hls(Formats.h264())
+        hls_obj.encryption(os.path.join(self.src_dir, 'enc.key'), 'https://www.aminyazdanpanah.com/enc.key')
 
-        self.assertIsNotNone(encrypted_hls.hls_key_info_file)
+        self.assertIsNotNone(hls_obj.options.get('hls_key_info_file', None))
 
-        with open(encrypted_hls.hls_key_info_file) as key_info:
+        with open(hls_obj.options.get('hls_key_info_file', None)) as key_info:
             key_info = key_info.readlines()
         self.assertEqual(key_info[0].replace('\n', ''), 'https://www.aminyazdanpanah.com/enc.key')
         self.assertEqual(key_info[1].replace('\n', ''), os.path.join(self.src_dir, 'enc.key'))
 
-        encrypted_hls.auto_rep()
-        encrypted_hls.format('libx264')
+        hls_obj.auto_generate_representations()
 
-        encrypted_hls.package(os.path.join(self.src_dir, 'encrypted_hls', 'test.m3u8'), c_stderr=False)
+        hls_obj.output(os.path.join(self.src_dir, 'encrypted_hls', 'test.m3u8'), stderr=False)
         with open(os.path.join(self.src_dir, 'fixture_test.m3u8')) as test_m3u8:
             expected_m3u8 = test_m3u8.read()
         with open(os.path.join(self.src_dir, 'encrypted_hls', 'test.m3u8')) as test_m3u8:
@@ -96,30 +88,19 @@ class TestStreaming(unittest.TestCase):
         self.assertEqual(actual_encrypted_m3u8, expected_m3u8)
 
     def test_dash(self):
-        dash_obj = ffmpeg_streaming.dash(self.src_video)
+        video = ffmpeg_streaming.input(self.src_video)
+        dash_obj = video.dash(Formats.hevc())
         self.assertIsInstance(dash_obj, DASH)
-        self.assertEqual(dash_obj.filename, self.src_video)
+        self.assertEqual(dash_obj.media.input, self.src_video)
 
-        dash_obj.auto_rep()
-        dash_obj.format('libx265')
+        dash_obj.auto_generate_representations()
 
-        dash_obj.package(os.path.join(self.src_dir, 'dash', 'test.mpd'), c_stderr=False)
+        dash_obj.output(os.path.join(self.src_dir, 'dash', 'test.mpd'), stderr=False)
         with open(os.path.join(self.src_dir, 'dash', 'test.mpd')) as test_mpd:
             actual_mpd = test_mpd.readlines()
         self.assertEqual(actual_mpd[0].replace('\n', ''), '<?xml version="1.0" encoding="utf-8"?>')
         self.assertEqual(actual_mpd[1].replace('\n', ''), '<MPD xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"')
 
-    def test_progress(self):
-        line = 'frame=   00 fps= 0 q=-0.0 q=-0.0 q=-0.0 size=N/A time=00:01:00. bitrate=N/A speed=0.0x'
-        total_sec = 60
-        _progress = progress(line, total_sec)
-
-        self.assertEqual(_progress, 100)
-
-        d_line = 'Duration: 01:00:00.00, start: 0.000000, bitrate: 0 kb/s'
-        _get_duration_sec = get_duration_sec(d_line)
-
-        self.assertEqual(_get_duration_sec, 3600)
 
 if __name__ == '__main__':
     unittest.main()

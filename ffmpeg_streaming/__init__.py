@@ -1,8 +1,8 @@
-from ._ffprobe import *
-from .media import *
-from .rep import *
-from .clouds import *
-from .key_info_file import *
+from ._input import *
+from ._format import *
+from ._reperesentation import *
+from ._media_property import *
+from ._clouds import *
+from .ffprobe import *
 
-VERSION = '0.0.13'
-__all__ = _ffprobe.__all__ + media.__all__ + rep.__all__ + clouds.__all__ + key_info_file.__all__
+__all__ = _input.__all__ + _format.__all__ + _reperesentation.__all__ + _media_property.__all__ + _clouds.__all__ + ffprobe.__all__
