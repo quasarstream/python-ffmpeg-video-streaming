@@ -30,6 +30,9 @@ def _verify_codecs(codec, codecs):
 
 
 class Format(abc.ABC):
+    """
+    @TODO: add documentation
+    """
     def __init__(self, video: str, audio: str):
         self.video = video
         self.audio = audio
@@ -40,6 +43,9 @@ class Format(abc.ABC):
 
 
 class H264(Format):
+    """
+    @TODO: add documentation
+    """
     def __init__(self, video: str = "libx264", audio: str = 'copy'):
         videos = ['libx264', 'h264', 'h264_afm']
         audios = ['copy', 'aac', 'libvo_aacenc', 'libfaac', 'libmp3lame', 'libfdk_aac']
@@ -51,6 +57,9 @@ class H264(Format):
 
 
 class HEVC(Format):
+    """
+    @TODO: add documentation
+    """
     def __init__(self, video: str = "libx265", audio: str = 'copy'):
         videos = ['libx265', 'h265']
         audios = ['copy', 'aac', 'libvo_aacenc', 'libfaac', 'libmp3lame', 'libfdk_aac']
@@ -62,6 +71,9 @@ class HEVC(Format):
 
 
 class VP9(Format):
+    """
+    @TODO: add documentation
+    """
     def __init__(self, video: str = "libvpx-vp9", audio: str = 'copy'):
         videos = ['libvpx', 'libvpx-vp9']
         audios = ['copy', 'aac', 'libvo_aacenc', 'libfaac', 'libmp3lame', 'libfdk_aac']
@@ -75,14 +87,23 @@ class VP9(Format):
 class Formats:
     @staticmethod
     def h264(video: str = "libx264", audio: str = 'copy') -> Format:
+        """
+        @TODO: add documentation
+        """
         return H264(video, audio)
 
     @staticmethod
     def hevc(video: str = "libx265", audio: str = 'copy') -> Format:
+        """
+        @TODO: add documentation
+        """
         return HEVC(video, audio)
 
     @staticmethod
     def vp9(video: str = "libvpx-vp9", audio: str = 'copy') -> Format:
+        """
+        @TODO: add documentation
+        """
         return VP9(video, audio)
 
 

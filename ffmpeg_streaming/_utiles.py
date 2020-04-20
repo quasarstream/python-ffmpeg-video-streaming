@@ -18,6 +18,9 @@ from sys import platform
 
 
 def get_path_info(path):
+    """
+    @TODO: add documentation
+    """
     dirname = os.path.dirname(path)
     name = str(os.path.basename(path).split('.')[0])
 
@@ -25,6 +28,9 @@ def get_path_info(path):
 
 
 def mkdir(dirname: str) -> None:
+    """
+    @TODO: add documentation
+    """
     try:
         os.makedirs(dirname)
     except OSError as exc:
@@ -33,6 +39,9 @@ def mkdir(dirname: str) -> None:
 
 
 def clean_args(args: list) -> list:
+    """
+    @TODO: add documentation
+    """
     clean_args_ = []
     for arg in args:
         if " " in arg:
@@ -43,17 +52,26 @@ def clean_args(args: list) -> list:
 
 
 def convert_to_sec(time):
+    """
+    @TODO: add documentation
+    """
     h, m, s = time.split(":")
     return int(h) * 3600 + int(m) * 60 + int(s)
 
 
 def get_time(key, string):
+    """
+    @TODO: add documentation
+    """
     time = re.search('(?<=' + key + ')\w+:\w+:\w+', string)
     if time:
         return convert_to_sec(time.group(0))
 
 
 def deprecated(func):
+    """
+    @TODO: add documentation
+    """
     def deprecated_fun(*args, **kwargs):
         warnings.warn('The {} method is deprecated and will be removed in a future release'.format(func.__name__)
                       , DeprecationWarning, stacklevel=2)
@@ -62,6 +80,9 @@ def deprecated(func):
 
 
 def get_os():
+    """
+    @TODO: add documentation
+    """
     if platform == "linux" or platform == "linux2":
         os_name = 'linux'
     elif platform == "darwin":
@@ -75,6 +96,9 @@ def get_os():
 
 
 def cnv_options_to_args(options: dict):
+    """
+    @TODO: add documentation
+    """
     args = []
     for k, v in options.items():
         args.append('-{}'.format(k))

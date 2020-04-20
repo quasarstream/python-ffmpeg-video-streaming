@@ -17,6 +17,9 @@ from ffmpeg_streaming._clouds import Clouds
 
 class Capture(object):
     def __init__(self, video, options):
+        """
+        @TODO: add documentation
+        """
         self.options = options
         self.video = video
 
@@ -58,6 +61,9 @@ class Capture(object):
 
 
 def get_from_cloud(cloud: Clouds, options: dict):
+    """
+    @TODO: add documentation
+    """
     save_to = options.pop('save_to', None)
     return {
         'i': cloud.download(save_to, **options),
@@ -67,6 +73,9 @@ def get_from_cloud(cloud: Clouds, options: dict):
 
 class InputOption(object):
     def __init__(self, _input, **options):
+        """
+        @TODO: add documentation
+        """
         self.input_ = _input
         self.options = options
 

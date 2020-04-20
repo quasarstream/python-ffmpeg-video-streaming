@@ -21,6 +21,9 @@ from ffmpeg_streaming._utiles import get_time
 
 
 def _p_open(commands, **options):
+    """
+    @TODO: add documentation
+    """
     logging.info("ffmpeg running command: {}".format(commands))
     return subprocess.Popen(shlex.split(commands), **options)
 
@@ -30,6 +33,9 @@ class Process(object):
     err = None
 
     def __init__(self, media, commands: str, monitor: callable = None, **options):
+        """
+        @TODO: add documentation
+        """
         self.is_monitor = False
         self.input = options.pop('input', None)
         self.timeout = options.pop('timeout', None)
@@ -59,6 +65,9 @@ class Process(object):
         self.process.kill()
 
     def _monitor(self):
+        """
+        @TODO: add documentation
+        """
         duration = 1
         time = 0
         log = []
@@ -86,6 +95,9 @@ class Process(object):
         Process.out = log
 
     def _thread_mon(self):
+        """
+        @TODO: add documentation
+        """
         thread = threading.Thread(target=self._monitor)
         thread.start()
 
@@ -98,6 +110,9 @@ class Process(object):
             raise RuntimeError(error)
 
     def run(self):
+        """
+        @TODO: add documentation
+        """
         if self.is_monitor:
             self._thread_mon()
         else:

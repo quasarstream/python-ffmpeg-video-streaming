@@ -29,6 +29,9 @@ def cnv_bitrate(bitrate: int, _type: str) -> str:
 
 class Bitrate:
     def __init__(self, video: int = None, audio: int = None, overall: int = None, **kwargs):
+        """
+        @TODO: add documentation
+        """
         if video is None and overall is None:
             raise ValueError("You must at least specify value of the video or overall format")
         self.overall_ = overall
@@ -38,17 +41,29 @@ class Bitrate:
 
     @property
     def overall(self):
+        """
+        @TODO: add documentation
+        """
         return cnv_bitrate(self.overall_, self.type) if self.overall_ is not None else None
 
     @property
     def video(self):
+        """
+        @TODO: add documentation
+        """
         return cnv_bitrate(self.video_, self.type) if self.video_ is not None else None
 
     @property
     def audio(self):
+        """
+        @TODO: add documentation
+        """
         return cnv_bitrate(self.audio_, self.type) if self.audio_ is not None else 'copy'
 
     def normalize_video(self, convert: bool = True):
+        """
+        @TODO: add documentation
+        """
         if self.video_ is not None and self.video_ != 0:
             val = self.video_
         else:
@@ -58,6 +73,9 @@ class Bitrate:
 
     @property
     def max_rate(self):
+        """
+        @TODO: add documentation
+        """
         return cnv_bitrate(int(self.normalize_video(False) * MAX_RATE_COEFFICIENT), self.type)
 
 
@@ -77,6 +95,9 @@ def multiple_down(value, multiple):
 
 class Ratio:
     def __init__(self, width: int, height: int):
+        """
+        @TODO: add documentation
+        """
         self.width = width
         self.height = height
 
@@ -84,6 +105,9 @@ class Ratio:
         return self.width / self.height
 
     def calculate_width(self, height: int, multiple: int = 1) -> int:
+        """
+        @TODO: add documentation
+        """
         max_w = multiple_up(math.ceil(self.get_value() * height), multiple)
         min_w = multiple_down(math.floor(self.get_value() * height), multiple)
 
@@ -93,6 +117,9 @@ class Ratio:
         return max_w if max_r < min_r else min_w
 
     def calculate_height(self, width: int, multiple: int = 1) -> int:
+        """
+        @TODO: add documentation
+        """
         max_h = multiple_up(math.ceil(width / self.get_value()), multiple)
         min_h = multiple_down(math.floor(width / self.get_value()), multiple)
 
@@ -104,15 +131,24 @@ class Ratio:
 
 class Size:
     def __init__(self, width: int, height: int):
+        """
+        @TODO: add documentation
+        """
         self.width = width
         self.height = height
 
     @property
     def ratio(self) -> Ratio:
+        """
+        @TODO: add documentation
+        """
         return Ratio(self.width, self.height)
 
     @property
     def normalize(self) -> str:
+        """
+        @TODO: add documentation
+        """
         return str(self.width) + "x" + str(self.height)
 
 

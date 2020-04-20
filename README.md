@@ -53,7 +53,7 @@ import ffmpeg_streaming
 There are several ways to open a resource.
 
 #### 1. From a FFmpeg supported resource
-You can pass a local path of video(or a supported resource) to the `open` method:
+You can pass a local path of video(or a supported resource) to the `input` method:
 ```python
 video = ffmpeg_streaming.input('/var/media/video.mp4')
 ```
@@ -66,7 +66,7 @@ video = ffmpeg_streaming.input('https://www.aminyazdanpanah.com/?"PATH TO A VIDE
 ```
 
 #### 2. From Clouds
-You can open a file from a cloud by passing an array of cloud configuration to the `openFromCloud` method. 
+You can open a file from a cloud by passing an instance of a cloud configuration to the `input` method. 
 
 ```python
 from ffmpeg_streaming import S3
@@ -77,10 +77,10 @@ video = ffmpeg_streaming.input(s3, bucket_name="bucket-name", key="video.mp4")
 Visit **[this page](https://video.aminyazdanpanah.com/python/start/clouds?r=open)** to see some examples of opening a file from **[Amazon S3](https://aws.amazon.com/s3)**, **[Google Cloud Storage](https://console.cloud.google.com/storage)**, **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**, and a custom cloud.
 
 #### 3. Capture Webcam or Screen (Live Streaming)
-You can pass a name of the supported, connected capture device(i.e. name of webcam, camera, screen and etc) to the `capture` method to stream a live media over network. 
+You can pass a name of the supported, connected capture device(i.e. name of webcam, camera, screen and etc) to the `input` method to stream a live media over network. 
 
  ```python
-video = ffmpeg_streaming.input('CAMERA NAME OR SCREEN NAME', capture=True)
+capture = ffmpeg_streaming.input('CAMERA NAME OR SCREEN NAME', capture=True)
  ```
 To list the supported, connected capture devices, see **[FFmpeg Capture Webcam](https://trac.ffmpeg.org/wiki/Capture/Webcam)** and **[FFmpeg Capture Desktop](https://trac.ffmpeg.org/wiki/Capture/Desktop)**.
  
@@ -134,7 +134,7 @@ _360p  = Representation(Size(640, 360), Bitrate(276 * 1024, 128 * 1024))
 _480p  = Representation(Size(854, 480), Bitrate(750 * 1024, 192 * 1024))
 _720p  = Representation(Size(1280, 720), Bitrate(2048 * 1024, 320 * 1024))
 
-hls = video.hls(Formats.hevc())
+hls = video.hls(Formats.h264())
 hls.representations(_360p, _480p, _720p)
 hls.output('/var/media/hls.m3u8')
 ```
@@ -174,7 +174,7 @@ See **[the example](https://video.aminyazdanpanah.com/python/start?r=enc-hls#hls
 ##### DRM
 However FFmpeg supports AES encryption for HLS packaging, which you can encrypt your content, it is not a full **[DRM](https://en.wikipedia.org/wiki/Digital_rights_management)** solution. If you want to use a full DRM solution, I recommend trying **[FairPlay Streaming](https://developer.apple.com/streaming/fps/)** solution which then securely exchange keys, and protect playback on devices.
 
-**[Apple’s FairPlay](https://developer.apple.com/streaming/fps/)** is a recommended DRM system, but you can use other DRM systems such as **[Microsoft's PlayReady](https://www.microsoft.com/playready/overview/)** and **[Google’s Widevine](https://www.widevine.com/)**.
+**Besides [Apple’s FairPlay](https://developer.apple.com/streaming/fps/)** DRM system, you can also use other DRM systems such as **[Microsoft's PlayReady](https://www.microsoft.com/playready/overview/)** and **[Google’s Widevine](https://www.widevine.com/)**.
 
 ### Transcoding
 You can get realtime information about the transcoding using the following code. 
@@ -208,8 +208,8 @@ dash.auto_generate_representations()
 
 dash.output('/var/media/dash.mpd')
 ```
-It can also be null. The default path to save files is the input path.
-``` python
+It can also be None. The default path to save files is the input path.
+```python
 from ffmpeg_streaming import Formats
 
 hls = video.hls(Formats.h264())
@@ -217,10 +217,10 @@ hls.auto_generate_representations()
 
 hls.output()
 ```
-**NOTE:** If you open a file from a cloud and do not pass a path to save the file to your local machine, you will have to pass a local path to the `save` method.
+**NOTE:** If you open a file from a cloud and do not pass a path to save the file to your local machine, you will have to pass a local path to the `output` method.
 
 #### 2. To Clouds
-You can save your files to a cloud by passing an array of cloud configuration to the `save` method. 
+You can save your files to a cloud by passing an instance of a `CloudManager` to the `output` method. 
 
 ```python
 from ffmpeg_streaming import  S3, CloudManager
@@ -244,9 +244,8 @@ Visit **[this page](https://video.aminyazdanpanah.com/python/start/clouds?r=save
 <p align="center"><img src="https://github.com/aminyazdanpanah/aminyazdanpanah.github.io/blob/master/video-streaming/video-streaming.gif?raw=true" width="100%"></p>
 
 #### 3. To a Server Instantly
-You can pass a url(or a supported resource like `ftp`) to live method to upload all the segments files to the HTTP server(or other protocols) using the HTTP PUT method, and update the manifest files every refresh times.
+You can pass a url(or a supported resource like `ftp`) to the `output` method to upload all the segments files to the HTTP server(or other protocols) using the HTTP PUT method, and update the manifest files every refresh times.
 
-If you want to save stream files to your local machine, use the `save` method.
 
 ```python
 # DASH
@@ -255,7 +254,7 @@ dash.output('http://YOUR-WEBSITE.COM/live-stream/out.mpd')
 # HLS
 hls.output('http://YOUR-WEBSITE.COM/live-stream/out.m3u8')
 ```
-**NOTE:** In the HLS format, you must upload the master playlist to the server manually. (Upload the `/var/www/stream/live-master-manifest.m3u8` file to the `http://YOUR-WEBSITE.COM`)
+**NOTE:** In the HLS format, you must upload the master playlist to the server manually.
 
 See **[FFmpeg Protocols Documentation](https://ffmpeg.org/ffmpeg-protocols.html)** for more information.
 
@@ -270,7 +269,7 @@ ffprobe = FFProbe('/var/media/video.mp4')
 See **[the example](https://video.aminyazdanpanah.com/python/start?r=metadata#metadata)** for more information.
 
 ### Conversion
-You can convert your stream to a file or to another stream protocols. You should pass a manifest of the stream to the `open` method:
+You can convert your stream to a file or to another stream protocols. You should pass a manifest of the stream to the `input` method:
 
 #### 1. HLS To DASH
 ```python
@@ -300,7 +299,6 @@ video = ffmpeg_streaming.input('https://www.aminyazdanpanah.com/?PATH/TO/MANIFES
 
 stream = video.stream2file(Formats.h264())
 stream.output('/var/media/new-video.mp4')
-
 ```
 
 ## Several Open Source Players

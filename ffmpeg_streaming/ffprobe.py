@@ -21,6 +21,9 @@ from ._media_property import Size, Bitrate
 
 class FFProbe:
     def __init__(self, filename, cmd='ffprobe'):
+        """
+        @TODO: add documentation
+        """
         commands = [cmd, '-show_format', '-show_streams', '-of', 'json', filename]
         logging.info("ffprobe running command: {}".format(" ".join(commands)))
         process = subprocess.Popen(commands, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -31,20 +34,35 @@ class FFProbe:
         logging.info("ffprobe executed command successfully!")
 
     def streams(self):
+        """
+        @TODO: add documentation
+        """
         return Streams(json.loads(self.out.decode('utf-8'))['streams'])
 
     def format(self):
+        """
+        @TODO: add documentation
+        """
         return json.loads(self.out.decode('utf-8'))['format']
 
     def all(self):
+        """
+        @TODO: add documentation
+        """
         return json.loads(self.out.decode('utf-8'))
 
     def save_as_json(self, path):
+        """
+        @TODO: add documentation
+        """
         with open(path, 'w') as probe:
             probe.write(self.out.decode('utf-8'))
 
     @property
     def video_size(self) -> Size:
+        """
+        @TODO: add documentation
+        """
         width = int(self.streams().video().get('width', 0))
         height = int(self.streams().video().get('height', 0))
 
@@ -55,6 +73,9 @@ class FFProbe:
 
     @property
     def bitrate(self, _type: str = "k") -> Bitrate:
+        """
+        @TODO: add documentation
+        """
         overall = int(self.format().get('bit_rate', 0))
         video = int(self.streams().video().get('bit_rate', 0))
         audio = int(self.streams().audio().get('bit_rate', 0))

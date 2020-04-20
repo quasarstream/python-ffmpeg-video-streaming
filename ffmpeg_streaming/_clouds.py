@@ -19,6 +19,9 @@ from os.path import isfile, join
 
 
 class Clouds(abc.ABC):
+    """
+    @TODO: add documentation
+    """
     @abc.abstractmethod
     def upload_directory(self, directory: str, **options) -> None:
         pass
@@ -30,6 +33,9 @@ class Clouds(abc.ABC):
 
 class S3(Clouds):
     def __init__(self, **options):
+        """
+        @TODO: add documentation
+        """
         try:
             import boto3
             from botocore.exceptions import ClientError
@@ -81,6 +87,9 @@ class S3(Clouds):
 
 class GCS(Clouds):
     def __init__(self, **options):
+        """
+        @TODO: add documentation
+        """
         try:
             from google.cloud import storage
         except ImportError as e:
@@ -124,6 +133,9 @@ class GCS(Clouds):
 
 class MAS(Clouds):
     def __init__(self, **options):
+        """
+        @TODO: add documentation
+        """
         try:
             from azure.storage.blob import BlockBlobService
         except ImportError as e:
@@ -170,6 +182,9 @@ class MAS(Clouds):
 
 class CloudManager:
     def __init__(self):
+        """
+        @TODO: add documentation
+        """
         self.clouds = []
 
     def add(self, cloud: Clouds, **options):

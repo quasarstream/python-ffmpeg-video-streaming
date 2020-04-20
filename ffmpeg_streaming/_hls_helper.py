@@ -19,6 +19,9 @@ from ffmpeg_streaming._utiles import mkdir
 
 class HLSKeyInfoFile:
     def __init__(self, key_info_file_path: str, path: str, url: str, period: int = 0, needle: str = '', length: int = 16):
+        """
+        @TODO: add documentation
+        """
         self.needle = needle
         self.period = period
         self.segments = []
@@ -71,6 +74,9 @@ def stream_info(rep) -> list:
 
 class HLSMasterPlaylist:
     def __init__(self, media):
+        """
+        @TODO: add documentation
+        """
         self.media = media
         self.path = media.output
 
@@ -81,6 +87,9 @@ class HLSMasterPlaylist:
             playlist.write(cls(media)._content())
 
     def _content(self) -> str:
+        """
+        @TODO: add documentation
+        """
         content = ['#EXTM3U'] + self._get_version() + self.media.options.get('description', [])
 
         for rep in self.media.reps:

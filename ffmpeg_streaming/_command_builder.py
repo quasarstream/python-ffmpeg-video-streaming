@@ -77,7 +77,7 @@ def _get_hls_stream(hls, rep, dirname, name):
         'b:a':                      rep.bitrate.audio,
         'maxrate':                  rep.bitrate.max_rate,
         'hls_segment_filename':     dirname + "/" + name + "_" + str(rep.size.height) + "p_%04d." + _hls_seg_ext(hls),
-        'hls_fmp4_init_filename':   name + "_init.mp4",
+        'hls_fmp4_init_filename':   name + "_" + str(rep.size.height) + "p_init.mp4",
         'strict':                   '-2'
     }
     args.update(hls.options)
@@ -86,6 +86,9 @@ def _get_hls_stream(hls, rep, dirname, name):
 
 
 def _hls(hls):
+    """
+    @TODO: add documentation
+    """
     dirname, name = get_path_info(hls.output_)
     streams = []
     for rep in hls.reps:
@@ -95,10 +98,16 @@ def _hls(hls):
 
 
 def stream_args(media):
+    """
+    @TODO: add documentation
+    """
     return getattr(sys.modules[__name__], "_%s" % type(media).__name__.lower())(media)
 
 
 def command_builder(ffmpeg_bin: str, media):
+    """
+    @TODO: add documentation
+    """
     args = [ffmpeg_bin] + cnv_options_to_args(dict(media.media.input_opts)) + stream_args(media)
     return " ".join(clean_args(args))
 

@@ -29,6 +29,9 @@ from .ffprobe import FFProbe
 
 class Save(abc.ABC):
     def __init__(self, media, _format: Format, **options):
+        """
+        @TODO: add documentation
+        """
         atexit.register(self.finish_up)
 
         self.output_ = ''
@@ -40,6 +43,9 @@ class Save(abc.ABC):
         self.output_temp = False
 
     def finish_up(self):
+        """
+        @TODO: add documentation
+        """
         if self.media.input_temp:
             os.remove(self.media.input)
         if self.output_temp:
@@ -59,6 +65,9 @@ class Save(abc.ABC):
         return method
 
     def output(self, output: str = None, clouds: CloudManager = None, monitor: callable = None, ffmpeg_bin: str = 'ffmpeg', **options):
+        """
+        @TODO: add documentation
+        """
         if output is None and clouds is None:
             self.output_ = self.media.input
         elif clouds is not None:
@@ -77,12 +86,18 @@ class Save(abc.ABC):
             shutil.move(os.path.dirname(self.output_), os.path.dirname(output))
 
     def _run(self, ffmpeg_bin, monitor: callable = None, **options):
+        """
+        @TODO: add documentation
+        """
         with Process(self, command_builder(ffmpeg_bin, self), monitor, **options) as process:
             self.pipe, err = process.run()
 
 
 class Streaming(Save, ABC):
     def __init__(self, media, _format: Format, **options):
+        """
+        @TODO: add documentation
+        """
         self.reps = list
         super(Streaming, self).__init__(media, _format, **options)
 
@@ -90,6 +105,9 @@ class Streaming(Save, ABC):
         self.reps = list(reps)
 
     def auto_generate_representations(self, heights=None, bitrate=None, ffprobe_bin='ffprobe'):
+        """
+        @TODO: add documentation
+        """
         probe = FFProbe(self.media.input, ffprobe_bin)
         self.reps = AutoRep(probe.video_size, probe.bitrate, self.format, heights, bitrate)
 
@@ -106,9 +124,15 @@ class HLS(Streaming):
     KEY_INFO_FILE_PATH = None
 
     def set_up(self):
+        """
+        @TODO: add documentation
+        """
         HLSMasterPlaylist.generate(self)
 
     def encryption(self, path: str, url: str, key_rotation_period: int = 0, needle: str = ".ts' for writing", length: int = 16):
+        """
+        @TODO: add documentation
+        """
         with tempfile.NamedTemporaryFile(mode='w', suffix='_py_ff_vi_st.tmp', delete=False) as key_info:
             HLS.KEY_INFO_FILE_PATH = key_info.name
 
@@ -119,14 +143,23 @@ class HLS(Streaming):
             self.flags('periodic_rekey')
 
     def fragmented_mp4(self):
+        """
+        @TODO: add documentation
+        """
         self.options.update({'hls_segment_type': 'fmp4'})
 
     def flags(self, *flags: str):
+        """
+        @TODO: add documentation
+        """
         hls_flags = self.options.pop('hls_flags', None)
         hls_flags = hls_flags + "+" + "+".join(list(flags)) if hls_flags is not None else "+".join(list(flags))
         self.options.update({'hls_flags': hls_flags})
 
     def finish_up(self):
+        """
+        @TODO: add documentation
+        """
         if HLS.KEY_INFO_FILE_PATH is not None:
             shutil.rmtree(HLS.KEY_INFO_FILE_PATH, ignore_errors=True)
 
@@ -134,23 +167,38 @@ class HLS(Streaming):
 
 
 class Stream2File(Save):
+    """
+    @TODO: add documentation
+    """
     def set_up(self):
         pass
 
 
 class Media(object):
     def __init__(self, input_opts):
+        """
+        @TODO: add documentation
+        """
         options = dict(input_opts)
         self.input = options.get('i', None)
         self.input_temp = options.pop('is_tmp', False)
         self.input_opts = options
 
     def hls(self, _format: Format, **options):
+        """
+        @TODO: add documentation
+        """
         return HLS(self, _format, **options)
 
     def dash(self, _format: Format, **options):
+        """
+        @TODO: add documentation
+        """
         return DASH(self, _format, **options)
 
     def stream2file(self, _format: Format, **options):
+        """
+        @TODO: add documentation
+        """
         return Stream2File(self, _format, **options)
 

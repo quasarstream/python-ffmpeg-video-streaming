@@ -18,11 +18,17 @@ MINIMUM_BITRATE = 65536
 
 class Representation:
     def __init__(self, size: Size, bitrate: Bitrate):
+        """
+        @TODO: add documentation
+        """
         self.size = size
         self.bitrate = bitrate
 
 
 def min_bitrate(bitrate: int) -> int:
+    """
+    @TODO: add documentation
+    """
     if bitrate < MINIMUM_BITRATE:
         return MINIMUM_BITRATE
 
@@ -30,6 +36,9 @@ def min_bitrate(bitrate: int) -> int:
 
 
 def reduce_bitrate(bitrate: Bitrate, divide: int) -> Bitrate:
+    """
+    @TODO: add documentation
+    """
     if divide == 1:
         return bitrate
 
@@ -48,6 +57,9 @@ def cal_bitrate(bitrate, org_bitrate: Bitrate, index: int) -> Bitrate:
 
 class AutoRep(object):
     def __init__(self, original_size: Size, original_bitrate: Bitrate, _format: Format, heights: list = None, bitrate: list = None):
+        """
+        @TODO: add documentation
+        """
         self.original_bitrate = original_bitrate
         self.original_size = original_size
         self._format = _format
@@ -59,6 +71,9 @@ class AutoRep(object):
             raise ValueError("The length of heights list must the same as length of bitrate")
 
     def __iter__(self):
+        """
+        @TODO: add documentation
+        """
         if not self.is_default:
             height = self.original_size.ratio.calculate_height(self.original_size.width, self._format.multiply())
             self.heights = [height] + list(filter(lambda x: x < height, self.heights))
@@ -68,6 +83,9 @@ class AutoRep(object):
         return self
 
     def __next__(self):
+        """
+        @TODO: add documentation
+        """
         if self.index < len(self.heights):
             height = self.heights[self.index]
             width = self.original_size.ratio.calculate_width(height, self._format.multiply())
