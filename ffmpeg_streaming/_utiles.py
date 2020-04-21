@@ -38,6 +38,17 @@ def mkdir(dirname: str) -> None:
         pass
 
 
+def rm(path: str) -> None:
+    """
+    @TODO: add documentation
+    """
+    try:
+        os.remove(path)
+    except OSError as exc:
+        logging.info(exc)
+        pass
+
+
 def clean_args(args: list) -> list:
     """
     @TODO: add documentation

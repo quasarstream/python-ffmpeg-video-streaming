@@ -23,7 +23,7 @@ from ._format import Format
 from ._hls_helper import HLSKeyInfoFile, HLSMasterPlaylist
 from ._process import Process
 from ._reperesentation import Representation, AutoRep
-from ._utiles import mkdir
+from ._utiles import mkdir, rm
 from .ffprobe import FFProbe
 
 
@@ -40,6 +40,7 @@ class Save(abc.ABC):
         self.format = _format
         self.options = options
         self.pipe = None
+        self.probe = None
         self.output_temp = False
 
     def finish_up(self):
@@ -47,7 +48,7 @@ class Save(abc.ABC):
         @TODO: add documentation
         """
         if self.media.input_temp:
-            os.remove(self.media.input)
+            rm(self.media.input)
         if self.output_temp:
             shutil.rmtree(os.path.dirname(str(self.output_)), ignore_errors=True)
 
@@ -108,8 +109,8 @@ class Streaming(Save, ABC):
         """
         @TODO: add documentation
         """
-        probe = FFProbe(self.media.input, ffprobe_bin)
-        self.reps = AutoRep(probe.video_size, probe.bitrate, self.format, heights, bitrate)
+        self.probe = FFProbe(self.media.input, ffprobe_bin)
+        self.reps = AutoRep(self.probe.video_size, self.probe.bitrate, self.format, heights, bitrate)
 
 
 class DASH(Streaming):
@@ -122,6 +123,7 @@ class DASH(Streaming):
 
 class HLS(Streaming):
     KEY_INFO_FILE_PATH = None
+    PERIODIC_RE_KEY_FLAG = 'periodic_rekey'
 
     def set_up(self):
         """
@@ -138,9 +140,10 @@ class HLS(Streaming):
 
         key_info_file = HLSKeyInfoFile(HLS.KEY_INFO_FILE_PATH, path, url, key_rotation_period, needle, length)
         self.options.update({'hls_key_info_file': str(key_info_file)})
+
         if key_rotation_period > 0:
             setattr(self, 'key_rotation', key_info_file)
-            self.flags('periodic_rekey')
+            self.flags(HLS.PERIODIC_RE_KEY_FLAG)
 
     def fragmented_mp4(self):
         """
@@ -161,7 +164,7 @@ class HLS(Streaming):
         @TODO: add documentation
         """
         if HLS.KEY_INFO_FILE_PATH is not None:
-            shutil.rmtree(HLS.KEY_INFO_FILE_PATH, ignore_errors=True)
+            rm(HLS.KEY_INFO_FILE_PATH)
 
         super(HLS, self).finish_up()
 

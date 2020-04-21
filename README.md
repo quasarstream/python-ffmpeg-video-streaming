@@ -9,7 +9,7 @@
 ## Overview
 This package uses the **[FFmpeg](https://ffmpeg.org)** to package media content for online streaming such as DASH and HLS. You can also use **[DRM](https://en.wikipedia.org/wiki/Digital_rights_management)** for HLS packaging. There are several options to open a file from a cloud and save files to clouds as well.
 - **[Full Documentation](https://video.aminyazdanpanah.com/python/)** is available describing all features and components.
-- As of version `0.1.0`, almost all files have been renewed, see the documentation for more information. If you find any bugs in the library, please file an issue. Pull requests are also welcome.
+- In this version(>=v0.1.0) all codes are rewritten from scratch. If you find any bugs in the library, please **[file an issue](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/issues)**. **[Pull requests](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/pulls)** are also welcome.
  
 **Contents**
 - [Requirements](#requirements)
@@ -40,7 +40,7 @@ pip install python-ffmpeg-video-streaming
 ```
 Alternatively, add the dependency directly to your `requirements.txt` file:
 ``` txt
-python-ffmpeg-video-streaming==0.1.0
+python-ffmpeg-video-streaming>=0.1
 ```
 
 ## Quickstart
@@ -77,7 +77,7 @@ video = ffmpeg_streaming.input(s3, bucket_name="bucket-name", key="video.mp4")
 Visit **[this page](https://video.aminyazdanpanah.com/python/start/clouds?r=open)** to see some examples of opening a file from **[Amazon S3](https://aws.amazon.com/s3)**, **[Google Cloud Storage](https://console.cloud.google.com/storage)**, **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**, and a custom cloud.
 
 #### 3. Capture Webcam or Screen (Live Streaming)
-You can pass a name of the supported, connected capture device(i.e. name of webcam, camera, screen and etc) to the `input` method to stream a live media over network. 
+You can pass a name of the supported, connected capture device(i.e. a name of webcam, camera, screen and etc) to the `input` method to stream a live media over network from your connected device. 
 
  ```python
 capture = ffmpeg_streaming.input('CAMERA NAME OR SCREEN NAME', capture=True)
@@ -149,14 +149,14 @@ You must specify a path to save a random key to your local machine and also a UR
 The following code generates a key for all segment files.
 
 ```python
-#A path you want to save a random key to your server
+from ffmpeg_streaming import Formats
+
+#A path you want to save a random key to your local machine
 save_to = '/home/public_html/"PATH TO THE KEY DIRECTORY"/key'
 
 #A URL (or a path) to access the key on your website
 url = 'https://www.aminyazdanpanah.com/?"PATH TO THE KEY DIRECTORY"/key'
-# or url = '/PATH TO THE KEY DIRECTORY/key';
-
-from ffmpeg_streaming import Formats
+# or url = '/"PATH TO THE KEY DIRECTORY"/key';
 
 hls = video.hls(Formats.h264())
 hls.encryption(save_to, url)
@@ -169,7 +169,7 @@ An integer as a "key rotation period" can also be passed to the `encryption` met
 
 See **[the example](https://video.aminyazdanpanah.com/python/start?r=enc-hls#hls-encryption)** for more information.
 
-**IMPORTANT:** It is very important to protect your key(s) on your website. For example, you can check a token(using a Get or Post HTTP method) to access the key(s) on your website. You can also check a session(or cookie) on your website to restrict access to the key(s)(**It is highly recommended**).    
+**IMPORTANT:** It is very important to protect your key(s) on your website. For example, you can use a token(using a Get or Post HTTP method) to check if the user is eligible to access to the key or not. You can also use a session(or cookie) on your website to restrict access to the key(s)(**It is highly recommended**).    
 
 ##### DRM
 However FFmpeg supports AES encryption for HLS packaging, which you can encrypt your content, it is not a full **[DRM](https://en.wikipedia.org/wiki/Digital_rights_management)** solution. If you want to use a full DRM solution, I recommend trying **[FairPlay Streaming](https://developer.apple.com/streaming/fps/)** solution which then securely exchange keys, and protect playback on devices.
@@ -189,7 +189,7 @@ def monitor(ffmpeg, duration, time_):
 
 hls = video.hls(Formats.h264())
 hls.auto_generate_representations()
-hls.output('/var/media/hls.m3u8')
+hls.output('/var/media/hls.m3u8', monitor=monitor)
 ```
 
 ##### Output From a Terminal:
@@ -199,7 +199,7 @@ hls.output('/var/media/hls.m3u8')
 There are several ways to save files.
 
 #### 1. To a Local Path
-You can pass a local path to the `output` method. If there was no directory in the path, then the package auto makes the directory.
+You can pass a local path to the `output` method. If there is no directory, then the package will create it.
 ```python
 from ffmpeg_streaming import Formats
 
@@ -208,7 +208,7 @@ dash.auto_generate_representations()
 
 dash.output('/var/media/dash.mpd')
 ```
-It can also be None. The default path to save files is the input path.
+It can also be None. The default path to save files is the input directory.
 ```python
 from ffmpeg_streaming import Formats
 
@@ -225,19 +225,19 @@ You can save your files to a cloud by passing an instance of a `CloudManager` to
 ```python
 from ffmpeg_streaming import  S3, CloudManager
 
-s3_cloud = S3(aws_access_key_id='YOUR_KEY_ID', aws_secret_access_key='YOUR_KEY_SECRET', region_name='YOUR_REGION')
-s3 = CloudManager().add(s3_cloud, bucket_name="bucket-name")
+s3 = S3(aws_access_key_id='YOUR_KEY_ID', aws_secret_access_key='YOUR_KEY_SECRET', region_name='YOUR_REGION')
+save_to_s3 = CloudManager().add(s3, bucket_name="bucket-name")
 
-hls.output(clouds=s3)
+hls.output(clouds=save_to_s3)
 ``` 
 A path can also be passed to save a copy of files to your local machine.
 ```python
-hls.output('/var/media/hls.m3u8', clouds=s3)
+hls.output('/var/media/hls.m3u8', clouds=save_to_s3)
 ```
 
 Visit **[this page](https://video.aminyazdanpanah.com/python/start/clouds?r=save)** to see some examples of saving files to **[Amazon S3](https://aws.amazon.com/s3)**, **[Google Cloud Storage](https://console.cloud.google.com/storage)**, **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**, and a custom cloud. 
 
-**NOTE:** This option(Save To Clouds) is only valid for **[VOD](https://en.wikipedia.org/wiki/Video_on_demand)** (it does not support live streaming).
+**NOTE:** This option is only valid for **[VOD](https://en.wikipedia.org/wiki/Video_on_demand)** (it does not support live streaming).
 
 **Schema:** The relation is `one-to-many`
 
@@ -246,7 +246,6 @@ Visit **[this page](https://video.aminyazdanpanah.com/python/start/clouds?r=save
 #### 3. To a Server Instantly
 You can pass a url(or a supported resource like `ftp`) to the `output` method to upload all the segments files to the HTTP server(or other protocols) using the HTTP PUT method, and update the manifest files every refresh times.
 
-
 ```python
 # DASH
 dash.output('http://YOUR-WEBSITE.COM/live-stream/out.mpd')
@@ -254,12 +253,13 @@ dash.output('http://YOUR-WEBSITE.COM/live-stream/out.mpd')
 # HLS
 hls.output('http://YOUR-WEBSITE.COM/live-stream/out.m3u8')
 ```
-**NOTE:** In the HLS format, you must upload the master playlist to the server manually.
 
-See **[FFmpeg Protocols Documentation](https://ffmpeg.org/ffmpeg-protocols.html)** for more information.
+**NOTE:** In the HLS method, you must upload the master playlist to the server manually.
+
+See **[FFmpeg Protocols Documentation](https://ffmpeg.org/ffmpeg-protocols.html)** for more information about supported resources.
 
 ### Metadata
-You can get information from multimedia streams and the video file using the following code.
+You can get information from the video file using the following code.
 ```python
 from ffmpeg_streaming import FFProbe
 
@@ -331,19 +331,15 @@ You can use these libraries to play your streams.
 
 **NOTE-1:** You must pass a **link of the master playlist(manifest)**(i.e. `https://www.aminyazdanpanah.com/?"PATH TO STREAM DIRECTORY"/dash-stream.mpd` or `/PATH_TO_STREAM_DIRECTORY/hls-stream.m3u8` ) to these players.
 
-**NOTE-2:** If you save your stream to a cloud(i.e. **[Amazon S3](https://aws.amazon.com/s3)**), the link of your playlist and also other content **MUST BE PUBLIC**. 
+**NOTE-2:** If you save your stream content to a cloud(i.e. **[Amazon S3](https://aws.amazon.com/s3)**), the link of your playlist and other content **MUST BE PUBLIC**. 
 
 **NOTE-3:** As you may know, **[IOS](https://www.apple.com/ios)** does not have native support for DASH. Although there are some libraries such as **[Viblast](https://github.com/Viblast/ios-player-sdk)** and **[MPEGDASH-iOS-Player](https://github.com/MPEGDASHPlayer/MPEGDASH-iOS-Player)** to support this technique, I have never tested them. So maybe som of them will not work correctly.
 
 
 ## Contributing and Reporting Bugs
-I'd love your help in improving, correcting, adding to the specification.
-Please **[file an issue](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/issues)** or **[submit a pull request](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/pulls)**.
-- Please see **[Contributing File](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/blob/master/CONTRIBUTING.md)** for more information.
-- If you have any questions or you want to report a bug, please just **[file an issue](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/issues)**
+I'd love your help in improving, correcting, adding to the specification. Please **[file an issue](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/issues)** or **[submit a pull request](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/pulls)**.
+- See **[Contributing File](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/blob/master/CONTRIBUTING.md)** for more information.
 - If you discover a security vulnerability within this package, please see **[SECURITY File](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/blob/master/SECURITY.md)** for more information.
-
-**NOTE:** If you have any questions about this package or FFmpeg, **DO NOT** send an email to me (or **DO NOT** submit the contact form on my website). Emails regarding these issues **will be ignored**.
 
 ## Credits
 - **[Amin Yazdanpanah](https://www.aminyazdanpanah.com/?u=github.com/aminyazdanpanah/python-ffmpeg-video-streaming)**
