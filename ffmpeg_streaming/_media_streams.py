@@ -26,7 +26,12 @@ class Streams:
         """
         @TODO: add documentation
         """
-        return self._get_stream('audio')
+        try:
+            audio = self._get_stream('audio')
+        # no audio tracks
+        except ValueError:
+            audio = {}
+        return audio
 
     def first_stream(self):
         """
