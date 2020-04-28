@@ -16,22 +16,17 @@ class Streams:
     def __init__(self, streams):
         self.streams = streams
 
-    def video(self):
+    def video(self, ignore_error=True):
         """
         @TODO: add documentation
         """
-        return self._get_stream('video')
-
-    def audio(self):
+        return self._get_stream('video', ignore_error)    
+        
+    def audio(self, ignore_error=True):
         """
         @TODO: add documentation
         """
-        try:
-            audio = self._get_stream('audio')
-        # no audio tracks
-        except ValueError:
-            audio = {}
-        return audio
+        return self._get_stream('audio', ignore_error)
 
     def first_stream(self):
         """
@@ -57,14 +52,14 @@ class Streams:
         """
         return self._get_streams('audio')
 
-    def _get_stream(self, media):
+    def _get_stream(self, media, ignore_error):
         """
         @TODO: add documentation
         """
         media_attr = next((stream for stream in self.streams if stream['codec_type'] == media), None)
-        if media_attr is None:
+        if media_attr is None and not ignore_error:
             raise ValueError('No ' + str(media) + ' stream found')
-        return media_attr
+        return media_attr if media_attr is not None else {}
 
     def _get_streams(self, media):
         """
