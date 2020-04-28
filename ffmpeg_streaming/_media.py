@@ -15,7 +15,6 @@ import os
 import shutil
 import tempfile
 import atexit
-from abc import ABC
 
 from ._clouds import CloudManager
 from ._command_builder import command_builder
@@ -73,8 +72,9 @@ class Save(abc.ABC):
             self.output_ = self.media.input
         elif clouds is not None:
             self.output_temp = True
-            basename = os.path.basename(output if output is not None else self.media.input)
-            self.output_ = os.path.join(tempfile.mkdtemp(prefix='ffmpeg_streaming_'), basename)
+            if clouds.filename is None:
+                clouds.filename = os.path.basename(output if output is not None else self.media.input)
+            self.output_ = os.path.join(tempfile.mkdtemp(prefix='ffmpeg_streaming_'), clouds.filename)
         else:
             mkdir(os.path.dirname(output))
             self.output_ = output
@@ -94,7 +94,7 @@ class Save(abc.ABC):
             self.pipe, err = process.run()
 
 
-class Streaming(Save, ABC):
+class Streaming(Save, abc.ABC):
     def __init__(self, media, _format: Format, **options):
         """
         @TODO: add documentation
@@ -187,17 +187,17 @@ class Media(object):
         self.input_temp = options.pop('is_tmp', False)
         self.input_opts = options
 
-    def hls(self, _format: Format, **options):
+    def hls(self, _format: Format, **hls_options):
         """
         @TODO: add documentation
         """
-        return HLS(self, _format, **options)
+        return HLS(self, _format, **hls_options)
 
-    def dash(self, _format: Format, **options):
+    def dash(self, _format: Format, **dash_options):
         """
         @TODO: add documentation
         """
-        return DASH(self, _format, **options)
+        return DASH(self, _format, **dash_options)
 
     def stream2file(self, _format: Format, **options):
         """

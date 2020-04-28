@@ -48,6 +48,7 @@ class S3(Clouds):
 
     def upload_directory(self, directory, **options):
         bucket_name = options.pop('bucket_name', None)
+        folder = options.pop('folder', '')
         if bucket_name is None:
             raise ValueError('You should pass a bucket name')
 
@@ -55,7 +56,7 @@ class S3(Clouds):
 
         try:
             for file in files:
-                self.s3.upload_file(join(directory, file), bucket_name, file)
+                self.s3.upload_file(join(directory, file), bucket_name, join(folder, file))
         except self.err as e:
             logging.error(e)
             raise RuntimeError(e)
@@ -181,10 +182,11 @@ class MAS(Clouds):
 
 
 class CloudManager:
-    def __init__(self):
+    def __init__(self, filename: str = None):
         """
         @TODO: add documentation
         """
+        self.filename = filename
         self.clouds = []
 
     def add(self, cloud: Clouds, **options):
