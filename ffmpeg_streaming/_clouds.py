@@ -15,7 +15,7 @@ import abc
 import logging
 import tempfile
 from os import listdir
-from os.path import isfile, join
+from os.path import isfile, join, basename
 
 
 class Clouds(abc.ABC):
@@ -71,7 +71,7 @@ class S3(Clouds):
             raise ValueError('You should pass a bucket and key name')
 
         if filename is None:
-            filename = tempfile.NamedTemporaryFile(suffix='_' + key + '_py_ff_vi_st.tmp', delete=False)
+            filename = tempfile.NamedTemporaryFile(suffix='_' + basename(key), delete=False)
         else:
             filename = open(filename, 'wb')
 
@@ -117,14 +117,14 @@ class GCS(Clouds):
             raise ValueError('You should pass a bucket name')
 
         bucket = self.client.get_bucket(bucket_name)
-
-        if filename is None:
-            with tempfile.NamedTemporaryFile(suffix='_py_ff_vi_st.tmp', delete=False) as tmp:
-                filename = tmp.name
-
         object_name = options.pop('object_name', None)
+
         if object_name is None:
             raise ValueError('You should pass an object name')
+
+        if filename is None:
+            with tempfile.NamedTemporaryFile(suffix='_' + basename(object_name), delete=False) as tmp:
+                filename = tmp.name
 
         blob = bucket.get_blob(object_name, options)
         blob.download_to_filename(filename)
@@ -167,7 +167,7 @@ class MAS(Clouds):
             raise ValueError('You should pass a container name and a blob name')
 
         if filename is None:
-            with tempfile.NamedTemporaryFile(suffix='_py_ff_vi_st.tmp', delete=False) as tmp:
+            with tempfile.NamedTemporaryFile(suffix='_' + basename(blob), delete=False) as tmp:
                 filename = tmp.name
 
         try:
