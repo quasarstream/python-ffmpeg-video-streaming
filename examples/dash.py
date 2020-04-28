@@ -1,5 +1,5 @@
 """
-examples.dash.dash
+examples.dash
 ~~~~~~~~~~~~
 
 Create DASH streams and manifest
@@ -16,9 +16,6 @@ import datetime
 import sys
 import time
 import logging
-
-import ffmpeg_streaming
-
 
 import ffmpeg_streaming
 from ffmpeg_streaming import Formats
@@ -56,7 +53,7 @@ def main():
 
     video = ffmpeg_streaming.input(args.input)
 
-    dash = video.dash(Formats.hevc())
+    dash = video.dash(Formats.h264())
     dash.auto_generate_representations()
     dash.output(args.output, monitor=monitor)
 

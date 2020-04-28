@@ -6,7 +6,7 @@ import ffmpeg_streaming
 from ffmpeg_streaming import Formats
 from ffmpeg_streaming import FFProbe, Representation, Size, Bitrate
 from ffmpeg_streaming._media import HLS, DASH
-from ffmpeg_streaming._media_streams import Streams
+from ffmpeg_streaming.ffprobe import Streams
 
 
 class TestStreaming(unittest.TestCase):

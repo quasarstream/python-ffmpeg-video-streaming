@@ -1,5 +1,5 @@
 """
-examples.hls.hls
+examples.hls
 ~~~~~~~~~~~~
 
 Create HlS streams
@@ -48,12 +48,24 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-i', '--input', required=True, help='The path to the video file (required).')
     parser.add_argument('-o', '--output', default=None, help='The output to write files.')
+
+    parser.add_argument('-k', '--key', default=None, help='The full pathname of the file where a random key will '
+                                                             'be created (required). Note: The path of the key should'
+                                                             'be accessible from your website(e.g. '
+                                                             '"/var/www/public_html/keys/enc.key")')
+    parser.add_argument('-u', '--url', default=None, help='A URL (or a path) to access the key on your website ('
+                                                          'required)')
+
     args = parser.parse_args()
 
     video = ffmpeg_streaming.input(args.input)
 
     hls = video.hls(Formats.h264())
     hls.auto_generate_representations()
+
+    if args.key is not None and args.url is not None:
+        hls.encryption(args.key, args.url, 10)
+
     hls.output(args.output, monitor=monitor)
 
 

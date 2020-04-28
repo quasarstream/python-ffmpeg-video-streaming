@@ -92,7 +92,7 @@ Create DASH files:
 ```python
 from ffmpeg_streaming import Formats
 
-dash = video.dash(Formats.hevc())
+dash = video.dash(Formats.h264())
 dash.auto_generate_representations()
 dash.output('/var/media/dash.mpd')
 ```
@@ -109,7 +109,7 @@ _1080p = Representation(Size(1920, 1080), Bitrate(4096 * 1024, 320 * 1024))
 _2k    = Representation(Size(2560, 1440), Bitrate(6144 * 1024, 320 * 1024))
 _4k    = Representation(Size(3840, 2160), Bitrate(17408 * 1024, 320 * 1024))
 
-dash = video.dash(Formats.hevc())
+dash = video.dash(Formats.h264())
 dash.representations(_144p, _240p, _360p, _480p, _720p, _1080p, _2k, _4k)
 dash.output('/var/media/dash.mpd')
 ```
@@ -174,7 +174,7 @@ See **[the example](https://video.aminyazdanpanah.com/python/start?r=enc-hls#hls
 ##### DRM
 However FFmpeg supports AES encryption for HLS packaging, which you can encrypt your content, it is not a full **[DRM](https://en.wikipedia.org/wiki/Digital_rights_management)** solution. If you want to use a full DRM solution, I recommend trying **[FairPlay Streaming](https://developer.apple.com/streaming/fps/)** solution which then securely exchange keys, and protect playback on devices.
 
-**Besides [Apple’s FairPlay](https://developer.apple.com/streaming/fps/)** DRM system, you can also use other DRM systems such as **[Microsoft's PlayReady](https://www.microsoft.com/playready/overview/)** and **[Google’s Widevine](https://www.widevine.com/)**.
+**Besides [Apple's FairPlay](https://developer.apple.com/streaming/fps/)** DRM system, you can also use other DRM systems such as **[Microsoft's PlayReady](https://www.microsoft.com/playready/overview/)** and **[Google's Widevine](https://www.widevine.com/)**.
 
 ### Transcoding
 You can get realtime information about the transcoding using the following code. 
@@ -203,7 +203,7 @@ You can pass a local path to the `output` method. If there is no directory, then
 ```python
 from ffmpeg_streaming import Formats
 
-dash = video.dash(Formats.hevc())
+dash = video.dash(Formats.h264())
 dash.auto_generate_representations()
 
 dash.output('/var/media/dash.mpd')
@@ -279,7 +279,7 @@ video = ffmpeg_streaming.input('https://www.aminyazdanpanah.com/?PATH/TO/HLS-MAN
 
 _480p  = Representation(Size(854, 480), Bitrate(750 * 1024, 192 * 1024))
 
-dash = video.dash(Formats.hevc())
+dash = video.dash(Formats.h264())
 dash.representations(_480p)
 dash.output('/var/media/dash.mpd')
 ```

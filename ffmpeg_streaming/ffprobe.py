@@ -15,8 +15,65 @@ import json
 import logging
 import subprocess
 
-from ._media_streams import Streams
 from ._media_property import Size, Bitrate
+
+
+class Streams:
+    def __init__(self, streams):
+        self.streams = streams
+
+    def video(self, ignore_error=True):
+        """
+        @TODO: add documentation
+        """
+        return self._get_stream('video', ignore_error)
+
+    def audio(self, ignore_error=True):
+        """
+        @TODO: add documentation
+        """
+        return self._get_stream('audio', ignore_error)
+
+    def first_stream(self):
+        """
+        @TODO: add documentation
+        """
+        return self.streams[0]
+
+    def all(self):
+        """
+        @TODO: add documentation
+        """
+        return self.streams
+
+    def videos(self):
+        """
+        @TODO: add documentation
+        """
+        return self._get_streams('video')
+
+    def audios(self):
+        """
+        @TODO: add documentation
+        """
+        return self._get_streams('audio')
+
+    def _get_stream(self, media, ignore_error):
+        """
+        @TODO: add documentation
+        """
+        media_attr = next((stream for stream in self.streams if stream['codec_type'] == media), None)
+        if media_attr is None and not ignore_error:
+            raise ValueError('No ' + str(media) + ' stream found')
+        return media_attr if media_attr is not None else {}
+
+    def _get_streams(self, media):
+        """
+        @TODO: add documentation
+        """
+        for stream in self.streams:
+            if stream['codec_type'] == media:
+                yield stream
 
 
 class FFProbe:
@@ -84,10 +141,6 @@ class FFProbe:
             raise RuntimeError('It could not determine the value of bitrate')
 
         return Bitrate(video, audio, overall, type=_type)
-
-
-def ffprobe(filename, cmd='ffprobe'):
-    return FFProbe(filename, cmd)
 
 
 __all__ = [

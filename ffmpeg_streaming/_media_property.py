@@ -12,8 +12,9 @@ Size and Bitrate Objects
 """
 import math
 
-OVERALL_TO_VIDEO_COEFFICIENT = .8
+OVERALL_TO_VIDEO_COEFFICIENT = 1
 MAX_RATE_COEFFICIENT = 1.2
+BUFFER_SIZE = 65536
 
 
 def cnv_bitrate(bitrate: int, _type: str) -> str:
@@ -37,6 +38,7 @@ class Bitrate:
         self.overall_ = overall
         self.video_ = video
         self.audio_ = audio
+        self.kwargs = kwargs
         self.type = kwargs.pop("type", "k")
 
     @property
@@ -77,6 +79,14 @@ class Bitrate:
         @TODO: add documentation
         """
         return cnv_bitrate(int(self.normalize_video(False) * MAX_RATE_COEFFICIENT), self.type)
+
+    @property
+    def buffer_size(self):
+        """
+        @TODO: add documentation
+        """
+
+        return cnv_bitrate(int(self.kwargs.get('buffer_size', BUFFER_SIZE)), self.type)
 
 
 def multiple_up(value, multiple):
