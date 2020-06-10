@@ -175,7 +175,9 @@ class HLS(Streaming):
         """
         @TODO: add documentation
         """
-        HLS.MASTER_PLAYLIST_IS_SAVED = True
+        if path is not None:
+            HLS.MASTER_PLAYLIST_IS_SAVED = True
+
         HLSMasterPlaylist.generate(self, path)
 
     def flags(self, *flags: str):
