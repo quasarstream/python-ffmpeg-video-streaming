@@ -84,13 +84,9 @@ class Process(object):
                 getattr(self.media, 'key_rotation').rotate_key(line)
 
             if callable(self.monitor):
-                if duration < 2 and get_time('Duration: ', line) is not None:
-                    duration = get_time('Duration: ', line)
-
-                if get_time('time=', line):
-                    time = get_time('time=', line)
-
-                self.monitor(line, duration, time)
+                duration = get_time('Duration: ', line, duration)
+                time = get_time('time=', line, time)
+                self.monitor(line, duration, time, self.process)
 
         Process.out = log
 

@@ -64,7 +64,7 @@ class Streams:
         """
         media_attr = next((stream for stream in self.streams if stream['codec_type'] == media), None)
         if media_attr is None and not ignore_error:
-            raise ValueError('No ' + str(media) + ' stream found')
+            raise ValueError('No {} stream found'.format(str(media)))
         return media_attr if media_attr is not None else {}
 
     def _get_streams(self, media):

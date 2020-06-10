@@ -134,7 +134,7 @@ class VP9(Format):
 
     def get_codec_options(self) -> dict:
         """
-        set the default value of hevc(h265) codec options and update the value with the specified value by user
+        set the default value of vp9 codec options and update the value with the specified value by user
         see https://ffmpeg.org/ffmpeg-codecs.html#Options-26 for more information about options
         :return: dict
         """

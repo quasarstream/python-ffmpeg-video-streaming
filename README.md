@@ -66,7 +66,7 @@ video = ffmpeg_streaming.input('https://www.aminyazdanpanah.com/?"PATH TO A VIDE
 ```
 
 #### 2. From Clouds
-You can open a file from a cloud by passing an instance of a cloud configuration to the `input` method. 
+You can open a file from a cloud by passing an instance of the Cloud object to the `input` method. 
 
 ```python
 from ffmpeg_streaming import S3
@@ -168,19 +168,27 @@ An integer as a "key rotation period" can also be passed to the `encryption` met
 
 See **[the example](https://video.aminyazdanpanah.com/python/start?r=enc-hls#hls-encryption)** for more information.
 
-**IMPORTANT:** It is very important to protect your key(s) on your website. For example, you can use a token(using a Get or Post HTTP method) to check if the user is eligible to access the key or not. You can also use a session(or cookie) on your website to restrict access to the key(s)(**It is highly recommended**).    
+**IMPORTANT:** It is very important to protect your key(s) on your website. For example, you can use a token(using a Get/Post HTTP method or add a token to authorization header) to check if the user is eligible to access the key or not. You can also use a session(or cookie) on your website to restrict access to the key(s)(**It is highly recommended**).    
 
 ##### DRM
 However FFmpeg supports AES encryption for HLS packaging, which you can encrypt your content, it is not a full **[DRM](https://en.wikipedia.org/wiki/Digital_rights_management)** solution. If you want to use a full DRM solution, I recommend trying **[FairPlay Streaming](https://developer.apple.com/streaming/fps/)** solution which then securely exchange keys, and protect playback on devices.
 
 **Besides [Apple's FairPlay](https://developer.apple.com/streaming/fps/)** DRM system, you can also use other DRM systems such as **[Microsoft's PlayReady](https://www.microsoft.com/playready/overview/)** and **[Google's Widevine](https://www.widevine.com/)**.
+
 ### Transcoding
 You can get realtime information about the transcoding using the following code. 
 ```python
 from ffmpeg_streaming import Formats
 import sys
 
-def monitor(ffmpeg, duration, time_):
+def monitor(ffmpeg, duration, time_, process):
+    # You can update a field in your database or log it to a file
+    # You can also create a socket connection and show a progress bar to users
+    # logging.info(ffmpeg) or print(ffmpeg)
+
+    # if "something happened":
+    #     process.terminate()
+
     per = round(time_ / duration * 100)
     sys.stdout.write("\rTranscoding...(%s%%) [%s%s]" % (per, '#' * per, '-' * (100 - per)))
     sys.stdout.flush()
@@ -253,8 +261,6 @@ hls.save_master_playlist('/var/media/hls.m3u8')
 #Before running the following code, you should upload the master playlist to the server. For example upload the '/var/media/hls.m3u8' to 'ftp://[user[:password]@]server[:port]/var/media/hls.m3u8'
 hls.output('ftp://[user[:password]@]server[:port]/var/media/hls.m3u8')
 ```
-
-**NOTE:** In the HLS method, you must upload the master playlist to the server manually.
 
 See **[FFmpeg Protocols Documentation](https://ffmpeg.org/ffmpeg-protocols.html)** for more information about supported resources.
 ### Metadata

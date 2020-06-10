@@ -159,7 +159,7 @@ class Size:
         """
         @TODO: add documentation
         """
-        return str(self.width) + "x" + str(self.height)
+        return "{}x{}".format(str(self.width), str(self.height))
 
 
 __all__ = [

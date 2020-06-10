@@ -35,10 +35,14 @@ def time_left(time_, total):
     return time_left
 
 
-def monitor(ffmpeg, duration, time_):
+def monitor(ffmpeg, duration, time_, process):
     # You can update a field in your database or log it to a file
     # You can also create a socket connection and show a progress bar to users
-    # logging.info(ffmpeg)
+    # logging.info(ffmpeg) or print(ffmpeg)
+
+    # if "something happened":
+    #     process.terminate()
+
     per = round(time_ / duration * 100)
     sys.stdout.write("\rTranscoding...(%s%%) %s [%s%s]" % (per, time_left(time_, duration), '#' * per, '-' * (100 - per)))
     sys.stdout.flush()
@@ -49,12 +53,17 @@ def main():
     parser.add_argument('-i', '--input', required=True, help='The path to the video file (required).')
     parser.add_argument('-o', '--output', default=None, help='The output to write files.')
 
-    parser.add_argument('-k', '--key', default=None, help='The full pathname of the file where a random key will '
-                                                             'be created (required). Note: The path of the key should'
-                                                             'be accessible from your website(e.g. '
-                                                             '"/var/www/public_html/keys/enc.key")')
+    parser.add_argument('-fmp4', '--fragmented', default=False, help='Fragmented mp4 output')
+
+    parser.add_argument('-k', '--key', default=None, help='The full pathname of the file where a random key will be '
+                                                          'created (required). Note: The path of the key should be '
+                                                          'accessible from your website(e.g. '
+                                                          '"/var/www/public_html/keys/enc.key")')
     parser.add_argument('-u', '--url', default=None, help='A URL (or a path) to access the key on your website ('
                                                           'required)')
+    parser.add_argument('-krp', '--key_rotation_period', default=0, help='Use a different key for each set of '
+                                                                         'segments, rotating to a new key after this '
+                                                                         'many segments.')
 
     args = parser.parse_args()
 
@@ -63,8 +72,11 @@ def main():
     hls = video.hls(Formats.h264())
     hls.auto_generate_representations()
 
+    if args.fragmented:
+        hls.fragmented_mp4()
+
     if args.key is not None and args.url is not None:
-        hls.encryption(args.key, args.url, 10)
+        hls.encryption(args.key, args.url, args.key_rotation_period)
 
     hls.output(args.output, monitor=monitor)
 

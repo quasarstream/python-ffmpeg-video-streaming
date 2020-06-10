@@ -40,7 +40,7 @@ class S3(Clouds):
             import boto3
             from botocore.exceptions import ClientError
         except ImportError as e:
-            raise ImportError("no specified import name! make sure you install the package via pip:\n\n"
+            raise ImportError("No specified import name! make sure that you have installed the package via pip:\n\n"
                               "pip install boto3")
 
         self.s3 = boto3.client('s3', **options)
@@ -71,7 +71,7 @@ class S3(Clouds):
             raise ValueError('You should pass a bucket and key name')
 
         if filename is None:
-            filename = tempfile.NamedTemporaryFile(suffix='_' + basename(key), delete=False)
+            filename = tempfile.NamedTemporaryFile(prefix=basename(key), delete=False)
         else:
             filename = open(filename, 'wb')
 
@@ -94,7 +94,7 @@ class GCS(Clouds):
         try:
             from google.cloud import storage
         except ImportError as e:
-            raise ImportError("no specified import name! make sure you install the package via pip:\n\n"
+            raise ImportError("No specified import name! make sure that you have installed the package via pip:\n\n"
                               "pip install google-cloud-storage")
         self.client = storage.Client(**options)
 
@@ -123,7 +123,7 @@ class GCS(Clouds):
             raise ValueError('You should pass an object name')
 
         if filename is None:
-            with tempfile.NamedTemporaryFile(suffix='_' + basename(object_name), delete=False) as tmp:
+            with tempfile.NamedTemporaryFile(prefix=basename(object_name), delete=False) as tmp:
                 filename = tmp.name
 
         blob = bucket.get_blob(object_name, options)
@@ -140,7 +140,7 @@ class MAS(Clouds):
         try:
             from azure.storage.blob import BlockBlobService
         except ImportError as e:
-            raise ImportError("no specified import name! make sure you installed the package via pip:\n\n"
+            raise ImportError("No specified import name! make sure that you have installed the package via pip:\n\n"
                               "pip install azure-storage-blob")
         self.block_blob_service = BlockBlobService(**options)
 
@@ -167,7 +167,7 @@ class MAS(Clouds):
             raise ValueError('You should pass a container name and a blob name')
 
         if filename is None:
-            with tempfile.NamedTemporaryFile(suffix='_' + basename(blob), delete=False) as tmp:
+            with tempfile.NamedTemporaryFile(prefix=basename(blob), delete=False) as tmp:
                 filename = tmp.name
 
         try:

@@ -70,13 +70,12 @@ def convert_to_sec(time):
     return int(h) * 3600 + int(m) * 60 + int(s)
 
 
-def get_time(key, string):
+def get_time(key, string, default):
     """
     @TODO: add documentation
     """
     time = re.search('(?<=' + key + ')\w+:\w+:\w+', string)
-    if time:
-        return convert_to_sec(time.group(0))
+    return convert_to_sec(time.group(0)) if time else default
 
 
 def deprecated(func):

@@ -81,8 +81,10 @@ class HLSMasterPlaylist:
         self.path = media.output
 
     @classmethod
-    def generate(cls, media):
-        path = os.path.join(os.path.dirname(media.output_), os.path.basename(media.output_).split('.')[0] + '.m3u8')
+    def generate(cls, media, path=None):
+        if path is None:
+            path = os.path.join(os.path.dirname(media.output_), os.path.basename(media.output_).split('.')[0] + '.m3u8')
+
         with open(path, 'w', encoding='utf-8') as playlist:
             playlist.write(cls(media)._content())
 
