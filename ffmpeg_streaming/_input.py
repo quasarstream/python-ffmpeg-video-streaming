@@ -80,12 +80,21 @@ class InputOption(object):
         self.options = options
 
     def __str__(self):
+        """
+        @TODO: add documentation
+        """
         return " ".join(cnv_options_to_args(self._create()))
 
     def __iter__(self):
+        """
+        @TODO: add documentation
+        """
         yield from self._create().items()
 
     def _create(self):
+        """
+        @TODO: add documentation
+        """
         options = self.options.pop('pre_opts', {'y': None})
         is_cap = self.options.pop('capture', False)
 
@@ -103,7 +112,34 @@ class InputOption(object):
         return options
 
 
-def input(_input, **options) -> Media:
+class Input:
+    def __init__(self, _input: InputOption):
+        """
+        @TODO: add documentation
+        """
+        self.inputs = [_input]
+
+    def input(self, _input, **options):
+        """
+        @TODO: add documentation
+        """
+        self.inputs.append(InputOption(_input, **options))
+
+    def __getattr__(self, name):
+        """
+        @TODO: add documentation
+        """
+        def method(*args, **kwargs):
+            media = Media(self)
+            if hasattr(media, name):
+                return getattr(media, name)(*args, **kwargs)
+            else:
+                raise AttributeError("The object has no attribute {}".format(name))
+
+        return method
+
+
+def input(_input, **options) -> Input:
     """Input options (ffmpeg pre_option ``-i`` input options)
         You can also pass a cloud object as an input to the method. the file will be downloaded and will pass it to ffmpeg
         if you want to open a resource from a pipe, set input "pipe:"
@@ -113,7 +149,7 @@ def input(_input, **options) -> Media:
          https://ffmpeg.org/ffmpeg-protocols.html for more information about input option and supported resources
          such as http, ftp, and so on.
         """
-    return Media(InputOption(_input, **options))
+    return Input(InputOption(_input, **options))
 
 
 __all__ = [

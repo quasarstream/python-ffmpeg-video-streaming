@@ -57,7 +57,7 @@ def clean_args(args: list) -> list:
     for arg in args:
         if " " in arg:
             arg = '"' + arg + '"'
-        clean_args_.append(arg.replace("\\", "/"))
+        clean_args_.append(arg.replace("\\", "/").replace("__COLON__", ":"))
 
     return clean_args_
 

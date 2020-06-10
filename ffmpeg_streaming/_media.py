@@ -15,6 +15,7 @@ import os
 import shutil
 import tempfile
 import atexit
+import asyncio
 
 from ._clouds import CloudManager
 from ._command_builder import command_builder
@@ -78,15 +79,17 @@ class Save(abc.ABC):
         else:
             mkdir(os.path.dirname(output))
             self.output_ = output
+
         self.set_up()
-        self._run(ffmpeg_bin, monitor, **options)
+        asyncio.run(self._run(ffmpeg_bin, monitor, **options))
+
         if clouds is not None:
             clouds.transfer('upload_directory', os.path.dirname(self.output_))
 
         if output is not None and self.output_temp:
             shutil.move(os.path.dirname(self.output_), os.path.dirname(output))
 
-    def _run(self, ffmpeg_bin, monitor: callable = None, **options):
+    async def _run(self, ffmpeg_bin, monitor: callable = None, **options):
         """
         @TODO: add documentation
         """
@@ -105,12 +108,27 @@ class Streaming(Save, abc.ABC):
     def representations(self, *reps: Representation):
         self.reps = list(reps)
 
-    def auto_generate_representations(self, heights=None, bitrate=None, ffprobe_bin='ffprobe'):
+    def auto_generate_representations(self, heights=None, bitrate=None, ffprobe_bin='ffprobe', include_original=True):
         """
         @TODO: add documentation
         """
         self.probe = FFProbe(self.media.input, ffprobe_bin)
-        self.reps = AutoRep(self.probe.video_size, self.probe.bitrate, self.format, heights, bitrate)
+        self.reps = AutoRep(self.probe.video_size, self.probe.bitrate, self.format, heights, bitrate, include_original)
+
+    def add_filter(self, *_filter: str):
+        """
+        @TODO: add documentation
+        """
+        _filters = self.options.pop('filter_complex', None)
+        _filters = _filters + "," + ",".join(list(_filter)) if _filters is not None else ",".join(list(_filter))
+        self.options.update({'filter_complex': _filters})
+
+    def watermarking(self, path, _filter='overlay=10:10'):
+        """
+        @TODO: add documentation
+        """
+        self.media.inputs.input(path)
+        self.add_filter(_filter)
 
 
 class DASH(Streaming):
@@ -187,14 +205,15 @@ class Stream2File(Save):
 
 
 class Media(object):
-    def __init__(self, input_opts):
+    def __init__(self, _inputs):
         """
         @TODO: add documentation
         """
-        options = dict(input_opts)
-        self.input = options.get('i', None)
-        self.input_temp = options.pop('is_tmp', False)
-        self.input_opts = options
+        self.inputs = _inputs
+
+        first_options = dict(_inputs.inputs[0])
+        self.input = first_options.get('i', None)
+        self.input_temp = first_options.get('is_tmp', False)
 
     def hls(self, _format: Format, **hls_options):
         """

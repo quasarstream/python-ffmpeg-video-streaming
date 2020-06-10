@@ -42,7 +42,7 @@ def _get_dash_stream(key, rep):
     @TODO: add documentation
     """
     args = {
-        'map':              0,
+        'map':               0,
         's:v:' + str(key):   rep.size.normalize,
         'b:v:' + str(key):   rep.bitrate.normalize_video()
     }
@@ -59,8 +59,8 @@ def _dash(dash):
     _args.update({
         'use_timeline':    1,
         'use_template':    1,
-        'init_seg_name':   name + '_init_$RepresentationID$.$ext$',
-        "media_seg_name":  name + '_chunk_$RepresentationID$_$Number%05d$.$ext$',
+        'init_seg_name':   '{}_init_$RepresentationID$.$ext$'.format(name),
+        "media_seg_name":  '{}_chunk_$RepresentationID$_$Number%05d$.$ext$'.format(name),
         'f':               'dash'
     })
     _args.update(dash.options)
@@ -69,7 +69,7 @@ def _dash(dash):
     for key, rep in enumerate(dash.reps):
         args += _get_dash_stream(key, rep)
 
-    return args + ['-strict', '-2', dirname + '/' + name + '.mpd']
+    return args + ['-strict', '-2', '{}/{}.mpd'.format(dirname, name)]
 
 
 def _hls_seg_ext(hls):
@@ -88,8 +88,8 @@ def _get_hls_stream(hls, rep, dirname, name):
         'hls_list_size':            0,
         'hls_time':                 10,
         'hls_allow_cache':          1,
-        'hls_segment_filename':     dirname + "/" + name + "_" + str(rep.size.height) + "p_%04d." + _hls_seg_ext(hls),
-        'hls_fmp4_init_filename':   name + "_" + str(rep.size.height) + "p_init.mp4",
+        'hls_segment_filename':     "{}/{}_{}p_%04d.{}".format(dirname, name, str(rep.size.height), _hls_seg_ext(hls)),
+        'hls_fmp4_init_filename':   "{}_{}p_init.mp4".format(name, str(rep.size.height)),
         's:v':                      rep.size.normalize,
         'b:v':                      rep.bitrate.normalize_video()
     })
@@ -97,7 +97,7 @@ def _get_hls_stream(hls, rep, dirname, name):
     args.update({'strict': '-2'})
     args.update(hls.options)
 
-    return cnv_options_to_args(args) + [dirname + "/" + name + "_" + str(rep.size.height) + "p.m3u8"]
+    return cnv_options_to_args(args) + ["{}/{}_{}p.m3u8".format(dirname, name, str(rep.size.height))]
 
 
 def _hls(hls):
@@ -106,7 +106,9 @@ def _hls(hls):
     """
     dirname, name = get_path_info(hls.output_)
     streams = []
-    for rep in hls.reps:
+    for key, rep in enumerate(hls.reps):
+        if key > 0:
+            streams += input_args(hls)
         streams += _get_hls_stream(hls, rep, dirname, name)
 
     return streams
@@ -119,10 +121,21 @@ def stream_args(media):
     return getattr(sys.modules[__name__], "_%s" % type(media).__name__.lower())(media)
 
 
+def input_args(media):
+    inputs = []
+    for key, _input in enumerate(media.media.inputs.inputs):
+        _input = dict(_input)
+        _input.pop('is_tmp', None)
+        if key > 0:
+            _input.pop('y', None)
+        inputs += cnv_options_to_args(_input)
+
+    return inputs
+
+
 def command_builder(ffmpeg_bin: str, media):
     """
     @TODO: add documentation
     """
-    args = [ffmpeg_bin] + cnv_options_to_args(dict(media.media.input_opts)) + stream_args(media)
-    return " ".join(clean_args(args))
+    return " ".join(clean_args([ffmpeg_bin] + input_args(media) + stream_args(media)))
 

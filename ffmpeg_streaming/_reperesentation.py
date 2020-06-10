@@ -56,10 +56,12 @@ def cal_bitrate(bitrate, org_bitrate: Bitrate, index: int) -> Bitrate:
 
 
 class AutoRep(object):
-    def __init__(self, original_size: Size, original_bitrate: Bitrate, _format: Format, heights: list = None, bitrate: list = None):
+    def __init__(self, original_size: Size, original_bitrate: Bitrate, _format: Format,
+                 heights: list = None, bitrate: list = None, include_original: bool = True):
         """
         @TODO: add documentation
         """
+        self.include_original = include_original
         self.original_bitrate = original_bitrate
         self.original_size = original_size
         self._format = _format
@@ -76,7 +78,8 @@ class AutoRep(object):
         """
         if not self.is_default:
             height = self.original_size.ratio.calculate_height(self.original_size.width, self._format.multiply())
-            self.heights = [height] + list(filter(lambda x: x < height, self.heights))
+            original = [height] if self.include_original else []
+            self.heights = original + list(filter(lambda x: x < height, self.heights))
 
         self.index = 0
 
