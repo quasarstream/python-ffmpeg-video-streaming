@@ -118,18 +118,20 @@ class DASH(Streaming):
         pass
 
     def generate_hls_playlist(self):
-        self.options.update({'hls_playlist': "1"})
+        self.options.update({'hls_playlist': 1})
 
 
 class HLS(Streaming):
     KEY_INFO_FILE_PATH = None
     PERIODIC_RE_KEY_FLAG = 'periodic_rekey'
+    MASTER_PLAYLIST_IS_SAVED = False
 
     def set_up(self):
         """
         @TODO: add documentation
         """
-        HLSMasterPlaylist.generate(self)
+        if not HLS.MASTER_PLAYLIST_IS_SAVED:
+            self.save_master_playlist()
 
     def encryption(self, path: str, url: str, key_rotation_period: int = 0, needle: str = ".ts' for writing", length: int = 16):
         """
@@ -150,6 +152,13 @@ class HLS(Streaming):
         @TODO: add documentation
         """
         self.options.update({'hls_segment_type': 'fmp4'})
+
+    def save_master_playlist(self, path=None):
+        """
+        @TODO: add documentation
+        """
+        HLS.MASTER_PLAYLIST_IS_SAVED = True
+        HLSMasterPlaylist.generate(self, path)
 
     def flags(self, *flags: str):
         """

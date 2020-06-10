@@ -52,13 +52,13 @@ import ffmpeg_streaming
 ### Opening a Resource
 There are several ways to open a resource.
 
-#### 1. From a FFmpeg supported resource
+#### 1. From an FFmpeg supported resource
 You can pass a local path of video(or a supported resource) to the `input` method:
 ```python
 video = ffmpeg_streaming.input('/var/media/video.mp4')
 ```
 
-See **[FFmpeg Protocols Documentation](https://ffmpeg.org/ffmpeg-protocols.html)** for more information about supported resources such as http, ftp, and etc.
+See **[FFmpeg Protocols Documentation](https://ffmpeg.org/ffmpeg-protocols.html)** for more information about supported resources such as HTTP, FTP, and etc.
 
 **For example:** 
 ```python
@@ -77,7 +77,7 @@ video = ffmpeg_streaming.input(s3, bucket_name="bucket-name", key="video.mp4")
 Visit **[this page](https://video.aminyazdanpanah.com/python/start/clouds?r=open)** to see some examples of opening a file from **[Amazon S3](https://aws.amazon.com/s3)**, **[Google Cloud Storage](https://console.cloud.google.com/storage)**, **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**, and a custom cloud.
 
 #### 3. Capture Webcam or Screen (Live Streaming)
-You can pass a name of the supported, connected capture device(i.e. a name of webcam, camera, screen and etc) to the `input` method to stream a live media over network from your connected device. 
+You can pass the name of a supported, connected capture device(i.e. the name of a webcam, camera, screen and etc) to the `input` method to stream a live media over the network from your connected device. 
 
  ```python
 capture = ffmpeg_streaming.input('CAMERA NAME OR SCREEN NAME', capture=True)
@@ -86,7 +86,7 @@ To list the supported, connected capture devices, see **[FFmpeg Capture Webcam](
  
  
 ### DASH
-**[Dynamic Adaptive Streaming over HTTP (DASH)](http://dashif.org/)**, also known as MPEG-DASH, is an adaptive bitrate streaming technique that enables high quality streaming of media content over the Internet delivered from conventional HTTP web servers. [Learn more](https://en.wikipedia.org/wiki/Dynamic_Adaptive_Streaming_over_HTTP)
+**[Dynamic Adaptive Streaming over HTTP (DASH)](http://dashif.org/)**, also known as MPEG-DASH, is an adaptive bitrate streaming technique that enables high-quality streaming of media content over the Internet delivered from conventional HTTP web servers. [Learn more](https://en.wikipedia.org/wiki/Dynamic_Adaptive_Streaming_over_HTTP)
  
 Create DASH files:
 ```python
@@ -114,9 +114,8 @@ dash.representations(_144p, _240p, _360p, _480p, _720p, _1080p, _2k, _4k)
 dash.output('/var/media/dash.mpd')
 ```
 See **[DASH section](https://video.aminyazdanpanah.com/python/start?r=dash#dash)** in the documentation, for more examples.
-
 ### HLS
-**[HTTP Live Streaming (also known as HLS)](https://developer.apple.com/streaming/)** is an HTTP-based adaptive bitrate streaming communications protocol implemented by Apple Inc. as part of its QuickTime, Safari, OS X, and iOS software. Client implementations are also available in Microsoft Edge, Firefox and some versions of Google Chrome. Support is widespread in streaming media servers. [Learn more](https://en.wikipedia.org/wiki/HTTP_Live_Streaming)
+**[HTTP Live Streaming (also known as HLS)](https://developer.apple.com/streaming/)** is an HTTP-based adaptive bitrate streaming communications protocol implemented by Apple Inc. as part of its QuickTime, Safari, OS X, and iOS software. Client implementations are also available in Microsoft Edge, Firefox, and some versions of Google Chrome. Support is widespread in streaming media servers. [Learn more](https://en.wikipedia.org/wiki/HTTP_Live_Streaming)
  
 Create HLS files:
 ```python
@@ -169,13 +168,12 @@ An integer as a "key rotation period" can also be passed to the `encryption` met
 
 See **[the example](https://video.aminyazdanpanah.com/python/start?r=enc-hls#hls-encryption)** for more information.
 
-**IMPORTANT:** It is very important to protect your key(s) on your website. For example, you can use a token(using a Get or Post HTTP method) to check if the user is eligible to access to the key or not. You can also use a session(or cookie) on your website to restrict access to the key(s)(**It is highly recommended**).    
+**IMPORTANT:** It is very important to protect your key(s) on your website. For example, you can use a token(using a Get or Post HTTP method) to check if the user is eligible to access the key or not. You can also use a session(or cookie) on your website to restrict access to the key(s)(**It is highly recommended**).    
 
 ##### DRM
 However FFmpeg supports AES encryption for HLS packaging, which you can encrypt your content, it is not a full **[DRM](https://en.wikipedia.org/wiki/Digital_rights_management)** solution. If you want to use a full DRM solution, I recommend trying **[FairPlay Streaming](https://developer.apple.com/streaming/fps/)** solution which then securely exchange keys, and protect playback on devices.
 
 **Besides [Apple's FairPlay](https://developer.apple.com/streaming/fps/)** DRM system, you can also use other DRM systems such as **[Microsoft's PlayReady](https://www.microsoft.com/playready/overview/)** and **[Google's Widevine](https://www.widevine.com/)**.
-
 ### Transcoding
 You can get realtime information about the transcoding using the following code. 
 ```python
@@ -244,20 +242,21 @@ Visit **[this page](https://video.aminyazdanpanah.com/python/start/clouds?r=save
 <p align="center"><img src="https://github.com/aminyazdanpanah/aminyazdanpanah.github.io/blob/master/video-streaming/video-streaming.gif?raw=true" width="100%"></p>
 
 #### 3. To a Server Instantly
-You can pass a url(or a supported resource like `ftp`) to the `output` method to upload all the segments files to the HTTP server(or other protocols) using the HTTP PUT method, and update the manifest files every refresh times.
+You can pass a URL(or a supported resource like `FTP`) to the `output` method to upload all the segments files to the HTTP server(or other protocols) using the HTTP PUT method and update the manifest files every refresh times.
 
 ```python
 # DASH
 dash.output('http://YOUR-WEBSITE.COM/live-stream/out.mpd')
 
 # HLS
-hls.output('http://YOUR-WEBSITE.COM/live-stream/out.m3u8')
+hls.save_master_playlist('/var/media/hls.m3u8')
+#Before running the following code, you should upload the master playlist to the server. For example upload the '/var/media/hls.m3u8' to 'ftp://[user[:password]@]server[:port]/var/media/hls.m3u8'
+hls.output('ftp://[user[:password]@]server[:port]/var/media/hls.m3u8')
 ```
 
 **NOTE:** In the HLS method, you must upload the master playlist to the server manually.
 
 See **[FFmpeg Protocols Documentation](https://ffmpeg.org/ffmpeg-protocols.html)** for more information about supported resources.
-
 ### Metadata
 You can get information from the video file using the following code.
 ```python
@@ -318,22 +317,26 @@ You can use these libraries to play your streams.
         - **[hls.js](https://github.com/video-dev/hls.js)**
 - **Android**
     - DASH and HLS: 
-        - **[ExoPlayer](https://github.com/google/ExoPlayer)**
+        - **[ExoPlayer](https://github.com/google/ExoPlayer) (Recommended)**
+        - **[VLC for Android](https://github.com/videolan/vlc-android)**
 - **IOS**
     - DASH: 
         - **[MPEGDASH-iOS-Player](https://github.com/MPEGDASHPlayer/MPEGDASH-iOS-Player)**
     - HLS: 
         - **[Player](https://github.com/piemonte/Player)**
+- **Android and IOS**
+    - DASH and HLS:
+        - **[ijkplayer](https://github.com/bilibili/ijkplayer)**
 - **Windows, Linux, and macOS**
     - DASH and HLS:
-        - **[FFmpeg(ffplay)](https://github.com/FFmpeg/FFmpeg)**
+        - **[FFmpeg(ffplay)](https://github.com/FFmpeg/FFmpeg) (Recommended)**
         - **[VLC media player](https://github.com/videolan/vlc)**
 
 **NOTE-1:** You must pass a **link of the master playlist(manifest)**(i.e. `https://www.aminyazdanpanah.com/?"PATH TO STREAM DIRECTORY"/dash-stream.mpd` or `/PATH_TO_STREAM_DIRECTORY/hls-stream.m3u8` ) to these players.
 
 **NOTE-2:** If you save your stream content to a cloud(i.e. **[Amazon S3](https://aws.amazon.com/s3)**), the link of your playlist and other content **MUST BE PUBLIC**. 
 
-**NOTE-3:** As you may know, **[IOS](https://www.apple.com/ios)** does not have native support for DASH. Although there are some libraries such as **[Viblast](https://github.com/Viblast/ios-player-sdk)** and **[MPEGDASH-iOS-Player](https://github.com/MPEGDASHPlayer/MPEGDASH-iOS-Player)** to support this technique, I have never tested them. So maybe som of them will not work correctly.
+**NOTE-3:** As you may know, **[IOS](https://www.apple.com/ios)** does not have native support for DASH. Although there are some libraries such as **[Viblast](https://github.com/Viblast/ios-player-sdk)** and **[MPEGDASH-iOS-Player](https://github.com/MPEGDASHPlayer/MPEGDASH-iOS-Player)** to support this technique, I have never tested them. So maybe some of them will not work properly.
 
 
 ## Contributing and Reporting Bugs
