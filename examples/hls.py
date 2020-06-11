@@ -39,13 +39,13 @@ def monitor(ffmpeg, duration, time_, process):
     # You can update a field in your database or log it to a file
     # You can also create a socket connection and show a progress bar to users
     # logging.info(ffmpeg) or print(ffmpeg)
-    print(ffmpeg)
+
     # if "something happened":
     #     process.terminate()
 
-    # per = round(time_ / duration * 100)
-    # sys.stdout.write("\rTranscoding...(%s%%) %s [%s%s]" % (per, time_left(time_, duration), '#' * per, '-' * (100 - per)))
-    # sys.stdout.flush()
+    per = round(time_ / duration * 100)
+    sys.stdout.write("\rTranscoding...(%s%%) %s [%s%s]" % (per, time_left(time_, duration), '#' * per, '-' * (100 - per)))
+    sys.stdout.flush()
 
 
 def main():
