@@ -14,7 +14,7 @@ import os
 import uuid
 from secrets import token_bytes, token_hex
 
-from ffmpeg_streaming._utiles import mkdir
+from ffmpeg_streaming._utiles import mkdir, get_path_info
 
 
 class HLSKeyInfoFile:
@@ -32,27 +32,45 @@ class HLSKeyInfoFile:
         self.key_info_file_path = key_info_file_path
 
     def __str__(self):
+        """
+        @TODO: add documentation
+        """
         self.generate()
         return self.key_info_file_path
 
     def generate(self):
+        """
+        @TODO: add documentation
+        """
         self.generate_key()
         self.update_key_info_file()
 
     def generate_key(self):
+        """
+        @TODO: add documentation
+        """
         with open(self.path, 'wb') as key:
             key.write(token_bytes(self.length))
 
     def update_key_info_file(self):
+        """
+        @TODO: add documentation
+        """
         with open(self.key_info_file_path, 'w') as key_info_file:
             key_info_file.write("\n".join([self.url, self.path, token_hex(self.length)]))
 
     def update_suffix(self):
+        """
+        @TODO: add documentation
+        """
         unique = uuid.uuid4()
         self.path = self.c_path + "-" + str(unique)
         self.url = self.c_url + "-" + str(unique)
 
     def rotate_key(self, line: str):
+        """
+        @TODO: add documentation
+        """
         if self.needle in line and line not in self.segments:
             self.segments.append(line)
             if len(self.segments) % self.period == 0:
@@ -61,15 +79,18 @@ class HLSKeyInfoFile:
 
 
 def stream_info(rep) -> list:
-    # @TODO: add custom stream info
+    """
+    @TODO: add documentation
+    """
     tag = '#EXT-X-STREAM-INF:'
     info = [
-        'BANDWIDTH=' + str(rep.bitrate.normalize_video(False)),
-        'RESOLUTION=' + rep.size.normalize,
-        'NAME="' + str(rep.size.height) + '"'
+        f'BANDWIDTH={rep.bitrate.calc_overall}',
+        f'RESOLUTION={rep.size.normalize}',
+        f'NAME="{rep.size.height}"'
     ]
-    
-    return [tag + ",".join(info)]
+    custom = rep.options.pop('stream_info', [])
+
+    return [tag + ",".join(info + custom)]
 
 
 class HLSMasterPlaylist:
@@ -78,13 +99,11 @@ class HLSMasterPlaylist:
         @TODO: add documentation
         """
         self.media = media
-        self.path = media.output
 
     @classmethod
     def generate(cls, media, path=None):
         if path is None:
-            path = os.path.join(os.path.dirname(media.output_), os.path.basename(media.output_).split('.')[0] + '.m3u8')
-
+            path = "{}.m3u8".format(os.path.join(*get_path_info(media.output_)))
         with open(path, 'w', encoding='utf-8') as playlist:
             playlist.write(cls(media)._content())
 
@@ -100,8 +119,14 @@ class HLSMasterPlaylist:
         return "\n".join(content)
 
     def _get_version(self) -> list:
-        version = "7" if hasattr(self.media, 'fragmented_mp4') else "3"
+        """
+        @TODO: add documentation
+        """
+        version = "7" if self.media.options.get('hls_segment_type', '') == 'fmp4' else "3"
         return ['#EXT-X-VERSION:' + version]
 
     def stream_path(self, rep):
-        return [str(os.path.basename(self.media.output_).split('.')[0]) + "_" + str(rep.size.height) + "p.m3u8"]
+        """
+        @TODO: add documentation
+        """
+        return ["{}_{}p.m3u8".format(os.path.basename(self.media.output_).split('.')[0], rep.size.height)]

@@ -62,7 +62,7 @@ class Bitrate:
         """
         return cnv_bitrate(self.audio_, self.type) if self.audio_ is not None else 'copy'
 
-    def normalize_video(self, convert: bool = True):
+    def calc_video(self, convert: bool = True):
         """
         @TODO: add documentation
         """
@@ -74,19 +74,11 @@ class Bitrate:
         return cnv_bitrate(val, self.type) if convert else val
 
     @property
-    def max_rate(self):
+    def calc_overall(self):
         """
         @TODO: add documentation
         """
-        return cnv_bitrate(int(self.normalize_video(False) * MAX_RATE_COEFFICIENT), self.type)
-
-    @property
-    def buffer_size(self):
-        """
-        @TODO: add documentation
-        """
-
-        return cnv_bitrate(int(self.kwargs.get('buffer_size', BUFFER_SIZE)), self.type)
+        return self.overall_ if self.overall_ is not None else self.video_ + self.audio_
 
 
 def multiple_up(value, multiple):
