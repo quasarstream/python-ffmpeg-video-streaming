@@ -44,9 +44,10 @@ def _get_dash_stream(key, rep):
     args = {
         'map':               0,
         's:v:' + str(key):   rep.size.normalize,
-        'b:v:' + str(key):   rep.bitrate.normalize_video()
+        'b:v:' + str(key):   rep.bitrate.calc_video()
     }
     args.update(_get_audio_bitrate(rep, key))
+    args.update(rep.options)
     return cnv_options_to_args(args)
 
 
@@ -88,12 +89,13 @@ def _get_hls_stream(hls, rep, dirname, name):
         'hls_list_size':            0,
         'hls_time':                 10,
         'hls_allow_cache':          1,
-        'hls_segment_filename':     "{}/{}_{}p_%04d.{}".format(dirname, name, str(rep.size.height), _hls_seg_ext(hls)),
-        'hls_fmp4_init_filename':   "{}_{}p_init.mp4".format(name, str(rep.size.height)),
+        'hls_segment_filename':     "{}/{}_{}p_%04d.{}".format(dirname, name, rep.size.height, _hls_seg_ext(hls)),
+        'hls_fmp4_init_filename':   "{}_{}p_init.mp4".format(name, rep.size.height),
         's:v':                      rep.size.normalize,
-        'b:v':                      rep.bitrate.normalize_video()
+        'b:v':                      rep.bitrate.calc_video()
     })
     args.update(_get_audio_bitrate(rep))
+    args.update(rep.options)
     args.update({'strict': '-2'})
     args.update(hls.options)
 

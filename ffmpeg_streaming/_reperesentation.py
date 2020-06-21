@@ -17,12 +17,13 @@ MINIMUM_BITRATE = 65536
 
 
 class Representation:
-    def __init__(self, size: Size, bitrate: Bitrate):
+    def __init__(self, size: Size, bitrate: Bitrate, **options):
         """
         @TODO: add documentation
         """
         self.size = size
         self.bitrate = bitrate
+        self.options = options
 
 
 def min_bitrate(bitrate: int) -> int:
