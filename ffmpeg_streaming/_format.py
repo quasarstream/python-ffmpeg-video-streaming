@@ -63,7 +63,7 @@ class H264(Format):
         """
         @TODO: add documentation
         """
-        videos = ['libx264', 'h264', 'h264_afm', 'h264_cuvid']
+        videos = ['libx264', 'h264', 'h264_afm', 'h264_nvenc']
         audios = ['copy', 'aac', 'libvo_aacenc', 'libfaac', 'libmp3lame', 'libfdk_aac']
 
         super(H264, self).__init__(_verify_codecs(video, videos), _verify_codecs(audio, audios), **codec_options)

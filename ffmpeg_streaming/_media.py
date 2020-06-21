@@ -16,6 +16,7 @@ import shutil
 import tempfile
 import atexit
 import asyncio
+import copy
 
 from ._clouds import CloudManager
 from ._command_builder import command_builder
@@ -213,9 +214,9 @@ class Media(object):
         """
         self.inputs = _inputs
 
-        first_options = dict(_inputs.inputs[0])
-        self.input = first_options.get('i', None)
-        self.input_temp = first_options.get('is_tmp', False)
+        first_input = dict(copy.deepcopy(_inputs.inputs[0]))
+        self.input = first_input.get('i', None)
+        self.input_temp = first_input.get('is_tmp', False)
 
     def hls(self, _format: Format, **hls_options):
         """
