@@ -74,7 +74,7 @@ def get_time(key, string, default):
     """
     @TODO: add documentation
     """
-    time = re.search('(?<=' + key + ')\w+:\w+:\w+', string)
+    time = re.search('(?<={})\w+:\w+:\w+'.format(key), string)
     return convert_to_sec(time.group(0)) if time else default
 
 
