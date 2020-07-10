@@ -15,9 +15,10 @@ import shlex
 import subprocess
 import threading
 import logging
+import time
 
 from ffmpeg_streaming._hls_helper import HLSKeyInfoFile
-from ffmpeg_streaming._utiles import get_time
+from ffmpeg_streaming._utiles import get_time, time_left
 
 
 def _p_open(commands, **options):
@@ -69,8 +70,9 @@ class Process(object):
         @TODO: add documentation
         """
         duration = 1
-        time = 0
+        _time = 0
         log = []
+        start_time = time.time()
 
         while True:
             line = self.process.stdout.readline().strip()
@@ -85,8 +87,8 @@ class Process(object):
 
             if callable(self.monitor):
                 duration = get_time('Duration: ', line, duration)
-                time = get_time('time=', line, time)
-                self.monitor(line, duration, time, self.process)
+                _time = get_time('time=', line, _time)
+                self.monitor(line, duration, _time, time_left(start_time, _time, duration), self.process)
 
         Process.out = log
 

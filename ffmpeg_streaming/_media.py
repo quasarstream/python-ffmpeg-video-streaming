@@ -41,7 +41,6 @@ class Save(abc.ABC):
         self.format = _format
         self.options = options
         self.pipe = None
-        self.probe = None
         self.output_temp = False
 
     def finish_up(self):
@@ -51,7 +50,11 @@ class Save(abc.ABC):
         if self.media.input_temp:
             rm(self.media.input)
         if self.output_temp:
-            shutil.rmtree(os.path.dirname(str(self.output_)), ignore_errors=True)
+            self.clouds.transfer('upload_directory', os.path.dirname(self.output_))
+            if self.output:
+                shutil.move(os.path.dirname(self.output_), os.path.dirname(str(self.output)))
+            else:
+                shutil.rmtree(os.path.dirname(str(self.output_)), ignore_errors=True)
 
     @abc.abstractmethod
     def set_up(self):
@@ -66,7 +69,8 @@ class Save(abc.ABC):
 
         return method
 
-    def output(self, output: str = None, clouds: CloudManager = None, monitor: callable = None, ffmpeg_bin: str = 'ffmpeg', **options):
+    def output(self, output: str = None, clouds: CloudManager = None,
+               run_command: bool = True, ffmpeg_bin: str = 'ffmpeg', monitor: callable = None, **options):
         """
         @TODO: add documentation
         """
@@ -74,6 +78,8 @@ class Save(abc.ABC):
             self.output_ = self.media.input
         elif clouds is not None:
             self.output_temp = True
+            setattr(self, 'clouds', clouds)
+            setattr(self, 'output', output)
             if clouds.filename is None:
                 clouds.filename = os.path.basename(output if output is not None else self.media.input)
             self.output_ = os.path.join(tempfile.mkdtemp(prefix='ffmpeg_streaming_'), clouds.filename)
@@ -82,20 +88,39 @@ class Save(abc.ABC):
             self.output_ = output
 
         self.set_up()
-        asyncio.run(self._run(ffmpeg_bin, monitor, **options))
 
-        if clouds is not None:
-            clouds.transfer('upload_directory', os.path.dirname(self.output_))
+        if run_command:
+            self.run(ffmpeg_bin, monitor, **options)
 
-        if output is not None and self.output_temp:
-            shutil.move(os.path.dirname(self.output_), os.path.dirname(output))
+    def probe(self, ffprobe_bin='ffprobe') -> FFProbe:
+        """
+        @TODO: add documentation
+        """
+        return FFProbe(self.media.input, ffprobe_bin)
 
-    async def _run(self, ffmpeg_bin, monitor: callable = None, **options):
+    def _run(self, ffmpeg_bin, monitor: callable = None, **options):
         """
         @TODO: add documentation
         """
         with Process(self, command_builder(ffmpeg_bin, self), monitor, **options) as process:
             self.pipe, err = process.run()
+
+    async def async_run(self, ffmpeg_bin, monitor: callable = None, **options):
+        """
+        @TODO: add documentation
+        """
+        self._run(ffmpeg_bin, monitor, **options)
+
+    def run(self, ffmpeg_bin, monitor: callable = None, **options):
+        """
+        @TODO: add documentation
+        """
+        async_run = options.pop('async_run', True)
+
+        if async_run:
+            asyncio.run(self.async_run(ffmpeg_bin, monitor, **options))
+        else:
+            self._run(ffmpeg_bin, monitor, **options)
 
 
 class Streaming(Save, abc.ABC):
@@ -109,12 +134,16 @@ class Streaming(Save, abc.ABC):
     def representations(self, *reps: Representation):
         self.reps = list(reps)
 
-    def auto_generate_representations(self, heights=None, bitrate=None, ffprobe_bin='ffprobe', include_original=True):
+    def auto_generate_representations(self, heights=None, bitrate=None, ffprobe_bin='ffprobe', include_original=True,
+                                      ascending_sort=False):
         """
         @TODO: add documentation
         """
-        self.probe = FFProbe(self.media.input, ffprobe_bin)
-        self.reps = AutoRep(self.probe.video_size, self.probe.bitrate, self.format, heights, bitrate, include_original)
+        probe = self.probe(ffprobe_bin)
+        self.reps = AutoRep(probe.video_size, probe.bitrate, self.format, heights, bitrate, include_original)
+
+        if ascending_sort:
+            self.reps = sorted(self.reps, key=lambda rep: rep.bitrate.overall_)
 
     def add_filter(self, *_filter: str):
         """
@@ -235,4 +264,3 @@ class Media(object):
         @TODO: add documentation
         """
         return Stream2File(self, _format, **options)
-

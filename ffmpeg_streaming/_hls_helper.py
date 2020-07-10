@@ -85,7 +85,7 @@ def stream_info(rep) -> list:
     tag = '#EXT-X-STREAM-INF:'
     info = [
         f'BANDWIDTH={rep.bitrate.calc_overall}',
-        f'RESOLUTION={rep.size.normalize}',
+        f'RESOLUTION={rep.size}',
         f'NAME="{rep.size.height}"'
     ]
     custom = rep.options.pop('stream_info', [])

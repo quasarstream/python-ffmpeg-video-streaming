@@ -14,6 +14,15 @@ import sys
 
 from ._utiles import cnv_options_to_args, get_path_info, clean_args
 
+# DASH default values
+USE_TIMELINE = 1
+USE_TEMPLATE = 1
+
+# HLS default values
+HLS_LIST_SIZE = 0
+HLS_TIME = 10
+HLS_ALLOW_CACHE = 1
+
 
 def _stream2file(stream2file):
     """
@@ -42,9 +51,9 @@ def _get_dash_stream(key, rep):
     @TODO: add documentation
     """
     args = {
-        'map':               0,
-        's:v:' + str(key):   rep.size.normalize,
-        'b:v:' + str(key):   rep.bitrate.calc_video()
+        'map': 0,
+        's:v:' + str(key): rep.size,
+        'b:v:' + str(key): rep.bitrate.calc_video()
     }
     args.update(_get_audio_bitrate(rep, key))
     args.update(rep.options)
@@ -58,11 +67,11 @@ def _dash(dash):
     dirname, name = get_path_info(dash.output_)
     _args = dash.format.all
     _args.update({
-        'use_timeline':    1,
-        'use_template':    1,
-        'init_seg_name':   '{}_init_$RepresentationID$.$ext$'.format(name),
-        "media_seg_name":  '{}_chunk_$RepresentationID$_$Number%05d$.$ext$'.format(name),
-        'f':               'dash'
+        'use_timeline': USE_TIMELINE,
+        'use_template': USE_TEMPLATE,
+        'init_seg_name': '{}_init_$RepresentationID$.$ext$'.format(name),
+        "media_seg_name": '{}_chunk_$RepresentationID$_$Number%05d$.$ext$'.format(name),
+        'f': 'dash'
     })
     _args.update(dash.options)
     args = cnv_options_to_args(_args)
@@ -86,13 +95,13 @@ def _get_hls_stream(hls, rep, dirname, name):
     """
     args = hls.format.all
     args.update({
-        'hls_list_size':            0,
-        'hls_time':                 10,
-        'hls_allow_cache':          1,
-        'hls_segment_filename':     "{}/{}_{}p_%04d.{}".format(dirname, name, rep.size.height, _hls_seg_ext(hls)),
-        'hls_fmp4_init_filename':   "{}_{}p_init.mp4".format(name, rep.size.height),
-        's:v':                      rep.size.normalize,
-        'b:v':                      rep.bitrate.calc_video()
+        'hls_list_size': HLS_LIST_SIZE,
+        'hls_time': HLS_TIME,
+        'hls_allow_cache': HLS_ALLOW_CACHE,
+        'hls_segment_filename': "{}/{}_{}p_%04d.{}".format(dirname, name, rep.size.height, _hls_seg_ext(hls)),
+        'hls_fmp4_init_filename': "{}_{}p_init.mp4".format(name, rep.size.height),
+        's:v': rep.size,
+        'b:v': rep.bitrate.calc_video()
     })
     args.update(_get_audio_bitrate(rep))
     args.update(rep.options)
@@ -140,4 +149,3 @@ def command_builder(ffmpeg_bin: str, media):
     @TODO: add documentation
     """
     return " ".join(clean_args([ffmpeg_bin] + input_args(media) + stream_args(media)))
-

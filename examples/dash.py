@@ -14,38 +14,58 @@ Create DASH streams and manifest
 import argparse
 import datetime
 import sys
-import time
 import logging
 
 import ffmpeg_streaming
 from ffmpeg_streaming import Formats
 
 logging.basicConfig(filename='streaming.log', level=logging.NOTSET, format='[%(asctime)s] %(levelname)s: %(message)s')
-start_time = time.time()
 
 
-def time_left(time_, total):
-    if time_ != 0:
-        diff_time = time.time() - start_time
-        seconds_left = total * diff_time / time_ - diff_time
-        time_left = str(datetime.timedelta(seconds=int(seconds_left))) + ' left'
-    else:
-        time_left = 'calculating...'
+def monitor(ffmpeg, duration, time_, time_left, process):
+    """
+    You can monitor ffmpeg command line and handle the process. For example, you can update a field in your database
+    or log it to a file.
 
-    return time_left
+    Examples:
+    1. Logging or printing ffmpeg command
+    logging.info(ffmpeg) or print(ffmpeg)
 
+    2. Handling Process object
+    if "something happened":
+        process.terminate()
 
-def monitor(ffmpeg, duration, time_, process):
-    # You can update a field in your database or log it to a file
-    # You can also create a socket connection and show a progress bar to users
-    # logging.info(ffmpeg) or print(ffmpeg)
+    3. Email someone to notice the time of finishing process
+    if time_left > 3600 and not already_send:  # if it takes more than one hour and you did not email them already
+        Email.send(
+            email='someone@somedomain.com',
+            subject='Your video will be ready at %s seconds' % time_left,
+            message='Your video takes more than an hour ...'
+        )
+       already_send = True
 
-    # if "something happened":
-    #     process.terminate()
+    4. Create a socket connection and show a progress bar(and other parameters) to users
+    Socket.broadcast(
+        address=127.0.0.1
+        port=5050
+        data={
+            percentage = per,
+            time_left = datetime.timedelta(seconds=int(time_left))
+        }
+    )
 
+    :param ffmpeg: ffmpeg command line
+    :param duration: duration of the video
+    :param time_: current time of transcoded video
+    :param time_left: seconds left to finish the video process
+    :param process: subprocess object
+    :return: None
+    """
     per = round(time_ / duration * 100)
     sys.stdout.write(
-        "\rTranscoding...(%s%%) %s [%s%s]" % (per, time_left(time_, duration), '#' * per, '-' * (100 - per)))
+        "\rTranscoding...(%s%%) %s left [%s%s]" %
+        (per, datetime.timedelta(seconds=int(time_left)), '#' * per, '-' * (100 - per))
+    )
     sys.stdout.flush()
 
 

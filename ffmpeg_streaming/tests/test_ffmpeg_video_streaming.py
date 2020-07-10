@@ -38,7 +38,7 @@ class TestStreaming(unittest.TestCase):
         hls_obj.representations(Representation(Size(256, 144), Bitrate(102400)))
         rep_1 = hls_obj.reps[0]
         self.assertIsInstance(rep_1, Representation)
-        self.assertEqual(rep_1.size.normalize, '256x144')
+        self.assertEqual(str(rep_1.size), '256x144')
         self.assertEqual(rep_1.bitrate.video, '100k')
 
         hls_obj.auto_generate_representations()
@@ -47,11 +47,11 @@ class TestStreaming(unittest.TestCase):
 
         for rep_ in reps:
             self.assertIsInstance(rep_, Representation)
-        self.assertEqual(reps[0].size.normalize, '480x270')
+        self.assertEqual(str(reps[0].size), '480x270')
         self.assertEqual(reps[0].bitrate.video, '176k')
-        self.assertEqual(reps[1].size.normalize, '426x240')
+        self.assertEqual(str(reps[1].size), '426x240')
         self.assertEqual(reps[1].bitrate.video, '88k')
-        self.assertEqual(reps[2].size.normalize, '256x144')
+        self.assertEqual(str(reps[2].size), '256x144')
         self.assertEqual(reps[2].bitrate.video, '71k')
 
         hls_obj.output(os.path.join(self.src_dir, 'hls', 'test.m3u8'))

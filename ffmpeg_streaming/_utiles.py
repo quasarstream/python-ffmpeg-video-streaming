@@ -13,6 +13,7 @@ Useful methods
 import logging
 import os
 import re
+import time
 import warnings
 from sys import platform
 
@@ -76,6 +77,17 @@ def get_time(key, string, default):
     """
     time = re.search('(?<={})\w+:\w+:\w+'.format(key), string)
     return convert_to_sec(time.group(0)) if time else default
+
+
+def time_left(start_time, unit, total):
+    """
+    @TODO: add documentation
+    """
+    if unit != 0:
+        diff_time = time.time() - start_time
+        return total * diff_time / unit - diff_time
+    else:
+        return 0
 
 
 def deprecated(func):

@@ -181,16 +181,50 @@ You can get realtime information about the transcoding using the following code.
 from ffmpeg_streaming import Formats
 import sys
 
-def monitor(ffmpeg, duration, time_, process):
-    # You can update a field in your database or log it to a file
-    # You can also create a socket connection and show a progress bar to users
-    # logging.info(ffmpeg) or print(ffmpeg)
+def monitor(ffmpeg, duration, time_, time_left, process):
+    """
+    You can monitor ffmpeg command line and handle the process. For example, you can update a field in your database
+    or log it to a file.
 
-    # if "something happened":
-    #     process.terminate()
+    Examples:
+    1. Logging or printing ffmpeg command
+    logging.info(ffmpeg) or print(ffmpeg)
 
+    2. Handling Process object
+    if "something happened":
+        process.terminate()
+
+    3. Email someone to notice the time of finishing process
+    if time_left > 3600 and not already_send:  # if it takes more than one hour and you did not email them already
+        Email.send(
+            email='someone@somedomain.com',
+            subject='Your video will be ready at %s seconds' % time_left,
+            message='Your video takes more than an hour ...'
+        )
+       already_send = True
+
+    4. Create a socket connection and show a progress bar(and other parameters) to users
+    Socket.broadcast(
+        address=127.0.0.1
+        port=5050
+        data={
+            percentage = per,
+            time_left = datetime.timedelta(seconds=int(time_left))
+        }
+    )
+
+    :param ffmpeg: ffmpeg command line
+    :param duration: duration of the video
+    :param time_: current time of transcoded video
+    :param time_left: seconds left to finish the video process
+    :param process: subprocess object
+    :return: None
+    """
     per = round(time_ / duration * 100)
-    sys.stdout.write("\rTranscoding...(%s%%) [%s%s]" % (per, '#' * per, '-' * (100 - per)))
+    sys.stdout.write(
+        "\rTranscoding...(%s%%) %s left [%s%s]" %
+        (per, datetime.timedelta(seconds=int(time_left)), '#' * per, '-' * (100 - per))
+    )
     sys.stdout.flush()
 
 hls = video.hls(Formats.h264())
@@ -274,7 +308,7 @@ ffprobe = FFProbe('/var/media/video.mp4')
 See **[the example](https://video.aminyazdanpanah.com/python/start?r=metadata#metadata)** for more information.
 
 ### Conversion
-You can convert your stream to a file or to another stream protocols. You should pass a manifest of the stream to the `input` method:
+You can convert your stream to a file or to another stream protocol. You should pass a manifest of the stream to the `input` method:
 
 #### 1. HLS To DASH
 ```python
@@ -340,7 +374,7 @@ You can use these libraries to play your streams.
 
 **NOTE-1:** You must pass a **link of the master playlist(manifest)**(i.e. `https://www.aminyazdanpanah.com/?"PATH TO STREAM DIRECTORY"/dash-stream.mpd` or `/PATH_TO_STREAM_DIRECTORY/hls-stream.m3u8` ) to these players.
 
-**NOTE-2:** If you save your stream content to a cloud(i.e. **[Amazon S3](https://aws.amazon.com/s3)**), the link of your playlist and other content **MUST BE PUBLIC**. 
+**NOTE-2:** If you save your stream content to a cloud(i.e. **[Amazon S3](https://aws.amazon.com/s3)**), the link of your master playlist and other contents **MUST BE PUBLIC**. 
 
 **NOTE-3:** As you may know, **[IOS](https://www.apple.com/ios)** does not have native support for DASH. Although there are some libraries such as **[Viblast](https://github.com/Viblast/ios-player-sdk)** and **[MPEGDASH-iOS-Player](https://github.com/MPEGDASHPlayer/MPEGDASH-iOS-Player)** to support this technique, I have never tested them. So maybe some of them will not work properly.
 

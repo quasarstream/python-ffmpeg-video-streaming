@@ -61,7 +61,7 @@ class S3(Clouds):
             logging.error(e)
             raise RuntimeError(e)
 
-        logging.info("The " + directory + "directory was uploaded to Amazon S3 successfully")
+        logging.info("The " + directory + " directory was uploaded to Amazon S3 successfully")
 
     def download(self, filename=None, **options):
         bucket_name = options.pop('bucket_name', None)

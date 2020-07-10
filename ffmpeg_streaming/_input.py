@@ -1,5 +1,5 @@
 """
-ffmpeg_streaming.media
+ffmpeg_streaming.input
 ~~~~~~~~~~~~
 
 Input options

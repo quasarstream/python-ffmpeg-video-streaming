@@ -146,12 +146,11 @@ class Size:
         """
         return Ratio(self.width, self.height)
 
-    @property
-    def normalize(self) -> str:
+    def __str__(self) -> str:
         """
         @TODO: add documentation
         """
-        return "{}x{}".format(str(self.width), str(self.height))
+        return f"{self.width}x{self.height}"
 
 
 __all__ = [
