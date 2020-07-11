@@ -14,6 +14,8 @@ from ffmpeg_streaming._media import Media
 from ffmpeg_streaming._utiles import get_os, cnv_options_to_args
 from ffmpeg_streaming._clouds import Clouds
 
+cloud = None
+
 
 class Capture(object):
     def __init__(self, video, options):
@@ -60,15 +62,19 @@ class Capture(object):
         yield from getattr(self, '_' + get_os())().items()
 
 
-def get_from_cloud(cloud: Clouds, options: dict):
+def get_from_cloud(_cloud: Clouds, options: dict):
     """
     @TODO: add documentation
     """
-    save_to = options.pop('save_to', None)
-    return {
-        'i': cloud.download(save_to, **options),
-        'is_tmp': True if save_to is None else False
-    }
+    global cloud
+    if cloud is None:
+        save_to = options.pop('save_to', None)
+        cloud = {
+            'i': _cloud.download(save_to, **options),
+            'is_tmp': True if save_to is None else False
+        }
+
+    return cloud
 
 
 class InputOption(object):

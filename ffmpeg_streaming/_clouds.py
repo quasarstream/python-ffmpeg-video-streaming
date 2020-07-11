@@ -56,12 +56,12 @@ class S3(Clouds):
 
         try:
             for file in files:
-                self.s3.upload_file(join(directory, file), bucket_name, join(folder, file))
+                self.s3.upload_file(join(directory, file), bucket_name, join(folder, file).replace("\\", "/"))
         except self.err as e:
             logging.error(e)
             raise RuntimeError(e)
 
-        logging.info("The " + directory + " directory was uploaded to Amazon S3 successfully")
+        logging.info("The {} directory was uploaded to Amazon S3 successfully".format(directory))
 
     def download(self, filename=None, **options):
         bucket_name = options.pop('bucket_name', None)
@@ -87,6 +87,8 @@ class S3(Clouds):
 
 
 class GCS(Clouds):
+    CLIENT = None
+
     def __init__(self, **options):
         """
         @TODO: add documentation
@@ -96,19 +98,19 @@ class GCS(Clouds):
         except ImportError as e:
             raise ImportError("No specified import name! make sure that you have installed the package via pip:\n\n"
                               "pip install google-cloud-storage")
-        self.client = storage.Client(**options)
+        GCS.CLIENT = storage.Client(**options)
 
     def upload_directory(self, directory, **options):
         bucket_name = options.pop('bucket_name', None)
         if bucket_name is None:
             raise ValueError('You should pass a bucket name')
 
-        bucket = self.client.get_bucket(bucket_name)
-
+        bucket = GCS.CLIENT.get_bucket(bucket_name)
+        folder = options.pop('folder', '')
         files = [f for f in listdir(directory) if isfile(join(directory, f))]
 
         for file in files:
-            blob = bucket.blob(bucket_name + file, **options)
+            blob = bucket.blob(join(folder, file).replace("\\", "/"), **options)
             blob.upload_from_filename(join(directory, file))
 
     def download(self, filename=None, **options):
@@ -116,7 +118,7 @@ class GCS(Clouds):
         if bucket_name is None:
             raise ValueError('You should pass a bucket name')
 
-        bucket = self.client.get_bucket(bucket_name)
+        bucket = GCS.CLIENT.get_bucket(bucket_name)
         object_name = options.pop('object_name', None)
 
         if object_name is None:
@@ -126,7 +128,7 @@ class GCS(Clouds):
             with tempfile.NamedTemporaryFile(prefix=basename(object_name), delete=False) as tmp:
                 filename = tmp.name
 
-        blob = bucket.get_blob(object_name, options)
+        blob = bucket.get_blob(object_name, **options)
         blob.download_to_filename(filename)
 
         return filename
