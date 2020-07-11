@@ -67,10 +67,10 @@ def _dash(dash):
     dirname, name = get_path_info(dash.output_)
     _args = dash.format.all
     _args.update({
-        'use_timeline': USE_TIMELINE,
-        'use_template': USE_TEMPLATE,
-        'init_seg_name': '{}_init_$RepresentationID$.$ext$'.format(name),
-        "media_seg_name": '{}_chunk_$RepresentationID$_$Number%05d$.$ext$'.format(name),
+        'use_timeline':     USE_TIMELINE,
+        'use_template':     USE_TEMPLATE,
+        'init_seg_name':    '{}_init_$RepresentationID$.$ext$'.format(name),
+        "media_seg_name":   '{}_chunk_$RepresentationID$_$Number%05d$.$ext$'.format(name),
         'f': 'dash'
     })
     _args.update(dash.options)
@@ -95,13 +95,13 @@ def _get_hls_stream(hls, rep, dirname, name):
     """
     args = hls.format.all
     args.update({
-        'hls_list_size': HLS_LIST_SIZE,
-        'hls_time': HLS_TIME,
-        'hls_allow_cache': HLS_ALLOW_CACHE,
-        'hls_segment_filename': "{}/{}_{}p_%04d.{}".format(dirname, name, rep.size.height, _hls_seg_ext(hls)),
-        'hls_fmp4_init_filename': "{}_{}p_init.mp4".format(name, rep.size.height),
-        's:v': rep.size,
-        'b:v': rep.bitrate.calc_video()
+        'hls_list_size':            HLS_LIST_SIZE,
+        'hls_time':                 HLS_TIME,
+        'hls_allow_cache':          HLS_ALLOW_CACHE,
+        'hls_segment_filename':     "{}/{}_{}p_%04d.{}".format(dirname, name, rep.size.height, _hls_seg_ext(hls)),
+        'hls_fmp4_init_filename':   "{}_{}p_init.mp4".format(name, rep.size.height),
+        's:v':                      rep.size,
+        'b:v':                      rep.bitrate.calc_video()
     })
     args.update(_get_audio_bitrate(rep))
     args.update(rep.options)
