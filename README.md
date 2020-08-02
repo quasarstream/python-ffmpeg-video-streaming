@@ -24,6 +24,7 @@ This package uses the **[FFmpeg](https://ffmpeg.org)** to package media content 
   - [Metadata](#metadata)
   - [Conversion](#conversion)
 - [Several Open Source Players](#several-open-source-players)
+- [FAQs](#faqs)
 - [Contributing and Reporting Bugs](#contributing-and-reporting-bugs)
 - [Credits](#credits)
 - [License](#license)
@@ -183,8 +184,7 @@ import sys
 
 def monitor(ffmpeg, duration, time_, time_left, process):
     """
-    You can monitor ffmpeg command line and handle the process. For example, you can update a field in your database
-    or log it to a file.
+    Handling proccess.
 
     Examples:
     1. Logging or printing ffmpeg command
@@ -194,16 +194,17 @@ def monitor(ffmpeg, duration, time_, time_left, process):
     if "something happened":
         process.terminate()
 
-    3. Email someone to notice the time of finishing process
-    if time_left > 3600 and not already_send:  # if it takes more than one hour and you did not email them already
+    3. Email someone to inform about the time of finishing process
+    if time_left > 3600 and not already_send:  # if it takes more than one hour and you have not emailed them already
+        ready_time = time_left + time.time()
         Email.send(
             email='someone@somedomain.com',
-            subject='Your video will be ready at %s seconds' % time_left,
-            message='Your video takes more than an hour ...'
+            subject='Your video will be ready by %s' % datetime.timedelta(seconds=ready_time),
+            message='Your video takes more than %s hour(s) ...' % round(time_left / 3600)
         )
        already_send = True
 
-    4. Create a socket connection and show a progress bar(and other parameters) to users
+    4. Create a socket connection and show a progress bar(or other parameters) to your users
     Socket.broadcast(
         address=127.0.0.1
         port=5050
@@ -372,11 +373,21 @@ You can use these libraries to play your streams.
         - **[FFmpeg(ffplay)](https://github.com/FFmpeg/FFmpeg) (Recommended)**
         - **[VLC media player](https://github.com/videolan/vlc)**
 
-**NOTE-1:** You must pass a **link of the master playlist(manifest)**(i.e. `https://www.aminyazdanpanah.com/?"PATH TO STREAM DIRECTORY"/dash-stream.mpd` or `/PATH_TO_STREAM_DIRECTORY/hls-stream.m3u8` ) to these players.
+## FAQs
+**I created stream files and now what should I pass to a player?**
+You must pass a **master playlist(manifest) URL**(e.x. `https://www.aminyazdanpanah.com/?"PATH TO STREAM DIRECTORY"/dash-stream.mpd` or `/PATH_TO_STREAM_DIRECTORY/hls-stream.m3u8` ) to a player. 
+See the demo page of these players for more information(**[hls.js Demo](https://hls-js.netlify.app/demo/)**, **[dash.js Demo](https://reference.dashif.org/dash.js/v3.1.2/samples/dash-if-reference-player/index.html)**, **[videojs Demo](https://videojs.com/advanced?video=elephantsdream)** and etc).  
 
-**NOTE-2:** If you save your stream content to a cloud(i.e. **[Amazon S3](https://aws.amazon.com/s3)**), the link of your master playlist and other contents **MUST BE PUBLIC**. 
+**My player does not show the quality selector button to change the video quality?**
+Some Players do not have an embedded quality selector button to change this option and you should install(or add) the plugin for this use case. For example, if you are using Videojs to play your stream, you can install **[videojs-hls-quality-selector](https://github.com/chrisboustead/videojs-hls-quality-selector)** to show the quality selector. For adding a plugin to other players, you can easily Google it!
 
-**NOTE-3:** As you may know, **[IOS](https://www.apple.com/ios)** does not have native support for DASH. Although there are some libraries such as **[Viblast](https://github.com/Viblast/ios-player-sdk)** and **[MPEGDASH-iOS-Player](https://github.com/MPEGDASHPlayer/MPEGDASH-iOS-Player)** to support this technique, I have never tested them. So maybe some of them will not work properly.
+**I uploaded my stream files to a cloud but it does not play on my website?**
+If you save your stream content to a cloud(i.e. **[Amazon S3](https://aws.amazon.com/s3)**), make sure your contents are **PUBLIC**. If they are not, you must change the access control. 
+
+**Does [IOS](https://www.apple.com/ios) support the DASH stream?**
+No, IOS does not have native support for DASH. Although there are some libraries such as **[Viblast](https://github.com/Viblast/ios-player-sdk)** and **[MPEGDASH-iOS-Player](https://github.com/MPEGDASHPlayer/MPEGDASH-iOS-Player)** to support this technique, I have never tested them. So maybe some of them will not work properly.
+
+See [this page](https://video.aminyazdanpanah.com/start?r=faq#faq) for more FAQs.
 
 
 ## Contributing and Reporting Bugs
