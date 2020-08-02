@@ -387,7 +387,7 @@ If you save your stream content to a cloud(i.e. **[Amazon S3](https://aws.amazon
 **Does [IOS](https://www.apple.com/ios) support the DASH stream?**
 No, IOS does not have native support for DASH. Although there are some libraries such as **[Viblast](https://github.com/Viblast/ios-player-sdk)** and **[MPEGDASH-iOS-Player](https://github.com/MPEGDASHPlayer/MPEGDASH-iOS-Player)** to support this technique, I have never tested them. So maybe some of them will not work properly.
 
-See [this page](https://video.aminyazdanpanah.com/start?r=faq#faq) for more FAQs.
+See [this page](https://video.aminyazdanpanah.com/python/start?r=faq#faq) for more FAQs.
 
 
 ## Contributing and Reporting Bugs
