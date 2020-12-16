@@ -23,7 +23,7 @@ def get_path_info(path):
     @TODO: add documentation
     """
     dirname = os.path.dirname(path)
-    name = str(os.path.basename(path).split('.')[0])
+    name = str(os.path.basename(path).rsplit('.', 1)[0])
 
     return dirname, name
 
