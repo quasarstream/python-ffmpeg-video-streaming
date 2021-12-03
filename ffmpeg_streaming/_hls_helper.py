@@ -77,8 +77,25 @@ class HLSKeyInfoFile:
                 self.update_suffix()
                 self.generate()
 
+def sub_info(rep, sub_path) -> list:
+    """
+    Returns the subtitle information to be added to manifest.
 
-def stream_info(rep) -> list:
+    Parameters
+    ----------
+    rep : Representation
+    sub_path : subtitle manifest file name
+    """
+    tag = '#EXT-X-MEDIA:'
+    info = [
+        f'TYPE=SUBTITLES',
+        f'GROUP-ID="subs"',
+        f'NAME="subtitles"',
+        f'URI="'+sub_path+'"'
+    ]
+    return [tag + ",".join(info)]
+
+def stream_info(rep, sub_exists) -> list:
     """
     @TODO: add documentation
     """
@@ -88,6 +105,8 @@ def stream_info(rep) -> list:
         f'RESOLUTION={rep.size}',
         f'NAME="{rep.size.height}"'
     ]
+    if sub_exists:
+        info.append(f'SUBTITLES="subs"')
     custom = rep.options.pop('stream_info', [])
 
     return [tag + ",".join(info + custom)]
@@ -114,7 +133,11 @@ class HLSMasterPlaylist:
         content = ['#EXTM3U'] + self._get_version() + self.media.options.get('description', [])
 
         for rep in self.media.reps:
-            content += stream_info(rep) + self.stream_path(rep)
+            sub_exists=os.path.isfile(os.path.dirname(self.media.output_)+'/'+self.sub_path(rep)[0])
+            if(sub_exists):
+                content += sub_info(rep,self.sub_path(rep)[0]) + stream_info(rep,sub_exists) + self.stream_path(rep)
+            else:
+                content += stream_info(rep,sub_exists) + self.stream_path(rep)
 
         return "\n".join(content)
 
@@ -130,3 +153,13 @@ class HLSMasterPlaylist:
         @TODO: add documentation
         """
         return ["{}_{}p.m3u8".format(os.path.basename(self.media.output_).split('.')[0], rep.size.height)]
+
+    def sub_path(self, rep):
+        """
+        Returns the subtitles maifest file name.
+
+        Parameters
+        ----------
+        rep : Representation
+        """
+        return ["{}_{}p_vtt.m3u8".format(os.path.basename(self.media.output_).split('.')[0], rep.size.height)]
