@@ -36,7 +36,6 @@ def mkdir(dirname: str) -> None:
         os.makedirs(dirname)
     except OSError as exc:
         logging.info(exc)
-        pass
 
 
 def rm(path: str) -> None:
@@ -47,7 +46,6 @@ def rm(path: str) -> None:
         os.remove(path)
     except OSError as exc:
         logging.info(exc)
-        pass
 
 
 def clean_args(args: list) -> list:
@@ -105,16 +103,14 @@ def get_os():
     """
     @TODO: add documentation
     """
-    if platform == "linux" or platform == "linux2":
-        os_name = 'linux'
+    if platform in ["linux", "linux2"]:
+        return 'linux'
     elif platform == "darwin":
-        os_name = 'os_x'
-    elif platform == "win32" or platform == "Windows":
-        os_name = 'windows'
+        return 'os_x'
+    elif platform in ["win32", "Windows"]:
+        return 'windows'
     else:
-        os_name = 'unknown'
-
-    return os_name
+        return 'unknown'
 
 
 def cnv_options_to_args(options: dict):

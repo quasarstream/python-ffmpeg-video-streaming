@@ -64,8 +64,8 @@ class HLSKeyInfoFile:
         @TODO: add documentation
         """
         unique = uuid.uuid4()
-        self.path = self.c_path + "-" + str(unique)
-        self.url = self.c_url + "-" + str(unique)
+        self.path = f'{self.c_path}-{str(unique)}'
+        self.url = f'{self.c_url}-{str(unique)}'
 
     def rotate_key(self, line: str):
         """
@@ -88,11 +88,12 @@ def sub_info(rep, sub_path) -> list:
     """
     tag = '#EXT-X-MEDIA:'
     info = [
-        f'TYPE=SUBTITLES',
-        f'GROUP-ID="subs"',
-        f'NAME="subtitles"',
-        f'URI="'+sub_path+'"'
+        'TYPE=SUBTITLES',
+        'GROUP-ID="subs"',
+        'NAME="subtitles"',
+        f'URI="{sub_path}' + '"',
     ]
+
     return [tag + ",".join(info)]
 
 def stream_info(rep, sub_exists) -> list:
@@ -106,7 +107,7 @@ def stream_info(rep, sub_exists) -> list:
         f'NAME="{rep.size.height}"'
     ]
     if sub_exists:
-        info.append(f'SUBTITLES="subs"')
+        info.append('SUBTITLES="subs"')
     custom = rep.options.pop('stream_info', [])
 
     return [tag + ",".join(info + custom)]
@@ -133,8 +134,9 @@ class HLSMasterPlaylist:
         content = ['#EXTM3U'] + self._get_version() + self.media.options.get('description', [])
 
         for rep in self.media.reps:
-            sub_exists=os.path.isfile(os.path.dirname(self.media.output_)+'/'+self.sub_path(rep)[0])
-            if(sub_exists):
+            if sub_exists := os.path.isfile(
+                os.path.dirname(self.media.output_) + '/' + self.sub_path(rep)[0]
+            ):
                 content += sub_info(rep,self.sub_path(rep)[0]) + stream_info(rep,sub_exists) + self.stream_path(rep)
             else:
                 content += stream_info(rep,sub_exists) + self.stream_path(rep)
@@ -146,7 +148,7 @@ class HLSMasterPlaylist:
         @TODO: add documentation
         """
         version = "7" if self.media.options.get('hls_segment_type', '') == 'fmp4' else "3"
-        return ['#EXT-X-VERSION:' + version]
+        return [f'#EXT-X-VERSION:{version}']
 
     def stream_path(self, rep):
         """

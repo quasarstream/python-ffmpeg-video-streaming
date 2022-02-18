@@ -40,7 +40,7 @@ def _get_audio_bitrate(rep, index: int = None):
     @TODO: add documentation
     """
     if rep.bitrate.audio_ is not None and rep.bitrate.audio_ != 0:
-        opt = 'b:a' if index is None else 'b:a:' + str(index)
+        opt = 'b:a' if index is None else f'b:a:{index}'
         return {opt: rep.bitrate.audio}
 
     return {}
@@ -52,9 +52,10 @@ def _get_dash_stream(key, rep):
     """
     args = {
         'map': 0,
-        's:v:' + str(key): rep.size,
-        'b:v:' + str(key): rep.bitrate.calc_video()
+        f's:v:{str(key)}': rep.size,
+        f'b:v:{str(key)}': rep.bitrate.calc_video(),
     }
+
     args.update(_get_audio_bitrate(rep, key))
     args.update(rep.options)
     return cnv_options_to_args(args)

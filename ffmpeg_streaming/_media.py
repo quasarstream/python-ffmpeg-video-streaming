@@ -115,9 +115,7 @@ class Save(abc.ABC):
         """
         @TODO: add documentation
         """
-        async_run = options.pop('async_run', True)
-
-        if async_run:
+        if async_run := options.pop('async_run', True):
             asyncio.run(self.async_run(ffmpeg_bin, monitor, **options))
         else:
             self._run(ffmpeg_bin, monitor, **options)
@@ -150,7 +148,12 @@ class Streaming(Save, abc.ABC):
         @TODO: add documentation
         """
         _filters = self.options.pop('filter_complex', None)
-        _filters = _filters + "," + ",".join(list(_filter)) if _filters is not None else ",".join(list(_filter))
+        _filters = (
+            f'{_filters},' + ",".join(list(_filter))
+            if _filters is not None
+            else ",".join(list(_filter))
+        )
+
         self.options.update({'filter_complex': _filters})
 
     def watermarking(self, path, _filter='overlay=10:10'):
@@ -215,7 +218,12 @@ class HLS(Streaming):
         @TODO: add documentation
         """
         hls_flags = self.options.pop('hls_flags', None)
-        hls_flags = hls_flags + "+" + "+".join(list(flags)) if hls_flags is not None else "+".join(list(flags))
+        hls_flags = (
+            f'{hls_flags}+' + "+".join(list(flags))
+            if hls_flags is not None
+            else "+".join(list(flags))
+        )
+
         self.options.update({'hls_flags': hls_flags})
 
     def finish_up(self):
@@ -244,7 +252,7 @@ class Media(object):
         self.inputs = _inputs
 
         first_input = dict(copy.copy(_inputs.inputs[0]))
-        self.input = first_input.get('i', None)
+        self.input = first_input.get('i')
         self.input_temp = first_input.get('is_tmp', False)
 
     def hls(self, _format: Format, **hls_options):

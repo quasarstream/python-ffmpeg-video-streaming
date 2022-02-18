@@ -30,10 +30,7 @@ def min_bitrate(bitrate: int) -> int:
     """
     @TODO: add documentation
     """
-    if bitrate < MINIMUM_BITRATE:
-        return MINIMUM_BITRATE
-
-    return bitrate
+    return max(bitrate, MINIMUM_BITRATE)
 
 
 def reduce_bitrate(bitrate: Bitrate, divide: int) -> Bitrate:
@@ -68,7 +65,7 @@ class AutoRep(object):
         self._format = _format
         self.heights = heights if heights is not None else [2160, 1440, 1080, 720, 480, 360, 240, 144]
         self.bitrate = bitrate
-        self.is_default = True if heights is not None and bitrate is not None else False
+        self.is_default = heights is not None and bitrate is not None
 
         if heights is not None and bitrate is not None and len(heights) != len(bitrate):
             raise ValueError("The length of heights list must the same as length of bitrate")
@@ -90,14 +87,13 @@ class AutoRep(object):
         """
         @TODO: add documentation
         """
-        if self.index < len(self.heights):
-            height = self.heights[self.index]
-            width = self.original_size.ratio.calculate_width(height, self._format.multiply())
-            self.index += 1
-
-            return Representation(Size(width, height), cal_bitrate(self.bitrate, self.original_bitrate, self.index))
-        else:
+        if self.index >= len(self.heights):
             raise StopIteration
+        height = self.heights[self.index]
+        width = self.original_size.ratio.calculate_width(height, self._format.multiply())
+        self.index += 1
+
+        return Representation(Size(width, height), cal_bitrate(self.bitrate, self.original_bitrate, self.index))
 
 
 __all__ = [
