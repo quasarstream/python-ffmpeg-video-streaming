@@ -26,22 +26,17 @@ class Capture(object):
         self.video = video
 
     def _linux(self):
-        is_screen = self.options.pop('screen', False)
-        if is_screen:
-            cap = 'x11grab'
-        else:
-            cap = 'v4l2'
-
+        cap = 'x11grab' if (is_screen := self.options.pop('screen', False)) else 'v4l2'
         return {
             'f': cap,
             'i': self.video
         }
 
     def _windows(self):
-        self.video = 'video=' + str(self.video)
+        self.video = f'video={str(self.video)}'
         windows_audio = self.options.pop('windows_audio', None)
         if windows_audio is not None:
-            self.video = self.video + ':audio=' + str(windows_audio)
+            self.video = f'{self.video}:audio={str(windows_audio)}'
 
         return {
             'f': 'dshow',
@@ -59,7 +54,7 @@ class Capture(object):
         raise OSError("Unreported OS!")
 
     def __iter__(self):
-        yield from getattr(self, '_' + get_os())().items()
+        yield from getattr(self, f'_{get_os()}')().items()
 
 
 def get_from_cloud(_cloud: Clouds, options: dict):
@@ -69,10 +64,7 @@ def get_from_cloud(_cloud: Clouds, options: dict):
     global cloud
     if cloud is None:
         save_to = options.pop('save_to', None)
-        cloud = {
-            'i': _cloud.download(save_to, **options),
-            'is_tmp': True if save_to is None else False
-        }
+        cloud = {'i': _cloud.download(save_to, **options), 'is_tmp': save_to is None}
 
     return cloud
 

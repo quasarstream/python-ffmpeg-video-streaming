@@ -78,7 +78,7 @@ class S3(Clouds):
         try:
             with filename as f:
                 self.s3.download_fileobj(bucket_name, key, f)
-            logging.info("The " + filename.name + " file was downloaded")
+            logging.info(f'The {filename.name} file was downloaded')
         except self.err as e:
             logging.error(e)
             raise RuntimeError(e)
@@ -174,7 +174,7 @@ class MAS(Clouds):
 
         try:
             self.block_blob_service.get_blob_to_path(container, blob, filename)
-            logging.info("The " + filename + " file was downloaded")
+            logging.info(f'The {filename} file was downloaded')
         except:
             error = "An error occurred while downloading the file"
             logging.error(error)
