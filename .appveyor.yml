@@ -17,9 +17,41 @@ environment:
   ffmpeg_download: https://www.gyan.dev/ffmpeg/builds/packages/ffmpeg-5.0-essentials_build.zip
 
   matrix:
-    - TOXENV: py38
-    - TOXENV: py39
-    - TOXENV: py310
+    - PYTHON: "C:\\Python38"
+      PYTHON_VERSION: "3.8.x" # currently 3.8.0
+      PYTHON_ARCH: "32"
+      OPENSSL_LIB: "https://ci.appveyor.com/api/buildjobs/fakubeldw67e9pmg/artifacts/YARA.OpenSSL.x86.1.1.1.nupkg"
+      VS: "Visual Studio 14 2015"
+
+    - PYTHON: "C:\\Python38-x64"
+      PYTHON_VERSION: "3.8.x" # currently 3.8.0
+      PYTHON_ARCH: "64"
+      OPENSSL_LIB: "https://ci.appveyor.com/api/buildjobs/q63539qt9yqaqspo/artifacts/YARA.OpenSSL.x64.1.1.1.nupkg"
+      VS: "Visual Studio 14 2015 Win64"
+
+    - PYTHON: "C:\\Python39"
+      PYTHON_VERSION: "3.9.0"
+      PYTHON_ARCH: "32"
+      OPENSSL_LIB: "https://ci.appveyor.com/api/buildjobs/fakubeldw67e9pmg/artifacts/YARA.OpenSSL.x86.1.1.1.nupkg"
+      VS: "Visual Studio 14 2015"
+
+    - PYTHON: "C:\\Python39-x64"
+      PYTHON_VERSION: "3.9.0"
+      PYTHON_ARCH: "64"
+      OPENSSL_LIB: "https://ci.appveyor.com/api/buildjobs/q63539qt9yqaqspo/artifacts/YARA.OpenSSL.x64.1.1.1.nupkg"
+      VS: "Visual Studio 14 2015 Win64"
+
+    - PYTHON: "C:\\Python310"
+      PYTHON_VERSION: "3.10.0"
+      PYTHON_ARCH: "32"
+      OPENSSL_LIB: "https://ci.appveyor.com/api/buildjobs/fakubeldw67e9pmg/artifacts/YARA.OpenSSL.x86.1.1.1.nupkg"
+      VS: "Visual Studio 14 2015"
+
+    - PYTHON: "C:\\Python10-x64"
+      PYTHON_VERSION: "3.10.0"
+      PYTHON_ARCH: "64"
+      OPENSSL_LIB: "https://ci.appveyor.com/api/buildjobs/q63539qt9yqaqspo/artifacts/YARA.OpenSSL.x64.1.1.1.nupkg"
+      VS: "Visual Studio 14 2015 Win64"
 
 init:
   - ECHO %PYTHON% %PYTHON_VERSION% %PYTHON_ARCH%
