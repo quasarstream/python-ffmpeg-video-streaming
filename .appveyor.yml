@@ -45,16 +45,8 @@ environment:
       VS: "Visual Studio 14 2015 Win64"
 
 install:
-  - ps: if ($env:APPVEYOR_PULL_REQUEST_NUMBER -and $env:APPVEYOR_BUILD_NUMBER -ne ((Invoke-RestMethod `
-        https://ci.appveyor.com/api/projects/$env:APPVEYOR_ACCOUNT_NAME/$env:APPVEYOR_PROJECT_SLUG/history?recordsNumber=50).builds | `
-        Where-Object pullRequestId -eq $env:APPVEYOR_PULL_REQUEST_NUMBER)[0].buildNumber) { `
-          throw "There are newer queued builds for this pull request, failing early." }
-  - ps: "[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12"
-  - ps: if (-not(Test-Path($env:PYTHON))) { & appveyor\install.ps1 }
-  - "echo %APPVEYOR_BUILD_WORKER_IMAGE%"
   - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
   - "python --version"
-  - "python -c \"import struct; print(struct.calcsize('P') * 8)\""
   - "python -m pip install --disable-pip-version-check --user --upgrade pip"
   - "python -m easy_install -U setuptools"
   - "pip install -r requirements.txt"
