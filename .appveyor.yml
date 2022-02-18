@@ -56,7 +56,6 @@ install:
   - "python --version"
   - "python -c \"import struct; print(struct.calcsize('P') * 8)\""
   - "python -m pip install --disable-pip-version-check --user --upgrade pip"
-  - "%CMD_IN_ENV% pip install wheel"
   - "python -m easy_install -U setuptools"
   - "pip install -r requirements.txt"
   - ps: Start-FileDownload $env:ffmpeg_download
