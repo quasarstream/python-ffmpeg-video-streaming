@@ -30,7 +30,7 @@ This package uses the **[FFmpeg](https://ffmpeg.org)** to package media content 
 - [License](#license)
 
 ## Requirements
-1. This version of the package is only compatible with **[Python 3.7](https://www.python.org/downloads/)** or higher.
+1. This version of the package is only compatible with **[Python 3.8](https://www.python.org/downloads/)** or higher.
 
 2. To use this package, you need to **[install the FFmpeg](https://ffmpeg.org/download.html)**. You will need both FFmpeg and FFProbe binaries to use it.
 
