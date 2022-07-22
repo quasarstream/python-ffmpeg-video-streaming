@@ -112,7 +112,7 @@ class FFProbe:
         """
         @TODO: add documentation
         """
-        with open(path, 'w') as probe:
+        with open(path, 'w', encoding='utf-8') as probe:
             probe.write(self.out.decode('utf-8'))
 
     @property
