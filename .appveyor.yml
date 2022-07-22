@@ -10,7 +10,7 @@ environment:
     CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\appveyor\\run_with_env.cmd"
     JANSSON_VERSION: "2.13"
 
-  ffmpeg_download: https://www.gyan.dev/ffmpeg/builds/packages/ffmpeg-5.0-essentials_build.zip
+  ffmpeg_download: https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip
 
   matrix:
     - PYTHON: "C:\\Python38"
@@ -65,8 +65,8 @@ install:
   - "pip install -r requirements.txt"
   - ps: Start-FileDownload $env:ffmpeg_download
 
-  - 7z x ffmpeg-5.0-essentials_build.zip
-  - PATH=%PATH%;%cd%\ffmpeg-5.0-essentials_build\bin
+  - 7z x ffmpeg-release-essentials.zip
+  - PATH=%PATH%;%cd%\ffmpeg-release-essentials\bin
 
 test_script:
   - cd c:\projects\python-ffmpeg-video-streaming
