@@ -45,7 +45,7 @@ class Format(abc.ABC):
             'c:v': self.video,
             'c:a': self.audio,
         }
-        args.update(self.get_codec_options())
+        args |= self.get_codec_options()
 
         return args
 
@@ -84,7 +84,7 @@ class H264(Format):
             'sc_threshold': 40
         }
 
-        h264_codec_options.update(self.codec_options)
+        h264_codec_options |= self.codec_options
 
         return h264_codec_options
 
@@ -114,7 +114,7 @@ class HEVC(Format):
             'sc_threshold': 40
         }
 
-        h265_codec_options.update(self.codec_options)
+        h265_codec_options |= self.codec_options
 
         return h265_codec_options
 
@@ -140,7 +140,7 @@ class VP9(Format):
         """
         vp9_codec_options = {}
 
-        vp9_codec_options.update(self.codec_options)
+        vp9_codec_options |= self.codec_options
 
         return vp9_codec_options
 
