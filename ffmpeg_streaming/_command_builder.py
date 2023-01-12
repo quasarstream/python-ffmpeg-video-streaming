@@ -54,6 +54,7 @@ def _get_dash_stream(key, rep):
         'map': 0,
         f's:v:{str(key)}': rep.size,
         f'b:v:{str(key)}': rep.bitrate.calc_video(),
+        'adaptation_sets': 'id=0,streams=v id=1,streams=a',
     }
 
     args.update(_get_audio_bitrate(rep, key))
