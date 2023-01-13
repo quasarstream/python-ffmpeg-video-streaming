@@ -56,7 +56,7 @@ def _get_dash_stream(key, rep):
         f'b:v:{str(key)}': rep.bitrate.calc_video(),
     }
 
-    args.update(_get_audio_bitrate(rep, key))
+    args |= _get_audio_bitrate(rep, key)
     args.update(rep.options)
     return cnv_options_to_args(args)
 
@@ -67,21 +67,23 @@ def _dash(dash):
     """
     dirname, name = get_path_info(dash.output_)
     _args = dash.format.all
-    _args.update({
-        'use_timeline': USE_TIMELINE,
-        'use_template': USE_TEMPLATE,
-        'init_seg_name': '{}_init_$RepresentationID$.$ext$'.format(name),
-        "media_seg_name": '{}_chunk_$RepresentationID$_$Number%05d$.$ext$'.format(name),
-        'f': 'dash',
-        'adaptation_sets': 'id=0,streams=v id=1,streams=a',
-    })
+    _args.update(
+        {
+            'use_timeline': USE_TIMELINE,
+            'use_template': USE_TEMPLATE,
+            'init_seg_name': f'{name}_init_$RepresentationID$.$ext$',
+            "media_seg_name": f'{name}_chunk_$RepresentationID$_$Number%05d$.$ext$',
+            'f': 'dash',
+            'adaptation_sets': 'id=0,streams=v id=1,streams=a',
+        }
+    )
     _args.update(dash.options)
     args = cnv_options_to_args(_args)
 
     for key, rep in enumerate(dash.reps):
         args += _get_dash_stream(key, rep)
 
-    return args + ['-strict', '-2', '{}/{}.mpd'.format(dirname, name)]
+    return args + ['-strict', '-2', f'{dirname}/{name}.mpd']
 
 
 def _hls_seg_ext(hls):
@@ -96,21 +98,25 @@ def _get_hls_stream(hls, rep, dirname, name):
     @TODO: add documentation
     """
     args = hls.format.all
-    args.update({
-        'hls_list_size':            HLS_LIST_SIZE,
-        'hls_time':                 HLS_TIME,
-        'hls_allow_cache':          HLS_ALLOW_CACHE,
-        'hls_segment_filename':     "{}/{}_{}p_%04d.{}".format(dirname, name, rep.size.height, _hls_seg_ext(hls)),
-        'hls_fmp4_init_filename':   "{}_{}p_init.mp4".format(name, rep.size.height),
-        's:v':                      rep.size,
-        'b:v':                      rep.bitrate.calc_video()
-    })
+    args.update(
+        {
+            'hls_list_size': HLS_LIST_SIZE,
+            'hls_time': HLS_TIME,
+            'hls_allow_cache': HLS_ALLOW_CACHE,
+            'hls_segment_filename': f"{dirname}/{name}_{rep.size.height}p_%04d.{_hls_seg_ext(hls)}",
+            'hls_fmp4_init_filename': f"{name}_{rep.size.height}p_init.mp4",
+            's:v': rep.size,
+            'b:v': rep.bitrate.calc_video(),
+        }
+    )
     args.update(_get_audio_bitrate(rep))
     args.update(rep.options)
     args.update({'strict': '-2'})
     args.update(hls.options)
 
-    return cnv_options_to_args(args) + ["{}/{}_{}p.m3u8".format(dirname, name, str(rep.size.height))]
+    return cnv_options_to_args(args) + [
+        f"{dirname}/{name}_{str(rep.size.height)}p.m3u8"
+    ]
 
 
 def _hls(hls):
@@ -131,7 +137,9 @@ def stream_args(media):
     """
     @TODO: add documentation
     """
-    return getattr(sys.modules[__name__], "_%s" % type(media).__name__.lower())(media)
+    return getattr(sys.modules[__name__], f"_{type(media).__name__.lower()}")(
+        media
+    )
 
 
 def input_args(media):
