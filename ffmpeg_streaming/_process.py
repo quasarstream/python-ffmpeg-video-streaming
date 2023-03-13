@@ -25,7 +25,7 @@ def _p_open(commands, **options):
     """
     @TODO: add documentation
     """
-    logging.info("ffmpeg running command: {}".format(commands))
+    logging.info(f"ffmpeg running command: {commands}")
     return subprocess.Popen(shlex.split(commands), **options)
 
 
@@ -44,16 +44,12 @@ class Process(object):
             'stdin': None,
             'stdout': subprocess.PIPE,
             'stderr': subprocess.STDOUT,
-            'universal_newlines': False
-        }
-        default_proc_opts.update(options)
-        options.update(default_proc_opts)
+            'universal_newlines': False,
+        } | options
+        options |= default_proc_opts
         if callable(monitor) or isinstance(getattr(media, 'key_rotation'), HLSKeyInfoFile):
             self.is_monitor = True
-            options.update({
-                'stdin': subprocess.PIPE,
-                'universal_newlines': True
-            })
+            options |= {'stdin': subprocess.PIPE, 'universal_newlines': True}
 
         self.process = _p_open(commands, **options)
         self.media = media
@@ -103,7 +99,7 @@ class Process(object):
         if thread.is_alive():
             self.process.terminate()
             thread.join()
-            error = 'Timeout! exceeded the timeout of {} seconds.'.format(str(self.timeout))
+            error = f'Timeout! exceeded the timeout of {str(self.timeout)} seconds.'
             logging.error(error)
             raise RuntimeError(error)
 
@@ -118,7 +114,7 @@ class Process(object):
 
         if self.process.poll():
             error = str(Process.err) if Process.err else str(Process.out)
-            logging.error('ffmpeg failed to execute command: {}'.format(error))
+            logging.error(f'ffmpeg failed to execute command: {error}')
             raise RuntimeError('ffmpeg failed to execute command: ', error)
 
         logging.info("ffmpeg executed command successfully")
