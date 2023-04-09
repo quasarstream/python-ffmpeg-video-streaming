@@ -68,11 +68,12 @@ def _dash(dash):
     dirname, name = get_path_info(dash.output_)
     _args = dash.format.all
     _args.update({
-        'use_timeline':     USE_TIMELINE,
-        'use_template':     USE_TEMPLATE,
-        'init_seg_name':    '{}_init_$RepresentationID$.$ext$'.format(name),
-        "media_seg_name":   '{}_chunk_$RepresentationID$_$Number%05d$.$ext$'.format(name),
-        'f': 'dash'
+        'use_timeline': USE_TIMELINE,
+        'use_template': USE_TEMPLATE,
+        'init_seg_name': '{}_init_$RepresentationID$.$ext$'.format(name),
+        "media_seg_name": '{}_chunk_$RepresentationID$_$Number%05d$.$ext$'.format(name),
+        'f': 'dash',
+        'adaptation_sets': 'id=0,streams=v id=1,streams=a',
     })
     _args.update(dash.options)
     args = cnv_options_to_args(_args)
