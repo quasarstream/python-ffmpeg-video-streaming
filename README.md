@@ -179,6 +179,7 @@ You can get realtime information about the transcoding using the following code.
 ```python
 from ffmpeg_streaming import Formats
 import sys
+import datetime
 
 def monitor(ffmpeg, duration, time_, time_left, process):
     """
