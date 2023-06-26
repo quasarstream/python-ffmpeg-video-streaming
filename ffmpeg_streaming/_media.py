@@ -182,7 +182,6 @@ class HLS(Streaming):
     PERIODIC_RE_KEY_FLAG = 'periodic_rekey'
     MASTER_PLAYLIST_IS_SAVED = False
 
-
     def set_up(self):
         """
         @TODO: add documentation
