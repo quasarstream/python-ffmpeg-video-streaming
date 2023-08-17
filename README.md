@@ -3,7 +3,7 @@
 
 ## Overview
 This package uses the **[FFmpeg](https://ffmpeg.org)** to package media content for online streaming such as DASH and HLS. You can also use **[DRM](https://en.wikipedia.org/wiki/Digital_rights_management)** for HLS packaging. There are several options to open a file from a cloud and save files to clouds as well.
-- **[Full Documentation](https://https://www.hadronepoch.org/op/python/ffmpeg-streaming/)** is available describing all features and components.
+- **[Full Documentation](https://www.hadronepoch.org/op/python/ffmpeg-streaming/)** is available describing all features and components.
 - **Your support is crucial to our ongoing work on open-source projects**. We kindly request that you consider exploring the **[available options](#support-us)** to assist us in this endeavor. Your encouragement and assistance will help us continue to deliver high-quality results in this important area. Thank you for your consideration and support.
 
 **Contents**
@@ -71,7 +71,7 @@ s3 = S3(aws_access_key_id='YOUR_KEY_ID', aws_secret_access_key='YOUR_KEY_SECRET'
 
 video = ffmpeg_streaming.input(s3, bucket_name="bucket-name", key="video.mp4")
 ```
-Visit **[this page](https://https://www.hadronepoch.org/op/python/ffmpeg-streaming/start/clouds?r=open)** to see some examples of opening a file from **[Amazon S3](https://aws.amazon.com/s3)**, **[Google Cloud Storage](https://console.cloud.google.com/storage)**, **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**, and a custom cloud.
+Visit **[this page](https://www.hadronepoch.org/op/python/ffmpeg-streaming/start/clouds?r=open)** to see some examples of opening a file from **[Amazon S3](https://aws.amazon.com/s3)**, **[Google Cloud Storage](https://console.cloud.google.com/storage)**, **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**, and a custom cloud.
 
 #### 3. Capture Webcam or Screen (Live Streaming)
 You can pass the name of a supported, connected capture device(i.e. the name of a webcam, camera, screen and etc) to the `input` method to stream a live media over the network from your connected device. 
@@ -110,7 +110,7 @@ dash = video.dash(Formats.h264())
 dash.representations(_144p, _240p, _360p, _480p, _720p, _1080p, _2k, _4k)
 dash.output('/var/media/dash.mpd')
 ```
-See **[DASH section](https://https://www.hadronepoch.org/op/python/ffmpeg-streaming/start?r=dash#dash)** in the documentation, for more examples.
+See **[DASH section](https://www.hadronepoch.org/op/python/ffmpeg-streaming/start?r=dash#dash)** in the documentation, for more examples.
 ### HLS
 **[HTTP Live Streaming (also known as HLS)](https://developer.apple.com/streaming/)** is an HTTP-based adaptive bitrate streaming communications protocol implemented by Apple Inc. as part of its QuickTime, Safari, OS X, and iOS software. Client implementations are also available in Microsoft Edge, Firefox, and some versions of Google Chrome. Support is widespread in streaming media servers. [Learn more](https://en.wikipedia.org/wiki/HTTP_Live_Streaming)
  
@@ -134,7 +134,7 @@ hls = video.hls(Formats.h264())
 hls.representations(_360p, _480p, _720p)
 hls.output('/var/media/hls.m3u8')
 ```
-See **[HLS section](https://https://www.hadronepoch.org/op/python/ffmpeg-streaming/start?r=hls#hls)** in the documentation, for more examples such as Fragmented MP4, live from camera/screen and so on.
+See **[HLS section](https://www.hadronepoch.org/op/python/ffmpeg-streaming/start?r=hls#hls)** in the documentation, for more examples such as Fragmented MP4, live from camera/screen and so on.
 
 #### Encryption(DRM)
 The encryption process requires some kind of secret (key) together with an encryption algorithm. HLS uses AES in cipher block chaining (CBC) mode. This means each block is encrypted using the ciphertext of the preceding block. [Learn more](https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation)
@@ -163,7 +163,7 @@ hls.output('/var/media/hls.m3u8')
 ##### Key Rotation
 An integer as a "key rotation period" can also be passed to the `encryption` method (i.e. `encryption(save_to, url, 10)`) to use a different key for each set of segments, rotating to a new key after this many segments. For example, if 10 segment files have been generated then it will generate a new key. If you set this value to **`1`**, each segment file will be encrypted with a new encryption key. This can improve security and allows for more flexibility. 
 
-See **[the example](https://https://www.hadronepoch.org/op/python/ffmpeg-streaming/start?r=enc-hls#hls-encryption)** for more information.
+See **[the example](https://www.hadronepoch.org/op/python/ffmpeg-streaming/start?r=enc-hls#hls-encryption)** for more information.
 
 **IMPORTANT:** It is very important to protect your key(s) on your website. For example, you can use a token(using a Get/Post HTTP method or add a token to authorization header) to check if the user is eligible to access the key or not. You can also use a session(or cookie) on your website to restrict access to the key(s)(**It is highly recommended**).    
 
@@ -273,7 +273,7 @@ A path can also be passed to save a copy of files to your local machine.
 hls.output('/var/media/hls.m3u8', clouds=save_to_s3)
 ```
 
-Visit **[this page](https://https://www.hadronepoch.org/op/python/ffmpeg-streaming/start/clouds?r=save)** to see some examples of saving files to **[Amazon S3](https://aws.amazon.com/s3)**, **[Google Cloud Storage](https://console.cloud.google.com/storage)**, **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**, and a custom cloud. 
+Visit **[this page](https://www.hadronepoch.org/op/python/ffmpeg-streaming/start/clouds?r=save)** to see some examples of saving files to **[Amazon S3](https://aws.amazon.com/s3)**, **[Google Cloud Storage](https://console.cloud.google.com/storage)**, **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**, and a custom cloud. 
 
 **NOTE:** This option is only valid for **[VOD](https://en.wikipedia.org/wiki/Video_on_demand)** (it does not support live streaming).
 
@@ -303,7 +303,7 @@ from ffmpeg_streaming import FFProbe
 ffprobe = FFProbe('/var/media/video.mp4')
 ```
 
-See **[the example](https://https://www.hadronepoch.org/op/python/ffmpeg-streaming/start?r=metadata#metadata)** for more information.
+See **[the example](https://www.hadronepoch.org/op/python/ffmpeg-streaming/start?r=metadata#metadata)** for more information.
 
 ### Conversion
 You can convert your stream to a file or to another stream protocol. You should pass a manifest of the stream to the `input` method:
@@ -384,7 +384,7 @@ If you save your stream content to a cloud(i.e. **[Amazon S3](https://aws.amazon
 **Does [IOS](https://www.apple.com/ios) support the DASH stream?**
 No, IOS does not have native support for DASH. Although there are some libraries such as **[Viblast](https://github.com/Viblast/ios-player-sdk)** and **[MPEGDASH-iOS-Player](https://github.com/MPEGDASHPlayer/MPEGDASH-iOS-Player)** to support this technique, I have never tested them. So maybe some of them will not work properly.
 
-See [this page](https://https://www.hadronepoch.org/op/python/ffmpeg-streaming/start?r=faq#faq) for more FAQs.
+See [this page](https://www.hadronepoch.org/op/python/ffmpeg-streaming/start?r=faq#faq) for more FAQs.
 
 ## Support Us
 We greatly appreciate your support in our efforts to contribute to open-source projects. If you're able to, we kindly ask that you take a moment to check out the available options for assisting us. Your help would enable us to maintain our commitment to producing exceptional results. Thank you for your support.
