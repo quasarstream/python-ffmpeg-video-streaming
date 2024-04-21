@@ -1,412 +1,210 @@
 # 📼 Python FFmpeg Video Streaming
+
 [![Downloads](https://pepy.tech/badge/python-ffmpeg-video-streaming)](https://pepy.tech/project/python-ffmpeg-video-streaming)
 
-## Overview
-This package uses the **[FFmpeg](https://ffmpeg.org)** to package media content for online streaming such as DASH and HLS. You can also use **[DRM](https://en.wikipedia.org/wiki/Digital_rights_management)** for HLS packaging. There are several options to open a file from a cloud and save files to clouds as well.
-- **[Full Documentation](https://www.hadronepoch.org/op/python/ffmpeg-streaming/)** is available describing all features and components.
-- **Your support is crucial to our ongoing work on open-source projects**. We kindly request that you consider exploring the **[available options](#support-us)** to assist us in this endeavor. Your encouragement and assistance will help us continue to deliver high-quality results in this important area. Thank you for your consideration and support.
+<p align="center"><img src="https://github.com/quasarstream/quasarstream.github.io/blob/master/video-streaming/video-streaming-v2.gif?raw=true" width="100%"></p>
 
-**Contents**
-- [Requirements](#requirements)
-- [Installation](#installation)
-- [Quickstart](#quickstart)
-  - [Opening a Resource](#opening-a-resource)
-  - [DASH](#dash)
-  - [HLS](#hls)
-    - [Encryption(DRM)](#encryptiondrm)
-  - [Transcoding](#transcoding)
-  - [Saving Files](#saving-files)
-  - [Metadata](#metadata)
-  - [Conversion](#conversion)
-- [Several Open Source Players](#several-open-source-players)
-- [FAQs](#faqs)
-- [Support Us](#support-us)
-- [Contributing and Reporting Bugs](#contributing-and-reporting-bugs)
-- [Credits](#credits)
-- [License](#license)
+This package utilizes **[FFmpeg](https://ffmpeg.org)**  to bundle media content for online streaming, including DASH and
+HLS. Additionally, it provides the capability to implement **[DRM](https://en.wikipedia.org/wiki/Digital_rights_management)** for HLS packaging. The program offers a range of
+options to open files from cloud storage and save files to cloud storage as well.
 
-## Requirements
-1. This version of the package is only compatible with **[Python 3.8](https://www.python.org/downloads/)** or higher.
+## Documentation
 
-2. To use this package, you need to **[install the FFmpeg](https://ffmpeg.org/download.html)**. You will need both FFmpeg and FFProbe binaries to use it.
+**[Full Documentation](https://www.quasarstream.com/op/python/ffmpeg-streaming/)** is available describing all features
+and components.
 
-## Installation
-Install the package via **[pip](https://pypi.org/project/pip/)**:
-``` bash
-pip install python-ffmpeg-video-streaming
-```
-Alternatively, add the dependency directly to your `requirements.txt` file:
-``` txt
-python-ffmpeg-video-streaming>=0.1
-```
+## Basic Usage
 
-## Quickstart
-First of all, you need to import the package in your code:
-```python
-import ffmpeg_streaming
-```
-
-### Opening a Resource
-There are several ways to open a resource.
-
-#### 1. From an FFmpeg supported resource
-You can pass a local path of video(or a supported resource) to the `input` method:
-```python
-video = ffmpeg_streaming.input('/var/media/video.mp4')
-```
-
-See **[FFmpeg Protocols Documentation](https://ffmpeg.org/ffmpeg-protocols.html)** for more information about supported resources such as HTTP, FTP, and etc.
-
-**For example:** 
-```python
-video = ffmpeg_streaming.input('https://www.hadronepoch.org/?"PATH TO A VIDEO FILE" or "PATH TO A LIVE HTTP STREAM"')
-```
-
-#### 2. From Clouds
-You can open a file from a cloud by passing an instance of the Cloud object to the `input` method. 
-
-```python
-from ffmpeg_streaming import S3
-s3 = S3(aws_access_key_id='YOUR_KEY_ID', aws_secret_access_key='YOUR_KEY_SECRET', region_name='YOUR_REGION')
-
-video = ffmpeg_streaming.input(s3, bucket_name="bucket-name", key="video.mp4")
-```
-Visit **[this page](https://www.hadronepoch.org/op/python/ffmpeg-streaming/start/clouds?r=open)** to see some examples of opening a file from **[Amazon S3](https://aws.amazon.com/s3)**, **[Google Cloud Storage](https://console.cloud.google.com/storage)**, **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**, and a custom cloud.
-
-#### 3. Capture Webcam or Screen (Live Streaming)
-You can pass the name of a supported, connected capture device(i.e. the name of a webcam, camera, screen and etc) to the `input` method to stream a live media over the network from your connected device. 
-
- ```python
-capture = ffmpeg_streaming.input('CAMERA NAME OR SCREEN NAME', capture=True)
- ```
-To list the supported, connected capture devices, see **[FFmpeg Capture Webcam](https://trac.ffmpeg.org/wiki/Capture/Webcam)** and **[FFmpeg Capture Desktop](https://trac.ffmpeg.org/wiki/Capture/Desktop)**.
- 
- 
-### DASH
-**[Dynamic Adaptive Streaming over HTTP (DASH)](http://dashif.org/)**, also known as MPEG-DASH, is an adaptive bitrate streaming technique that enables high-quality streaming of media content over the Internet delivered from conventional HTTP web servers. [Learn more](https://en.wikipedia.org/wiki/Dynamic_Adaptive_Streaming_over_HTTP)
- 
-Create DASH files:
-```python
-from ffmpeg_streaming import Formats
-
-dash = video.dash(Formats.h264())
-dash.auto_generate_representations()
-dash.output('/var/media/dash.mpd')
-```
-Generate representations manually:
 ```python
 from ffmpeg_streaming import Formats, Bitrate, Representation, Size
 
-_144p  = Representation(Size(256, 144), Bitrate(95 * 1024, 64 * 1024))
-_240p  = Representation(Size(426, 240), Bitrate(150 * 1024, 94 * 1024))
-_360p  = Representation(Size(640, 360), Bitrate(276 * 1024, 128 * 1024))
-_480p  = Representation(Size(854, 480), Bitrate(750 * 1024, 192 * 1024))
-_720p  = Representation(Size(1280, 720), Bitrate(2048 * 1024, 320 * 1024))
-_1080p = Representation(Size(1920, 1080), Bitrate(4096 * 1024, 320 * 1024))
-_2k    = Representation(Size(2560, 1440), Bitrate(6144 * 1024, 320 * 1024))
-_4k    = Representation(Size(3840, 2160), Bitrate(17408 * 1024, 320 * 1024))
-
-dash = video.dash(Formats.h264())
-dash.representations(_144p, _240p, _360p, _480p, _720p, _1080p, _2k, _4k)
-dash.output('/var/media/dash.mpd')
-```
-See **[DASH section](https://www.hadronepoch.org/op/python/ffmpeg-streaming/start?r=dash#dash)** in the documentation, for more examples.
-### HLS
-**[HTTP Live Streaming (also known as HLS)](https://developer.apple.com/streaming/)** is an HTTP-based adaptive bitrate streaming communications protocol implemented by Apple Inc. as part of its QuickTime, Safari, OS X, and iOS software. Client implementations are also available in Microsoft Edge, Firefox, and some versions of Google Chrome. Support is widespread in streaming media servers. [Learn more](https://en.wikipedia.org/wiki/HTTP_Live_Streaming)
- 
-Create HLS files:
-```python
-from ffmpeg_streaming import Formats
-
-hls = video.hls(Formats.h264())
-hls.auto_generate_representations()
-hls.output('/var/media/hls.m3u8')
-```
-Generate representations manually:
-```python
-from ffmpeg_streaming import Formats, Bitrate, Representation, Size
-
-_360p  = Representation(Size(640, 360), Bitrate(276 * 1024, 128 * 1024))
-_480p  = Representation(Size(854, 480), Bitrate(750 * 1024, 192 * 1024))
-_720p  = Representation(Size(1280, 720), Bitrate(2048 * 1024, 320 * 1024))
+_360p = Representation(Size(640, 360), Bitrate(276 * 1024, 128 * 1024))
+_480p = Representation(Size(854, 480), Bitrate(750 * 1024, 192 * 1024))
+_720p = Representation(Size(1280, 720), Bitrate(2048 * 1024, 320 * 1024))
 
 hls = video.hls(Formats.h264())
 hls.representations(_360p, _480p, _720p)
 hls.output('/var/media/hls.m3u8')
 ```
-See **[HLS section](https://www.hadronepoch.org/op/python/ffmpeg-streaming/start?r=hls#hls)** in the documentation, for more examples such as Fragmented MP4, live from camera/screen and so on.
 
-#### Encryption(DRM)
-The encryption process requires some kind of secret (key) together with an encryption algorithm. HLS uses AES in cipher block chaining (CBC) mode. This means each block is encrypted using the ciphertext of the preceding block. [Learn more](https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation)
+## Get from Basic, Pro, and Enterprise packages for Video Streaming
 
-You must specify a path to save a random key to your local machine and also a URL(or a path) to access the key on your website(the key you will save must be accessible from your website). You must pass both these parameters to the `encryption` method:
+Our service enables you to save a significant amount of time and resources, allowing you to concentrate on the essential
+features of your OTT platform without worrying about time-consuming boilerplate code. Our cost-effective solution starts
+at **$78**, giving you the flexibility to focus on your core competencies and accelerate your development process. By
+utilizing our service, you can improve your productivity, reduce your development time, and deliver top-quality results.
+Don't let the burden of writing boilerplate code slow you down; let us help you streamline your development process and
+take your OTT platform to the next level.
 
-##### Single Key
-The following code generates a key for all segment files.
+### Project information
 
-```python
-from ffmpeg_streaming import Formats
+- **BACKEND:** Python - Django v5
+- **FRONTEND:** Javascript ES6 - React v18
+- **CONTAINER:** Docker
 
-#A path you want to save a random key to your local machine
-save_to = '/home/public_html/"PATH TO THE KEY DIRECTORY"/key'
+### Plans
 
-#A URL (or a path) to access the key on your website
-url = 'https://www.hadronepoch.org/?"PATH TO THE KEY DIRECTORY"/key'
-# or url = '/"PATH TO THE KEY DIRECTORY"/key';
+<div style="align-content: center">
+<table style="margin: auto">
+    <thead>
+        <tr>
+            <th>Features / Plans</th>
+            <th>Basic</th>
+            <th>Pro</th>
+            <th>Enterprise</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>OAuth 2.0 (Login, Register)</td>
+            <td align="center">✅</td>
+            <td align="center">✅</td>
+            <td align="center">✅</td>
+        </tr>
+        <tr>
+            <td>Access-control list (ACL)</td>
+            <td align="center">✅</td>
+            <td align="center">✅</td>
+            <td align="center">✅</td>
+        </tr>
+        <tr>
+            <td>Video On-Demand</td>
+            <td align="center">✅</td>
+            <td align="center">✅</td>
+            <td align="center">✅</td>
+        </tr>
+        <tr>
+            <td>HLS</td>
+            <td align="center">✅</td>
+            <td align="center">✅</td>
+            <td align="center">✅</td>
+        </tr>
+        <tr>
+            <td>DASH</td>
+            <td align="center">✅</td>
+            <td align="center">✅</td>
+            <td align="center">✅</td>
+        </tr>
+        <tr>
+            <td>HLS Encryption(Single key and key rotation)</td>
+            <td align="center">✅</td>
+            <td align="center">✅</td>
+            <td align="center">✅</td>
+        </tr>
+        <tr>
+            <td>Video Quality Settings (Choose from 144p to 4k and auto mode)</td>
+            <td align="center">✅</td>
+            <td align="center">✅</td>
+            <td align="center">✅</td>
+        </tr>
+        <tr>
+            <td>Real-Time Progress Monitoring (progress bar to show the live upload and transcoding progress)</td>
+            <td align="center">✅</td>
+            <td align="center">✅</td>
+            <td align="center">✅</td>
+        </tr>
+        <tr>
+            <td>Dark and light theme</td>
+            <td align="center">✅</td>
+            <td align="center">✅</td>
+            <td align="center">✅</td>
+        </tr>
+        <tr>
+            <td>Live Streaming (From Browser Webcam, IP Cameras, Live Streaming Software)</td>
+            <td align="center">⛔️</td>
+            <td align="center">✅</td>
+            <td align="center">✅</td>
+        </tr>
+        <tr>
+            <td>Custom player skin</td>
+            <td align="center">⛔️</td>
+            <td align="center">✅</td>
+            <td align="center">✅</td>
+        </tr>
+        <tr>
+            <td>Monetization: Subscriptons/pay-per-view/ads</td>
+            <td align="center">⛔️</td>
+            <td align="center">✅</td>
+            <td align="center">✅</td>
+        </tr>
+        <tr>
+            <td>Advanced Analytics: Views/Watched hours/Visited countries and more</td>
+            <td align="center">⛔️</td>
+            <td align="center">✅</td>
+            <td align="center">✅</td>
+        </tr>
+        <tr>
+            <td>Robust DRM Systems: Widevine, FairPlay Streaming and PlayReady</td>
+            <td align="center">⛔️</td>
+            <td align="center">✅</td>
+            <td align="center">✅</td>
+        </tr>
+        <tr>
+            <td>Social Media Integration(Like, Comment, Share videos)</td>
+            <td align="center">⛔️</td>
+            <td align="center">⛔️</td>
+            <td align="center">✅</td>
+        </tr>
+        <tr>
+            <td>Cloud CDN (Content Delivery Network to Clouds Like Amazon S3, Google Cloud Storage, Microsoft Azure and more)</td>
+            <td align="center">⛔️</td>
+            <td align="center">⛔️</td>
+            <td align="center">✅</td>
+        </tr>
+        <tr>
+            <td>Email Service</td>
+            <td align="center">⛔️</td>
+            <td align="center">⛔️</td>
+            <td align="center">✅</td>
+        </tr>
+        <tr>
+            <td>Support</td>
+            <td align="center">3 Months</td>
+            <td align="center">6 Months</td>
+            <td align="center">Customizable</td>
+        </tr>
+        <tr>
+            <td>Price</td>
+            <td align="center"><strong title="One-time fee">$78</strong></td>
+            <td align="center" colspan="2"><strong title="Start at $198 (monthly fee)">Custom Pricing Available</strong></td>
+        </tr>
+        <tr>
+            <td>Get</td>
+            <td align="center"> <strong><a target="_blank" href="https://quasarstream.com/video-streaming-basic?u=py-ffmpeg"> GET THE BASIC PACKAGES</a></strong> </td>
+            <td align="center"  colspan="2"> <strong><a target="_blank" href="https://quasarstream.com/contact?u=py-ffmpeg"> CONTACT US</a></strong> </td>
+        </tr>
+    </tbody>
+    <tfoot>
+        <tr>
+            <th align="left" colspan="4">
+                We have demos available. Please <a target="_blank" href="https://quasarstream.com/contact?u=py-ffmpeg"> CONTACT US</a> to request one.
+            </th>
+        </tr>
+        <tr>
+            <th align="left" colspan="4">
+                    If you have any questions or doubts, please don't hesitate to contact Amin Yazdanpanah (admin) using <a target="_blank" href="https://aminyazdanpanah.com/?u=py-ffmpeg">this link</a>.            
+            </th>
+        </tr>
+    </tfoot>
+</table>
+</div>
 
-hls = video.hls(Formats.h264())
-hls.encryption(save_to, url)
-hls.auto_generate_representations()
-hls.output('/var/media/hls.m3u8')
-```
+### Screenshots
+<p align="center"><img src="https://github.com/quasarstream/quasarstream.github.io/blob/master/video-streaming/video-streaming-screen-hots.gif?raw=true" width="100%"></p>
 
-##### Key Rotation
-An integer as a "key rotation period" can also be passed to the `encryption` method (i.e. `encryption(save_to, url, 10)`) to use a different key for each set of segments, rotating to a new key after this many segments. For example, if 10 segment files have been generated then it will generate a new key. If you set this value to **`1`**, each segment file will be encrypted with a new encryption key. This can improve security and allows for more flexibility. 
+## Contributors
 
-See **[the example](https://www.hadronepoch.org/op/python/ffmpeg-streaming/start?r=enc-hls#hls-encryption)** for more information.
+Your contribution is crucial to our success, regardless of its size. We appreciate your support and encourage you to
+read our **[CONTRIBUTING](https://github.com/quasarstream/python-ffmpeg-video-streaming/blob/master/CONTRIBUTING.md)**
+guide for detailed instructions on how to get involved. Together, we can make a significant impact.
 
-**IMPORTANT:** It is very important to protect your key(s) on your website. For example, you can use a token(using a Get/Post HTTP method or add a token to authorization header) to check if the user is eligible to access the key or not. You can also use a session(or cookie) on your website to restrict access to the key(s)(**It is highly recommended**).    
+<a href="https://github.com/quasarstream/python-ffmpeg-video-streaming/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=quasarstream/python-ffmpeg-video-streaming" />
+</a>
 
-##### DRM
-However FFmpeg supports AES encryption for HLS packaging, which you can encrypt your content, it is not a full **[DRM](https://en.wikipedia.org/wiki/Digital_rights_management)** solution. If you want to use a full DRM solution, I recommend trying **[FairPlay Streaming](https://developer.apple.com/streaming/fps/)** solution which then securely exchange keys, and protect playback on devices.
-
-**Besides [Apple's FairPlay](https://developer.apple.com/streaming/fps/)** DRM system, you can also use other DRM systems such as **[Microsoft's PlayReady](https://www.microsoft.com/playready/overview/)** and **[Google's Widevine](https://www.widevine.com/)**.
-
-### Transcoding
-You can get realtime information about the transcoding using the following code. 
-```python
-from ffmpeg_streaming import Formats
-import sys
-import datetime
-
-def monitor(ffmpeg, duration, time_, time_left, process):
-    """
-    Handling proccess.
-
-    Examples:
-    1. Logging or printing ffmpeg command
-    logging.info(ffmpeg) or print(ffmpeg)
-
-    2. Handling Process object
-    if "something happened":
-        process.terminate()
-
-    3. Email someone to inform about the time of finishing process
-    if time_left > 3600 and not already_send:  # if it takes more than one hour and you have not emailed them already
-        ready_time = time_left + time.time()
-        Email.send(
-            email='someone@somedomain.com',
-            subject='Your video will be ready by %s' % datetime.timedelta(seconds=ready_time),
-            message='Your video takes more than %s hour(s) ...' % round(time_left / 3600)
-        )
-       already_send = True
-
-    4. Create a socket connection and show a progress bar(or other parameters) to your users
-    Socket.broadcast(
-        address=127.0.0.1
-        port=5050
-        data={
-            percentage = per,
-            time_left = datetime.timedelta(seconds=int(time_left))
-        }
-    )
-
-    :param ffmpeg: ffmpeg command line
-    :param duration: duration of the video
-    :param time_: current time of transcoded video
-    :param time_left: seconds left to finish the video process
-    :param process: subprocess object
-    :return: None
-    """
-    per = round(time_ / duration * 100)
-    sys.stdout.write(
-        "\rTranscoding...(%s%%) %s left [%s%s]" %
-        (per, datetime.timedelta(seconds=int(time_left)), '#' * per, '-' * (100 - per))
-    )
-    sys.stdout.flush()
-
-hls = video.hls(Formats.h264())
-hls.auto_generate_representations()
-hls.output('/var/media/hls.m3u8', monitor=monitor)
-```
-
-##### Output From a Terminal:
-![transcoding](https://github.com/aminyazdanpanah/aminyazdanpanah.github.io/blob/master/video-streaming/transcoding.gif?raw=true "transcoding" )
-
-### Saving Files
-There are several ways to save files.
-
-#### 1. To a Local Path
-You can pass a local path to the `output` method. If there is no directory, then the package will create it.
-```python
-from ffmpeg_streaming import Formats
-
-dash = video.dash(Formats.h264())
-dash.auto_generate_representations()
-
-dash.output('/var/media/dash.mpd')
-```
-It can also be None. The default path to save files is the input directory.
-```python
-from ffmpeg_streaming import Formats
-
-hls = video.hls(Formats.h264())
-hls.auto_generate_representations()
-
-hls.output()
-```
-**NOTE:** If you open a file from a cloud and do not pass a path to save the file to your local machine, you will have to pass a local path to the `output` method.
-
-#### 2. To Clouds
-You can save your files to a cloud by passing an instance of a `CloudManager` to the `output` method. 
-
-```python
-from ffmpeg_streaming import  S3, CloudManager
-
-s3 = S3(aws_access_key_id='YOUR_KEY_ID', aws_secret_access_key='YOUR_KEY_SECRET', region_name='YOUR_REGION')
-save_to_s3 = CloudManager().add(s3, bucket_name="bucket-name")
-
-hls.output(clouds=save_to_s3)
-``` 
-A path can also be passed to save a copy of files to your local machine.
-```python
-hls.output('/var/media/hls.m3u8', clouds=save_to_s3)
-```
-
-Visit **[this page](https://www.hadronepoch.org/op/python/ffmpeg-streaming/start/clouds?r=save)** to see some examples of saving files to **[Amazon S3](https://aws.amazon.com/s3)**, **[Google Cloud Storage](https://console.cloud.google.com/storage)**, **[Microsoft Azure Storage](https://azure.microsoft.com/en-us/features/storage-explorer/)**, and a custom cloud. 
-
-**NOTE:** This option is only valid for **[VOD](https://en.wikipedia.org/wiki/Video_on_demand)** (it does not support live streaming).
-
-**Schema:** The relation is `one-to-many`
-
-<p align="center"><img src="https://github.com/aminyazdanpanah/aminyazdanpanah.github.io/blob/master/video-streaming/video-streaming.gif?raw=true" width="100%"></p>
-
-#### 3. To a Server Instantly
-You can pass a URL(or a supported resource like `FTP`) to the `output` method to upload all the segments files to the HTTP server(or other protocols) using the HTTP PUT method and update the manifest files every refresh times.
-
-```python
-# DASH
-dash.output('http://YOUR-WEBSITE.COM/live-stream/out.mpd')
-
-# HLS
-hls.save_master_playlist('/var/media/hls.m3u8')
-#Before running the following code, you should upload the master playlist to the server. For example upload the '/var/media/hls.m3u8' to 'ftp://[user[:password]@]server[:port]/var/media/hls.m3u8'
-hls.output('ftp://[user[:password]@]server[:port]/var/media/hls.m3u8')
-```
-
-See **[FFmpeg Protocols Documentation](https://ffmpeg.org/ffmpeg-protocols.html)** for more information about supported resources.
-### Metadata
-You can get information from the video file using the following code.
-```python
-from ffmpeg_streaming import FFProbe
-
-ffprobe = FFProbe('/var/media/video.mp4')
-```
-
-See **[the example](https://www.hadronepoch.org/op/python/ffmpeg-streaming/start?r=metadata#metadata)** for more information.
-
-### Conversion
-You can convert your stream to a file or to another stream protocol. You should pass a manifest of the stream to the `input` method:
-
-#### 1. HLS To DASH
-```python
-from ffmpeg_streaming import Formats, Bitrate, Representation, Size
-
-video = ffmpeg_streaming.input('https://www.hadronepoch.org/?PATH/TO/HLS-MANIFEST.M3U8')
-
-_480p  = Representation(Size(854, 480), Bitrate(750 * 1024, 192 * 1024))
-
-dash = video.dash(Formats.h264())
-dash.representations(_480p)
-dash.output('/var/media/dash.mpd')
-```
-
-#### 2. DASH To HLS
-```python
-video = ffmpeg_streaming.input('https://www.hadronepoch.org/?PATH/TO/DASH-MANIFEST.MPD')
-
-hls = video.hls(Formats.h264())
-hls.auto_generate_representations()
-hls.output('/var/media/hls.m3u8')
-```
-
-#### 3. Stream(DASH or HLS) To File
-```python
-video = ffmpeg_streaming.input('https://www.hadronepoch.org/?PATH/TO/MANIFEST.MPD or M3U8')
-
-stream = video.stream2file(Formats.h264())
-stream.output('/var/media/new-video.mp4')
-```
-
-## Several Open Source Players
-You can use these libraries to play your streams.
-- **WEB**
-    - DASH and HLS: 
-        - **[Video.js 7](https://github.com/videojs/video.js) (Recommended) - [videojs-http-streaming (VHS)](https://github.com/videojs/http-streaming)**
-        - **[Plyr](https://github.com/sampotts/plyr)**
-        - **[DPlayer](https://github.com/MoePlayer/DPlayer)**
-        - **[MediaElement.js](https://github.com/mediaelement/mediaelement)**
-        - **[Clappr](https://github.com/clappr/clappr)**
-        - **[Shaka Player](https://github.com/google/shaka-player)**
-        - **[Flowplayer](https://github.com/flowplayer/flowplayer)**
-    - DASH:
-        - **[dash.js](https://github.com/Dash-Industry-Forum/dash.js)**
-    - HLS: 
-        - **[hls.js](https://github.com/video-dev/hls.js)**
-- **Android**
-    - DASH and HLS: 
-        - **[ExoPlayer](https://github.com/google/ExoPlayer) (Recommended)**
-        - **[VLC for Android](https://github.com/videolan/vlc-android)**
-- **IOS**
-    - DASH: 
-        - **[MPEGDASH-iOS-Player](https://github.com/MPEGDASHPlayer/MPEGDASH-iOS-Player)**
-    - HLS: 
-        - **[Player](https://github.com/piemonte/Player)**
-- **Android and IOS**
-    - DASH and HLS:
-        - **[ijkplayer](https://github.com/bilibili/ijkplayer)**
-- **Windows, Linux, and macOS**
-    - DASH and HLS:
-        - **[FFmpeg(ffplay)](https://github.com/FFmpeg/FFmpeg) (Recommended)**
-        - **[VLC media player](https://github.com/videolan/vlc)**
-
-## FAQs
-**I created stream files and now what should I pass to a player?**
-You must pass a **master playlist(manifest) URL**(e.x. `https://www.hadronepoch.org/?"PATH TO STREAM DIRECTORY"/dash-stream.mpd` or `/PATH_TO_STREAM_DIRECTORY/hls-stream.m3u8` ) to a player. 
-See the demo page of these players for more information(**[hls.js Demo](https://hls-js.netlify.app/demo/)**, **[dash.js Demo](https://reference.dashif.org/dash.js/v3.1.2/samples/dash-if-reference-player/index.html)**, **[videojs Demo](https://videojs.com/advanced?video=elephantsdream)** and etc).  
-
-**My player does not show the quality selector button to change the video quality?**
-Some Players do not have an embedded quality selector button to change this option and you should install(or add) the plugin for this use case. For example, if you are using Videojs to play your stream, you can install **[videojs-hls-quality-selector](https://github.com/chrisboustead/videojs-hls-quality-selector)** to show the quality selector. For adding a plugin to other players, you can easily Google it!
-
-**I uploaded my stream files to a cloud but it does not play on my website?**
-If you save your stream content to a cloud(i.e. **[Amazon S3](https://aws.amazon.com/s3)**), make sure your contents are **PUBLIC**. If they are not, you must change the access control. 
-
-**Does [IOS](https://www.apple.com/ios) support the DASH stream?**
-No, IOS does not have native support for DASH. Although there are some libraries such as **[Viblast](https://github.com/Viblast/ios-player-sdk)** and **[MPEGDASH-iOS-Player](https://github.com/MPEGDASHPlayer/MPEGDASH-iOS-Player)** to support this technique, I have never tested them. So maybe some of them will not work properly.
-
-See [this page](https://www.hadronepoch.org/op/python/ffmpeg-streaming/start?r=faq#faq) for more FAQs.
-
-## Support Us
-We greatly appreciate your support in our efforts to contribute to open-source projects. If you're able to, we kindly ask that you take a moment to check out the available options for assisting us. Your help would enable us to maintain our commitment to producing exceptional results. Thank you for your support.
-
-### 1. purchasing a service or product
-Our company offers a range of products and services, including video streaming, video-on-demand, video conferencing, and an HR assistance application. If you wish to purchase any of these offerings, kindly direct your inquiries to our email address at **contact@hadronepoch.org**. We will be updating **[our website](https://www.hadronepoch.org)** with further details in the near future.
-
-### 2. sponsoring the project or org 
-Thank you for considering the option of sponsoring our organization. Your generous donations will greatly assist us in our efforts to enhance and expand our existing libraries, as well as build new ones. There are several options available for sponsorship, including clicking on the **[provided link](https://github.com/sponsors/hadronepoch)** or utilizing alternative methods such as **[crypto](https://hadronepoch.org/support)**, **[Patreon](https://patreon.com/HadronEpoch)**, **[Open Collective](https://opencollective.com/hadronepoch)**, and **[ko-fi](https://ko-fi.com/hadronepoch)**. Your support is greatly appreciated and will help us to continue our mission of providing valuable resources to the community.
-
-### 3. Star and Share
-If you find this project to be of value, kindly consider **[starring it](stargazers)** and **sharing it** with those in your network who may benefit from this type of software. Your support would be greatly appreciated and would help to increase visibility and accessibility of this project. 
-
-Thank you for your consideration. 
-## Contributing and Reporting Bugs
-I'd love your help in improving, correcting, adding to the specification. Please **[file an issue](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/issues)** or **[submit a pull request](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/pulls)**.
-- See **[Contributing File](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/blob/master/CONTRIBUTING.md)** for more information.
-- If you discover a security vulnerability within this package, please see **[SECURITY File](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/blob/master/SECURITY.md)** for more information.
-
-## Credits
-- **[Amin Yazdanpanah](https://www.hadronepoch.org/?u=github.com/aminyazdanpanah/python-ffmpeg-video-streaming)**
-- **[All Contributors](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/graphs/contributors)**
+Made with [contrib.rocks](https://contrib.rocks).
 
 ## License
-The MIT License (MIT). See **[License File](https://github.com/aminyazdanpanah/python-ffmpeg-video-streaming/blob/master/LICENSE)** for more information.
+
+The MIT License (MIT). See **[License File](https://github.com/quasarstream/python-ffmpeg-video-streaming/blob/master/LICENSE)** for more
+information.

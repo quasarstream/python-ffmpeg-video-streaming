@@ -88,8 +88,7 @@ class Process(object):
             if callable(self.monitor):
                 duration = get_time('Duration: ', line, duration)
                 _time = get_time('time=', line, _time)
-                #FIXME: review the following line and refactor it if it needed
-                self.monitor(self,line, duration, _time, time_left(start_time, _time, duration), self.process)
+                self.monitor(line, duration, _time, time_left(start_time, _time, duration), self.process)
 
         Process.out = log
 
