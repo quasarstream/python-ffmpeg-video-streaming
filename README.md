@@ -1,4 +1,4 @@
-# 📼 Python FFmpeg Video Streaming
+# 📼 Python FFmpeg - Video Streaming
 
 [![Downloads](https://pepy.tech/badge/python-ffmpeg-video-streaming)](https://pepy.tech/project/python-ffmpeg-video-streaming)
 
@@ -27,20 +27,12 @@ hls.representations(_360p, _480p, _720p)
 hls.output('/var/media/hls.m3u8')
 ```
 
-## Get from Basic, Pro, and Enterprise packages for Video Streaming
+## Get from Basic and Pro packages for Video Streaming
 
-Our service enables you to save a significant amount of time and resources, allowing you to concentrate on the essential
-features of your OTT platform without worrying about time-consuming boilerplate code. Our cost-effective solution starts
-at **$78**, giving you the flexibility to focus on your core competencies and accelerate your development process. By
-utilizing our service, you can improve your productivity, reduce your development time, and deliver top-quality results.
-Don't let the burden of writing boilerplate code slow you down; let us help you streamline your development process and
-take your OTT platform to the next level.
+<p align="center"><img src="https://github.com/quasarstream/quasarstream.github.io/blob/master/video-streaming/video-streaming-screen-hots.gif?raw=true" width="100%"></p>
 
-### Project information
+Our platform empowers businesses to expand their reach globally by delivering exceptional video streaming experiences. Enjoy unmatched reliability, scalability, and high-definition quality across a diverse range of devices, ensuring your content captivates audiences worldwide.
 
-- **BACKEND:** Python - Django v5
-- **FRONTEND:** Javascript ES6 - React v18
-- **CONTAINER:** Docker
 
 ### Plans
 
@@ -51,147 +43,114 @@ take your OTT platform to the next level.
             <th>Features / Plans</th>
             <th>Basic</th>
             <th>Pro</th>
-            <th>Enterprise</th>
         </tr>
     </thead>
     <tbody>
         <tr>
-            <td>OAuth 2.0 (Login, Register)</td>
-            <td align="center">✅</td>
-            <td align="center">✅</td>
-            <td align="center">✅</td>
-        </tr>
-        <tr>
-            <td>Access-control list (ACL)</td>
-            <td align="center">✅</td>
+            <td><strong>Authentication</strong></td>
             <td align="center">✅</td>
             <td align="center">✅</td>
         </tr>
         <tr>
-            <td>Video On-Demand</td>
-            <td align="center">✅</td>
-            <td align="center">✅</td>
-            <td align="center">✅</td>
-        </tr>
-        <tr>
-            <td>HLS</td>
-            <td align="center">✅</td>
+            <td><strong>Access-control list</strong> (ACL)</td>
             <td align="center">✅</td>
             <td align="center">✅</td>
         </tr>
         <tr>
-            <td>DASH</td>
-            <td align="center">✅</td>
-            <td align="center">✅</td>
-            <td align="center">✅</td>
-        </tr>
-        <tr>
-            <td>HLS Encryption(Single key and key rotation)</td>
-            <td align="center">✅</td>
+            <td><strong>Video On-Demand</strong> (HLS and DASH)</td>
             <td align="center">✅</td>
             <td align="center">✅</td>
         </tr>
         <tr>
-            <td>Video Quality Settings (Choose from 144p to 4k and auto mode)</td>
-            <td align="center">✅</td>
-            <td align="center">✅</td>
-            <td align="center">✅</td>
-        </tr>
-        <tr>
-            <td>Real-Time Progress Monitoring (progress bar to show the live upload and transcoding progress)</td>
-            <td align="center">✅</td>
+            <td><strong>HLS Encryption</strong>(Single key and key rotation)</td>
             <td align="center">✅</td>
             <td align="center">✅</td>
         </tr>
         <tr>
-            <td>Dark and light theme</td>
-            <td align="center">✅</td>
-            <td align="center">✅</td>
-            <td align="center">✅</td>
-        </tr>
-        <tr>
-            <td>Live Streaming (From Browser Webcam, IP Cameras, Live Streaming Software)</td>
-            <td align="center">⛔️</td>
+            <td><strong>Video Quality Settings</strong>: Manually Choose from 144p to 4k or auto mode</td>
             <td align="center">✅</td>
             <td align="center">✅</td>
         </tr>
         <tr>
-            <td>Custom player skin</td>
-            <td align="center">⛔️</td>
+            <td><strong>Real-Time Progress Monitoring</strong>: progress bar to display the live upload and transcoding progress</td>
             <td align="center">✅</td>
             <td align="center">✅</td>
         </tr>
         <tr>
-            <td>Monetization: Subscriptons/pay-per-view/ads</td>
-            <td align="center">⛔️</td>
+            <td><strong>Dark and light theme</strong></td>
             <td align="center">✅</td>
             <td align="center">✅</td>
         </tr>
         <tr>
-            <td>Advanced Analytics: Views/Watched hours/Visited countries and more</td>
-            <td align="center">⛔️</td>
-            <td align="center">✅</td>
-            <td align="center">✅</td>
-        </tr>
-        <tr>
-            <td>Robust DRM Systems: Widevine, FairPlay Streaming and PlayReady</td>
-            <td align="center">⛔️</td>
-            <td align="center">✅</td>
-            <td align="center">✅</td>
-        </tr>
-        <tr>
-            <td>Social Media Integration(Like, Comment, Share videos)</td>
-            <td align="center">⛔️</td>
+            <td><strong>Live Streaming</strong>: From Browser Webcam, IP Cameras, Live Streaming Software</td>
             <td align="center">⛔️</td>
             <td align="center">✅</td>
         </tr>
         <tr>
-            <td>Cloud CDN (Content Delivery Network to Clouds Like Amazon S3, Google Cloud Storage, Microsoft Azure and more)</td>
-            <td align="center">⛔️</td>
-            <td align="center">⛔️</td>
-            <td align="center">✅</td>
-        </tr>
-        <tr>
-            <td>Email Service</td>
-            <td align="center">⛔️</td>
+            <td><strong>Bespoke player design</strong>: Crafted to perfectly align with your brand identity and user preferences.</td>
             <td align="center">⛔️</td>
             <td align="center">✅</td>
         </tr>
         <tr>
-            <td>Support</td>
+            <td><strong>Add Subtitles and Audios</strong>: add different subtitle and audio files to stream</td>
+            <td align="center">⛔️</td>
+            <td align="center">✅</td>
+        </tr>
+        <tr>
+            <td><strong>Monetization</strong>: Subscriptons/pay-per-view/ads</td>
+            <td align="center">⛔️</td>
+            <td align="center">✅</td>
+        </tr>
+        <tr>
+            <td><strong>Advanced Analytics</strong>: Views/Watched hours/Visited countries and more</td>
+            <td align="center">⛔️</td>
+            <td align="center">✅</td>
+        </tr>
+        <tr>
+            <td><strong>Robust DRM Systems</strong>: Widevine, FairPlay Streaming and PlayReady</td>
+            <td align="center">⛔️</td>
+            <td align="center">✅</td>
+        </tr>
+        <tr>
+            <td><strong>Social Media Integration</strong>: Like, Comment, Share and embed videos</td>
+            <td align="center">⛔️</td>
+            <td align="center">✅</td>
+        </tr>
+        <tr>
+            <td><strong>Cloud-based CDN<strong>: Accelerates content delivery worldwide through integration with major cloud storage providers such as Amazon S3, Google Cloud Storage, and Microsoft Azure.</td>
+            <td align="center">⛔️</td>
+            <td align="center">✅</td>
+        </tr>
+        <tr>
+            <td><strong>Tailored features<strong>: We can integrate any specific functionality you require into your platform.</td>
+            <td align="center">⛔️</td>
+            <td align="center">✅</td>
+        </tr>
+        <tr>
+            <td><strong>Support<strong></td>
             <td align="center">3 Months</td>
-            <td align="center">6 Months</td>
             <td align="center">Customizable</td>
         </tr>
         <tr>
-            <td>Price</td>
-            <td align="center"><strong title="One-time fee">$78</strong></td>
-            <td align="center" colspan="2"><strong title="Start at $198 (monthly fee)">Custom Pricing Available</strong></td>
+            <td><strong>Online Demo<strong></td>
+            <td align="center"> <strong><a target="_blank" href="https://quasarstream.com/vs-demo?s=php&u=php-ffmpeg"> See Online Demo</a></strong> </td>
+            <td align="center"> <strong><a target="_blank" href="https://quasarstream.com/book-demo?u=php-ffmpeg"> Book Free Demo</a></strong> </td>
         </tr>
         <tr>
-            <td>Get</td>
-            <td align="center"> <strong><a target="_blank" href="https://quasarstream.com/video-streaming-basic?u=py-ffmpeg"> GET THE BASIC PACKAGES</a></strong> </td>
-            <td align="center"  colspan="2"> <strong><a target="_blank" href="https://quasarstream.com/contact?u=py-ffmpeg"> CONTACT US</a></strong> </td>
+            <td><strong>Get<strong></td>
+            <td align="center"> <strong><a target="_blank" href="https://quasarstream.com/video-streaming-basic?s=php&u=php-ffmpeg"> GET </a></strong> </td>
+            <td align="center"> <strong><a target="_blank" href="https://quasarstream.com/contact?u=php-ffmpeg"> CONTACT US</a></strong> </td>
         </tr>
     </tbody>
     <tfoot>
         <tr>
             <th align="left" colspan="4">
-                We have demos available. Please <a target="_blank" href="https://quasarstream.com/contact?u=py-ffmpeg"> CONTACT US</a> to request one.
-            </th>
-        </tr>
-        <tr>
-            <th align="left" colspan="4">
-                    If you have any questions or doubts, please don't hesitate to contact Amin Yazdanpanah (admin) using <a target="_blank" href="https://aminyazdanpanah.com/?u=py-ffmpeg">this link</a>.            
+                We tailor OTT platforms to exact client specifications, offering flexible and affordable pricing.
             </th>
         </tr>
     </tfoot>
 </table>
 </div>
-
-### Screenshots
-<p align="center"><img src="https://github.com/quasarstream/quasarstream.github.io/blob/master/video-streaming/video-streaming-screen-hots.gif?raw=true" width="100%"></p>
-
 ## Contributors
 
 Your contribution is crucial to our success, regardless of its size. We appreciate your support and encourage you to
