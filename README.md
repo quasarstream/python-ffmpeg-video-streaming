@@ -117,17 +117,17 @@ Our platform empowers businesses to expand their reach globally by delivering ex
             <td align="center">✅</td>
         </tr>
         <tr>
-            <td><strong>Cloud-based CDN<strong>: Accelerates content delivery worldwide through integration with major cloud storage providers such as Amazon S3, Google Cloud Storage, and Microsoft Azure.</td>
+            <td><strong>Cloud-based CDN</strong>: Accelerates content delivery worldwide through integration with major cloud storage providers such as Amazon S3, Google Cloud Storage, and Microsoft Azure.</td>
             <td align="center">⛔️</td>
             <td align="center">✅</td>
         </tr>
         <tr>
-            <td><strong>Tailored features<strong>: We can integrate any specific functionality you require into your platform.</td>
+            <td><strong>Tailored features</strong>: We can integrate any specific functionality you require into your platform.</td>
             <td align="center">⛔️</td>
             <td align="center">✅</td>
         </tr>
         <tr>
-            <td><strong>Support<strong></td>
+            <td><strong>Support</strong></td>
             <td align="center">3 Months</td>
             <td align="center">Customizable</td>
         </tr>
