@@ -133,13 +133,13 @@ Our platform empowers businesses to expand their reach globally by delivering ex
         </tr>
         <tr>
             <td><strong>Online Demo<strong></td>
-            <td align="center"> <strong><a target="_blank" href="https://quasarstream.com/vs-demo?s=php&u=php-ffmpeg"> See Online Demo</a></strong> </td>
-            <td align="center"> <strong><a target="_blank" href="https://quasarstream.com/book-demo?u=php-ffmpeg"> Book Free Demo</a></strong> </td>
+            <td align="center"> <strong><a target="_blank" href="https://quasarstream.com/vs-demo?s=python&u=py-ffmpeg"> See Online Demo</a></strong> </td>
+            <td align="center"> <strong><a target="_blank" href="https://quasarstream.com/book-demo?u=py-ffmpeg"> Book Free Demo</a></strong> </td>
         </tr>
         <tr>
             <td><strong>Get<strong></td>
-            <td align="center"> <strong><a target="_blank" href="https://quasarstream.com/video-streaming-basic?s=php&u=php-ffmpeg"> GET </a></strong> </td>
-            <td align="center"> <strong><a target="_blank" href="https://quasarstream.com/contact?u=php-ffmpeg"> CONTACT US</a></strong> </td>
+            <td align="center"> <strong><a target="_blank" href="https://quasarstream.com/video-streaming-basic?s=python&u=py-ffmpeg"> GET </a></strong> </td>
+            <td align="center"> <strong><a target="_blank" href="https://quasarstream.com/contact?u=py-ffmpeg"> CONTACT US</a></strong> </td>
         </tr>
     </tbody>
     <tfoot>
@@ -151,6 +151,7 @@ Our platform empowers businesses to expand their reach globally by delivering ex
     </tfoot>
 </table>
 </div>
+                
 ## Contributors
 
 Your contribution is crucial to our success, regardless of its size. We appreciate your support and encourage you to
