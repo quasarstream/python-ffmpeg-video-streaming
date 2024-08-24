@@ -39,9 +39,11 @@ class Save(abc.ABC):
         self.key = None
         self.media = media
         self.format = _format
-        self.options = options
         self.pipe = None
         self.output_temp = False
+        self.process = None
+        self.kill_process_on_exit = options.pop('kill_process_on_exit', False)
+        self.options = options
 
     def finish_up(self):
         """
@@ -55,6 +57,8 @@ class Save(abc.ABC):
                 shutil.move(os.path.dirname(self.output_), os.path.dirname(str(self.output)))
             else:
                 shutil.rmtree(os.path.dirname(str(self.output_)), ignore_errors=True)
+        if self.kill_process_on_exit:
+            self.process.__exit__()
 
     @abc.abstractmethod
     def set_up(self):
@@ -103,6 +107,7 @@ class Save(abc.ABC):
         @TODO: add documentation
         """
         with Process(self, command_builder(ffmpeg_bin, self), monitor, **options) as process:
+            self.process = process
             self.pipe, err = process.run()
 
     async def async_run(self, ffmpeg_bin, monitor: callable = None, **options):

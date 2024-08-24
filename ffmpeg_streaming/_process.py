@@ -58,11 +58,14 @@ class Process(object):
         self.process = _p_open(commands, **options)
         self.media = media
         self.monitor = monitor
+        self.exited = False
 
     def __enter__(self):
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(self, exc_type=None, exc_val=None, exc_tb=None):
+        logging.info("exiting ffmpeg process.")
+        self.exited = True
         self.process.kill()
 
     def _monitor(self):
@@ -118,8 +121,9 @@ class Process(object):
 
         if self.process.poll():
             error = str(Process.err) if Process.err else str(Process.out)
-            logging.error('ffmpeg failed to execute command: {}'.format(error))
-            raise RuntimeError('ffmpeg failed to execute command: ', error)
+            if not self.exited:
+                logging.error('ffmpeg failed to execute command: {}'.format(error))
+                raise RuntimeError('ffmpeg failed to execute command: ', error)
 
         logging.info("ffmpeg executed command successfully")
 
