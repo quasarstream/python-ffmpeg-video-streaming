@@ -69,6 +69,16 @@ class Save(abc.ABC):
 
         return method
 
+    async def async_output(self, output: str = None, clouds: CloudManager = None,
+               run_command: bool = True, ffmpeg_bin: str = 'ffmpeg', monitor: callable = None, **options):
+        """
+        @TODO: add documentation
+        """
+        self.output(output, clouds, run_command=False, ffmpeg_bin=ffmpeg_bin, monitor=monitor, **options)
+
+        if run_command:
+            await self.async_run(ffmpeg_bin="ffmpeg")
+
     def output(self, output: str = None, clouds: CloudManager = None,
                run_command: bool = True, ffmpeg_bin: str = 'ffmpeg', monitor: callable = None, **options):
         """
@@ -116,7 +126,13 @@ class Save(abc.ABC):
         @TODO: add documentation
         """
         if async_run := options.pop('async_run', True):
-            asyncio.run(self.async_run(ffmpeg_bin, monitor, **options))
+            try:
+                # Raise a RuntimeError if no loop is running:
+                asyncio.get_running_loop()
+                return asyncio.create_task(self.async_run(ffmpeg_bin, monitor, **options))
+            except RuntimeError:
+                # No loop is running:
+                asyncio.run(self.async_run(ffmpeg_bin, monitor, **options))
         else:
             self._run(ffmpeg_bin, monitor, **options)
 
