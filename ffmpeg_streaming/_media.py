@@ -126,7 +126,13 @@ class Save(abc.ABC):
         @TODO: add documentation
         """
         if async_run := options.pop('async_run', True):
-            asyncio.run(self.async_run(ffmpeg_bin, monitor, **options))
+            try:
+                # Raise a RuntimeError if no loop is running:
+                asyncio.get_running_loop()
+                return asyncio.create_task(self.async_run(ffmpeg_bin, monitor, **options))
+            except RuntimeError:
+                # No loop is running:
+                asyncio.run(self.async_run(ffmpeg_bin, monitor, **options))
         else:
             self._run(ffmpeg_bin, monitor, **options)
 
