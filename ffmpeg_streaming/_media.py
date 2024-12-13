@@ -69,6 +69,16 @@ class Save(abc.ABC):
 
         return method
 
+    async def async_output(self, output: str = None, clouds: CloudManager = None,
+               run_command: bool = True, ffmpeg_bin: str = 'ffmpeg', monitor: callable = None, **options):
+        """
+        @TODO: add documentation
+        """
+        self.output(output, clouds, run_command=False, ffmpeg_bin=ffmpeg_bin, monitor=monitor, **options)
+
+        if run_command:
+            await self.async_run(ffmpeg_bin="ffmpeg")
+
     def output(self, output: str = None, clouds: CloudManager = None,
                run_command: bool = True, ffmpeg_bin: str = 'ffmpeg', monitor: callable = None, **options):
         """
