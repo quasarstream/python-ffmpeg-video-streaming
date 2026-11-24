@@ -73,7 +73,7 @@ class HLSKeyInfoFile:
         """
         if self.needle in line and line not in self.segments:
             self.segments.append(line)
-            if len(self.segments) % self.period == 0:
+            if self.period > 0 and len(self.segments) % self.period == 0:
                 self.update_suffix()
                 self.generate()
 
@@ -154,7 +154,8 @@ class HLSMasterPlaylist:
         """
         @TODO: add documentation
         """
-        return ["{}_{}p.m3u8".format(os.path.basename(self.media.output_).split('.')[0], rep.size.height)]
+        _, name = get_path_info(self.media.output_)
+        return ["{}_{}p.m3u8".format(name, rep.size.height)]
 
     def sub_path(self, rep):
         """
@@ -164,4 +165,5 @@ class HLSMasterPlaylist:
         ----------
         rep : Representation
         """
-        return ["{}_{}p_vtt.m3u8".format(os.path.basename(self.media.output_).split('.')[0], rep.size.height)]
+        _, name = get_path_info(self.media.output_)
+        return ["{}_{}p_vtt.m3u8".format(name, rep.size.height)]

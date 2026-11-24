@@ -78,7 +78,7 @@ class Bitrate:
         """
         @TODO: add documentation
         """
-        return self.overall_ if self.overall_ is not None else self.video_ + self.audio_
+        return self.overall_ if self.overall_ is not None else (self.video_ or 0) + (self.audio_ or 0)
 
 
 def multiple_up(value, multiple):
