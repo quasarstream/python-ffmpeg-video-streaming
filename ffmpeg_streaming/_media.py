@@ -177,11 +177,16 @@ class HLS(Streaming):
     PERIODIC_RE_KEY_FLAG = 'periodic_rekey'
     MASTER_PLAYLIST_IS_SAVED = False
 
+    def __init__(self, media, _format: Format, **options):
+        self.KEY_INFO_FILE_PATH = None
+        self.MASTER_PLAYLIST_IS_SAVED = False
+        super(HLS, self).__init__(media, _format, **options)
+
     def set_up(self):
         """
         @TODO: add documentation
         """
-        if not HLS.MASTER_PLAYLIST_IS_SAVED:
+        if not self.MASTER_PLAYLIST_IS_SAVED:
             self.save_master_playlist()
 
     def encryption(self, path: str, url: str, key_rotation_period: int = 0, needle: str = ".ts' for writing", length: int = 16):
@@ -189,9 +194,9 @@ class HLS(Streaming):
         @TODO: add documentation
         """
         with tempfile.NamedTemporaryFile(mode='w', suffix='_py_ff_vi_st.tmp', delete=False) as key_info:
-            HLS.KEY_INFO_FILE_PATH = key_info.name
+            self.KEY_INFO_FILE_PATH = key_info.name
 
-        key_info_file = HLSKeyInfoFile(HLS.KEY_INFO_FILE_PATH, path, url, key_rotation_period, needle, length)
+        key_info_file = HLSKeyInfoFile(self.KEY_INFO_FILE_PATH, path, url, key_rotation_period, needle, length)
         self.options.update({'hls_key_info_file': str(key_info_file)})
 
         if key_rotation_period > 0:
@@ -209,7 +214,7 @@ class HLS(Streaming):
         @TODO: add documentation
         """
         if path is not None:
-            HLS.MASTER_PLAYLIST_IS_SAVED = True
+            self.MASTER_PLAYLIST_IS_SAVED = True
 
         HLSMasterPlaylist.generate(self, path)
 
@@ -230,8 +235,8 @@ class HLS(Streaming):
         """
         @TODO: add documentation
         """
-        if HLS.KEY_INFO_FILE_PATH is not None:
-            rm(HLS.KEY_INFO_FILE_PATH)
+        if self.KEY_INFO_FILE_PATH is not None:
+            rm(self.KEY_INFO_FILE_PATH)
 
         super(HLS, self).finish_up()
 
